@@ -1,0 +1,2526 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gebäude-Energierechner</title>
+<meta name="description" content="Jahresverbrauch Strom, Wärme und Wasser von Gebäuden – Grobabschätzung nach DIN V 4108-6 / DIN V 18599 (vereinfacht) mit Auswertungen, Maßnahmen und PDF-Bericht.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f2a37'/%3E%3Cpath d='M18 4 8 18h7l-2 10 11-15h-7z' fill='%23f2c14e'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#eef1f5;--card:#fff;--ink:#1f2933;--muted:#6b7785;--line:#d5dbe3;--dark:#1f2a37;--accent:#1f6feb;--avg:#2e7d32;--avgbg:#eef6ee;--warnbg:#fff4e5;--warn:#8a4b00;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.4 "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+button,input,select{font:inherit;color:inherit}
+header.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--dark);color:#fff;padding:10px 16px}
+header.top h1{font-size:18px;margin:0;font-weight:700;white-space:nowrap}
+header.top .sub{color:#aab6c4;font-size:13px;flex:1;min-width:200px}
+header.top .acts{display:flex;align-items:center;gap:8px;position:relative;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#f3f6fa}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.btn.primary:hover{background:#1858c4}
+header .btn.ghost{background:transparent;color:#fff;border-color:#4a5868}
+header .btn.ghost:hover{background:#2b3848}
+.chk{display:flex;align-items:center;gap:5px;color:#d5dde6;font-size:13px;cursor:pointer}
+#menu{position:absolute;right:0;top:40px;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);padding:6px;min-width:280px;z-index:30}
+#menu button{display:block;width:100%;text-align:left;border:0;background:none;padding:8px 10px;border-radius:5px;cursor:pointer}
+#menu button:hover{background:#eef3fb}
+#menu hr{border:0;border-top:1px solid var(--line);margin:4px 0}
+main{display:grid;grid-template-columns:minmax(420px,600px) 1fr;gap:12px;padding:12px;height:calc(100vh - 54px - 30px)}
+.inputs,.results{min-height:0;min-width:0;display:flex;flex-direction:column}
+.tabs{display:flex;flex-wrap:wrap;gap:2px;border-bottom:1px solid var(--line)}
+.tab{border:1px solid transparent;border-bottom:0;background:none;padding:7px 11px;border-radius:7px 7px 0 0;cursor:pointer;color:var(--muted);font-size:13.5px}
+.tab:hover{color:var(--ink)}
+.tab.active{background:var(--card);border-color:var(--line);color:var(--accent);font-weight:600;margin-bottom:-1px}
+#in-panels,#out-panels{background:var(--card);border:1px solid var(--line);border-top:0;border-radius:0 0 8px 8px;overflow:auto;flex:1;min-height:0}
+#in-panels{padding:12px}
+fieldset.card{border:1px solid var(--line);border-radius:8px;margin:0 0 12px;padding:8px 12px 12px}
+legend{color:var(--accent);font-weight:700;padding:0 4px;font-size:13.5px}
+.note{color:var(--muted);font-size:12.5px;margin:2px 0 8px}
+.grid{display:grid;grid-template-columns:minmax(150px,1fr) minmax(0,auto) 62px;gap:5px 10px;align-items:start}
+.lbl{padding-top:5px}
+.unit{color:var(--muted);font-size:12.5px;padding-top:6px}
+.tip{display:inline-block;margin-left:4px;color:var(--accent);cursor:help;font-size:12px}
+#tipbox{position:absolute;z-index:50;max-width:400px;background:#fffbe6;border:1px solid #e6d9a6;border-radius:6px;padding:7px 9px;font-size:12.5px;box-shadow:0 4px 14px rgba(0,0,0,.12);pointer-events:none}
+.numwrap{display:inline-flex;align-items:center;gap:6px}
+input.num{width:96px;text-align:right;padding:4px 7px;border:1px solid var(--line);border-radius:5px;background:#fff}
+input.num.avg{background:var(--avgbg);color:var(--avg);border-color:#cfe3cf}
+input.num.bad{background:#fde2e1;border-color:#e57373}
+input.txt{width:100%;min-width:220px;padding:4px 7px;border:1px solid var(--line);border-radius:5px}
+.avgcb{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none}
+.choicewrap{display:block}
+select{max-width:100%;width:310px;padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:#fff}
+.hint{color:var(--avg);font-style:italic;font-size:12px;margin-top:2px}
+.gengrid{display:grid;grid-template-columns:18px minmax(160px,1fr) repeat(4,auto);gap:5px 6px;align-items:start}
+.gengrid select{width:100%;min-width:160px}
+.gengrid input.num,.zonegrid input.num{width:62px}
+.zonegrid{display:grid;grid-template-columns:minmax(140px,1fr) repeat(3,auto);gap:5px 8px;align-items:center}
+.gh{color:var(--muted);font-size:12px;font-weight:700}
+.gi{padding-top:5px}
+.devtab{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px}
+.devtab th{background:#e6ebf1;text-align:left;padding:4px 6px;font-size:12px}
+.devtab td{border-bottom:1px solid #edf0f4;padding:3px 6px}
+.devtab .r{text-align:right}
+.devadd{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.devadd select{width:190px}
+input.sm{width:90px;min-width:0}
+input.xs{width:52px}
+button.x{border:0;background:none;color:#c62828;cursor:pointer}
+.muted{color:var(--muted)}
+#tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.tile{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:8px;padding:7px 12px}
+.tile .tt{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.tile .tv{font-size:21px;font-weight:700;margin:1px 0}
+.tile .ts{font-size:12px;color:var(--muted)}
+.outpanel{padding:10px 12px}
+.chart svg{width:100%;height:auto;display:block}
+.tables{margin-top:4px}
+.tblwrap{margin:10px 0 6px}
+.tbltitle{color:var(--accent);font-weight:700;font-size:13px;margin-bottom:3px}
+.tblscroll{overflow-x:auto}
+table.res{border-collapse:collapse;width:100%;min-width:760px;table-layout:fixed;font-size:12.5px}
+table.res th{background:#e6ebf1;text-align:left;padding:5px 6px;font-weight:700;white-space:normal;vertical-align:bottom;line-height:1.2}
+table.res td{padding:4px 6px;border-bottom:1px solid #edf0f4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table.res .r{text-align:right}
+table.res tr.total td{background:#eaf1fb;font-weight:700}
+table.res tr.group td{font-weight:700}
+table.res tr.muted td{color:var(--muted)}
+table.res tr.lv1 td:first-child{padding-left:22px}
+table.res tr.lv2 td:first-child{padding-left:40px}
+table.res tbody tr:hover td{background:#f5f8fc}
+.tblnote{color:var(--muted);font-size:12px;font-style:italic;margin:4px 0}
+.warn{background:var(--warnbg);color:var(--warn);border-radius:6px;padding:8px 10px;font-size:13px;margin:8px 0}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+#report{background:#fbfcfd;border:1px solid var(--line);border-radius:6px;padding:12px;font:12px/1.45 Consolas,Menlo,"DejaVu Sans Mono",monospace;overflow:auto;white-space:pre;margin:0}
+footer.status{height:30px;line-height:30px;background:var(--dark);color:#d5dde6;font-size:12.5px;padding:0 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:fixed;bottom:0;left:0;right:0;z-index:15}
+#toast{position:fixed;bottom:44px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:9px 14px;border-radius:8px;z-index:60;font-size:13px}
+dialog{border:1px solid var(--line);border-radius:10px;padding:18px 20px;max-width:520px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+dialog h2{margin:0 0 6px;font-size:17px;color:var(--accent)}
+dialog label{display:flex;gap:8px;align-items:center;margin:5px 0}
+dialog .dlgacts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+#print-root{display:none}
+@media (max-width:1100px){
+  main{grid-template-columns:minmax(0,1fr);height:auto;padding-bottom:44px}
+  #in-panels{max-height:none}
+  #out-panels{overflow:visible}
+}
+@media (max-width:640px){
+  header.top{position:static;padding:10px 12px}
+  main{padding:8px}
+  #tiles{grid-template-columns:1fr 1fr}
+  .tile .tv{font-size:17px}
+  .chart{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .chart svg{min-width:780px}
+  input.txt{min-width:0}
+  .devadd select{width:100%}
+  .grid{grid-template-columns:1fr auto;}
+  .grid .unit{display:none}
+  .lbl{grid-column:1 / -1;padding-top:6px}
+  select{width:100%}
+  header.top .sub{display:none}
+  .gengrid{grid-template-columns:18px 1fr 1fr;}
+  .gengrid .gh:nth-child(n+3){display:none}
+}
+
+/* ------------------------------------------------------------------ Druck / PDF (A4 quer) */
+@page{size:A4 landscape;margin:9mm 11mm 12mm;
+  @bottom-left{content:"Gebäude-Energierechner · Grobabschätzung nach DIN V 4108-6 / DIN V 18599 (vereinfacht) – ersetzt keinen Energieausweis nach GEG";font:7pt "Segoe UI",Arial,sans-serif;color:#6b7785}
+  @bottom-right{content:"Seite " counter(page) " von " counter(pages);font:7pt "Segoe UI",Arial,sans-serif;color:#6b7785}}
+@media print{
+  html,body{background:#fff;font-size:9pt}
+  body>*:not(#print-root){display:none!important}
+  #print-root{display:block}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .psec{break-before:page}
+  .psec:first-child{break-before:auto}
+  .phead{display:flex;justify-content:space-between;align-items:center;background:#1f2a37;color:#fff;padding:7px 12px;font-size:13pt;font-weight:700;border-radius:3px}
+  .phead .pr{font-size:8.5pt;font-weight:400;color:#c9d3de}
+  .psub{color:#6b7785;font-size:8pt;margin:4px 0 6px}
+  .pchart{margin:4px 0 2px;break-inside:avoid}
+  .pchart svg{width:100%;height:auto;max-height:92mm}
+  .pchart.tall svg{max-height:150mm}
+  table.res{min-width:0;font-size:7.4pt}
+  table.res th,table.res td{padding:2.2px 4px}
+  table.res thead{display:table-header-group}
+  table.res tr{break-inside:avoid}
+  .tblwrap{margin:5px 0 3px}
+  .tbltitle{font-size:8.5pt;break-after:avoid}
+  .tblnote{font-size:7pt}
+  .cover .cband{display:flex;justify-content:space-between;background:#1f2a37;color:#fff;padding:14px 18px;border-radius:3px}
+  .cover .ct{font-size:22pt;font-weight:700}
+  .cover .cs{color:#c9d3de;font-size:10.5pt;margin-top:4px}
+  .cover .cr{text-align:right;color:#c9d3de;font-size:8.5pt;line-height:1.5}
+  .cover .cr b{color:#fff;font-size:10.5pt}
+  .ptiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0 6px}
+  .ptile{border:1px solid #d5dbe3;border-left:5px solid var(--c);border-radius:5px;padding:5px 9px;background:#f7f9fb}
+  .ptile .tt{font-size:6.8pt;font-weight:700;color:#6b7785;text-transform:uppercase;letter-spacing:.04em}
+  .ptile .tv{font-size:14pt;font-weight:700}
+  .ptile .ts{font-size:7pt;color:#6b7785}
+  .cover h3{color:#1f6feb;font-size:10pt;margin:6px 0 3px}
+  table.facts{border-collapse:collapse;font-size:8pt;width:100%}
+  table.facts th{text-align:left;color:#6b7785;font-weight:400;width:32mm;padding:1.5px 0;vertical-align:top}
+  table.facts td{padding:1.5px 0}
+  .cover .pchart svg{max-height:62mm}
+  .warn{font-size:7.5pt;padding:4px 8px;margin:5px 0}
+  .icols{column-count:3;column-gap:6mm;font-size:6.5pt;margin-top:4px;line-height:1.25}
+  .icols .ih{font-weight:700;color:#1f6feb;margin:4px 0 1px;break-after:avoid}
+  .icols .ir{display:grid;grid-template-columns:1.15fr 1fr 12mm;gap:3px;border-bottom:1px solid #edf0f4;padding:0.6px 0;break-inside:avoid}
+  .icols .ir.avg{color:#6b7785}
+  .icols .src{text-align:right}
+  table.meth{border-collapse:collapse;font-size:8.5pt;margin-top:8px}
+  table.meth th{text-align:left;color:#1f6feb;vertical-align:top;padding:4px 10px 4px 0;width:30mm}
+  table.meth td{padding:4px 0;line-height:1.45}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>⚡ Gebäude-Energierechner</h1>
+  <span class="sub">Jahresverbrauch Strom · Wärme · Wasser (DIN V 4108-6 / DIN V 18599 vereinfacht)</span>
+  <div class="acts">
+    <button class="btn ghost" id="btn-menu" aria-haspopup="true">Datei ▾</button>
+    <button class="btn ghost" id="btn-pdf">PDF-Bericht</button>
+    <label class="chk"><input type="checkbox" id="auto" checked> automatisch</label>
+    <button class="btn primary" id="btn-calc">Berechnen</button>
+    <div id="menu" hidden>
+      <button data-act="save">Parameter speichern (.json)</button>
+      <button data-act="load">Parameter laden (.json) …</button>
+      <hr>
+      <button data-act="pdf">PDF-Bericht mit allen Grafiken …</button>
+      <button data-act="txt">Bericht exportieren (.txt)</button>
+      <button data-act="csv">Ergebnisse exportieren (.csv)</button>
+      <button data-act="png">Aktuelles Diagramm speichern (.png)</button>
+      <hr>
+      <button data-act="reset">Alle Eingaben zurücksetzen</button>
+    </div>
+  </div>
+</header>
+<main>
+  <section class="inputs"><nav class="tabs" id="in-tabs"></nav><div id="in-panels"></div></section>
+  <section class="results"><div id="tiles"></div><nav class="tabs" id="out-tabs"></nav><div id="out-panels"></div></section>
+</main>
+<footer class="status" id="status">Bereit</footer>
+<div id="tipbox" hidden></div>
+<div id="toast" hidden></div>
+<dialog id="pdfdlg">
+  <h2>PDF-Bericht</h2>
+  <p class="note">Immer enthalten: Übersicht, Energiefluss, Hülle, Strom, Wärme, Wasser, Kosten &amp; CO₂ und Monatsverlauf – jeweils mit Grafik und Tabelle.</p>
+  <label><input type="checkbox" id="opt-deckblatt" checked> Deckblatt mit Kennzahlen und Eckdaten</label>
+  <label><input type="checkbox" id="opt-eingaben" checked> Liste aller Eingabeparameter (Eingabe / Ø-Annahme)</label>
+  <label><input type="checkbox" id="opt-massnahmen" checked> Maßnahmen und Einsparpotenziale</label>
+  <label><input type="checkbox" id="opt-methodik" checked> Methodik und Annahmen</label>
+  <p class="note">Im folgenden Druckdialog als Ziel <b>„Als PDF speichern“</b> wählen (Querformat A4 ist voreingestellt, Hintergrundgrafiken einschalten, falls angeboten).</p>
+  <div class="dlgacts"><button class="btn" id="pdf-cancel">Abbrechen</button><button class="btn primary" id="pdf-go">PDF erstellen …</button></div>
+</dialog>
+<div id="print-root"></div>
+<script>
+const D = {"AVG_LABEL":"Ø unbekannt / Durchschnitt","MONTHS":["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"],"DAYS_M":[31,28,31,30,31,30,31,31,30,31,30,31],"T_REF":[1.0,1.9,4.7,9.2,14.1,16.7,19.0,18.6,14.3,9.5,4.1,0.9],"SOLAR_M":[20,33,55,75,90,90,95,85,65,45,22,15],"LIGHT_W":[1.3,1.15,1.0,0.85,0.75,0.7,0.7,0.8,0.95,1.1,1.25,1.35],"COOL_SHARE":[0,0,0,0.02,0.08,0.2,0.3,0.27,0.11,0.02,0,0],"REGIONS":{"Norddeutschland / Küste":{"dT":0.4,"tdes":-10,"pv":880},"West (Rhein-Ruhr, Bergisches Land, Rheinland)":{"dT":0.6,"tdes":-10,"pv":900},"Mitte / Ø Deutschland (Referenzklima Potsdam)":{"dT":0.0,"tdes":-12,"pv":950},"Ost (kontinental: Brandenburg, Sachsen)":{"dT":-0.4,"tdes":-14,"pv":960},"Süddeutschland (Bayern, Baden-Württemberg)":{"dT":-0.6,"tdes":-14,"pv":1050},"Mittelgebirge / Höhenlage > 500 m":{"dT":-2.0,"tdes":-16,"pv":950},"Alpenvorland / Hochlage > 800 m":{"dT":-3.0,"tdes":-18,"pv":1100}},"DEFAULT_REGION":"Mitte / Ø Deutschland (Referenzklima Potsdam)","PROFILES":{"Einfamilienhaus":{"hh":[1000,650],"bath":0.35,"res":true,"days":365,"hours":24,"theta":20.0,"m2pp":45,"presence":14,"h":2.6,"floor_m2":70,"max_floors":3,"room":18,"we_m2":140,"lux":150,"light_h":1100,"dl":0.25,"zones":[80,8,7,5],"plug_pp":0,"base":0.0,"wc":4.5,"hand":6,"shower":0.75,"misc_l":30,"misc_ww":4,"clean":0.0,"win":0.2,"cool":["keine",0],"cool_q":8,"n_hyg":0.45,"air_pp":0,"absenk":"Nachtabsenkung","heated":100,"bench":null,"lift_cat":1,"meals":0,"kitchen":"keine","mech":false,"ww":"zentral","circ":"keine","wc_we":1.5,"sink_we":2.5,"shower_we":1.2,"sinks_ww":true},"Mehrfamilienhaus":{"hh":[600,600],"bath":0.25,"res":true,"days":365,"hours":24,"theta":20.0,"m2pp":42,"presence":14,"h":2.6,"floor_m2":300,"max_floors":8,"room":17,"we_m2":70,"lux":150,"light_h":1100,"dl":0.25,"zones":[82,10,6,2],"plug_pp":0,"base":0.0,"wc":4.5,"hand":6,"shower":0.75,"misc_l":30,"misc_ww":4,"clean":0.0,"win":0.18,"cool":["keine",0],"cool_q":8,"n_hyg":0.45,"air_pp":0,"absenk":"Nachtabsenkung","heated":100,"bench":null,"lift_cat":2,"meals":0,"kitchen":"keine","mech":false,"ww":"zentral","circ":"ja, 24 h","wc_we":1.1,"sink_we":1.8,"shower_we":1.0,"sinks_ww":true},"Büro / Verwaltung":{"res":false,"days":250,"hours":11,"theta":21.0,"m2pp":20,"presence":8.5,"h":2.9,"floor_m2":600,"max_floors":8,"room":22,"we_m2":1,"lux":400,"light_h":2750,"dl":0.55,"zones":[65,18,7,10],"plug_pp":450,"base":1.2,"wc":2.5,"hand":3.0,"shower":0.02,"misc_l":1.5,"misc_ww":0.5,"clean":0.12,"win":0.25,"cool":["keine",0],"cool_q":30,"n_hyg":0,"air_pp":36,"absenk":"Nacht- und Wochenendabsenkung","heated":95,"bench":[95,40],"lift_cat":3,"meals":0,"kitchen":"Teeküche (im Gerätestrom enthalten)","mech":false,"ww":"Kleinspeicher","circ":"keine","wc_per":15,"sink_per":12,"shower_per":100,"sinks_ww":true},"Schule":{"res":false,"days":200,"hours":8,"theta":20.0,"m2pp":7,"presence":6.5,"h":3.2,"floor_m2":1000,"max_floors":4,"room":60,"we_m2":1,"lux":350,"light_h":1600,"dl":0.6,"zones":[62,22,8,8],"plug_pp":70,"base":0.6,"wc":1.5,"hand":2.0,"shower":0.01,"misc_l":1.0,"misc_ww":0.2,"clean":0.15,"win":0.28,"cool":["keine",0],"cool_q":15,"n_hyg":0,"air_pp":25,"absenk":"Nacht- und Wochenendabsenkung","heated":95,"bench":[110,15],"lift_cat":1,"meals":0.3,"kitchen":"Aufwärm-/Verteilerküche","mech":false,"ww":"Kleinspeicher","circ":"keine","wc_per":20,"sink_per":15,"shower_per":300,"sinks_ww":false},"Kindertagesstätte":{"res":false,"days":235,"hours":10,"theta":21.0,"m2pp":9,"presence":8,"h":2.9,"floor_m2":500,"max_floors":2,"room":35,"we_m2":1,"lux":300,"light_h":2350,"dl":0.55,"zones":[65,15,12,8],"plug_pp":120,"base":0.8,"wc":3.0,"hand":6,"shower":0.02,"misc_l":5,"misc_ww":2,"clean":0.2,"win":0.25,"cool":["keine",0],"cool_q":10,"n_hyg":0,"air_pp":20,"absenk":"Nacht- und Wochenendabsenkung","heated":100,"bench":[120,20],"lift_cat":1,"meals":1.0,"kitchen":"Aufwärm-/Verteilerküche","mech":false,"ww":"zentral","circ":"ja, zeitgesteuert","wc_per":8,"sink_per":6,"shower_per":50,"sinks_ww":true},"Hotel / Beherbergung":{"bath":0.15,"res":false,"days":365,"hours":24,"theta":21.0,"m2pp":35,"presence":12,"h":2.7,"floor_m2":600,"max_floors":8,"room":25,"we_m2":1,"lux":200,"light_h":3000,"dl":0.3,"zones":[60,20,12,8],"plug_pp":700,"base":2.0,"wc":4,"hand":6,"shower":0.9,"misc_l":25,"misc_ww":10,"clean":0.15,"win":0.2,"cool":["Splitgeräte / Teilklimatisierung",40],"cool_q":25,"n_hyg":0,"air_pp":30,"absenk":"keine","heated":100,"bench":[150,75],"lift_cat":3,"meals":1.5,"kitchen":"Vollküche (elektrisch)","mech":true,"ww":"zentral","circ":"ja, 24 h","wc_per":1.6,"sink_per":1.4,"shower_per":1.7,"sinks_ww":true},"Krankenhaus / Pflegeheim":{"bath":0.5,"res":false,"days":365,"hours":24,"theta":22.0,"m2pp":45,"presence":20,"h":3.0,"floor_m2":1500,"max_floors":8,"room":25,"we_m2":1,"lux":300,"light_h":4500,"dl":0.35,"zones":[55,25,10,10],"plug_pp":1800,"base":3.0,"wc":5,"hand":15,"shower":0.7,"misc_l":120,"misc_ww":40,"clean":0.3,"win":0.2,"cool":["Zentrale Kälteanlage (Kaltwasser)",40],"cool_q":35,"n_hyg":0,"air_pp":50,"absenk":"keine","heated":100,"bench":[230,110],"lift_cat":4,"meals":3.0,"kitchen":"Vollküche (elektrisch)","mech":true,"ww":"zentral","circ":"ja, 24 h","wc_per":2,"sink_per":1.5,"shower_per":3,"sinks_ww":true},"Einzelhandel":{"res":false,"days":300,"hours":12,"theta":19.0,"m2pp":25,"presence":6,"h":3.8,"floor_m2":1500,"max_floors":2,"room":120,"we_m2":1,"lux":500,"light_h":3600,"dl":0.2,"zones":[80,6,4,10],"plug_pp":200,"base":4.0,"wc":0.6,"hand":1.0,"shower":0.0,"misc_l":1.0,"misc_ww":0.2,"clean":0.15,"win":0.1,"cool":["Zentrale Kälteanlage (Kaltwasser)",80],"cool_q":35,"n_hyg":0,"air_pp":20,"absenk":"Nachtabsenkung","heated":95,"bench":[80,100],"lift_cat":2,"meals":0,"kitchen":"keine","mech":true,"ww":"Kleinspeicher","circ":"keine","wc_per":40,"sink_per":40,"shower_per":0,"sinks_ww":true},"Gaststätte / Restaurant":{"res":false,"days":300,"hours":13,"theta":21.0,"m2pp":3,"presence":2.5,"h":3.0,"floor_m2":200,"max_floors":2,"room":40,"we_m2":1,"lux":300,"light_h":3900,"dl":0.3,"zones":[75,8,10,7],"plug_pp":150,"base":4.0,"wc":1.5,"hand":2.0,"shower":0.0,"misc_l":5,"misc_ww":2,"clean":0.25,"win":0.15,"cool":["Splitgeräte / Teilklimatisierung",50],"cool_q":30,"n_hyg":0,"air_pp":25,"absenk":"Nachtabsenkung","heated":100,"bench":[150,180],"lift_cat":1,"meals":1.5,"kitchen":"Vollküche (elektrisch)","mech":true,"ww":"zentral","circ":"ja, zeitgesteuert","wc_per":25,"sink_per":25,"shower_per":0,"sinks_ww":true},"Werkstatt / Bauhof / leichte Produktion":{"res":false,"days":250,"hours":9,"theta":17.0,"m2pp":40,"presence":8,"h":5.0,"floor_m2":1000,"max_floors":2,"room":150,"we_m2":1,"lux":300,"light_h":2250,"dl":0.4,"zones":[75,8,7,10],"plug_pp":1500,"base":1.0,"wc":2,"hand":4,"shower":0.3,"misc_l":5,"misc_ww":0.5,"clean":0.1,"win":0.12,"cool":["keine",0],"cool_q":10,"n_hyg":0,"air_pp":40,"absenk":"Nacht- und Wochenendabsenkung","heated":90,"bench":[130,45],"lift_cat":1,"meals":0,"kitchen":"Teeküche (im Gerätestrom enthalten)","mech":false,"ww":"zentral","circ":"ja, zeitgesteuert","wc_per":15,"sink_per":8,"shower_per":10,"sinks_ww":true},"Lager / Logistik":{"res":false,"days":250,"hours":10,"theta":15.0,"m2pp":150,"presence":8,"h":7.0,"floor_m2":3000,"max_floors":1,"room":400,"we_m2":1,"lux":150,"light_h":2500,"dl":0.25,"zones":[85,5,3,7],"plug_pp":600,"base":0.5,"wc":2,"hand":3,"shower":0.1,"misc_l":1,"misc_ww":0.2,"clean":0.05,"win":0.05,"cool":["keine",0],"cool_q":5,"n_hyg":0,"air_pp":30,"absenk":"Nacht- und Wochenendabsenkung","heated":80,"bench":[70,25],"lift_cat":1,"meals":0,"kitchen":"Teeküche (im Gerätestrom enthalten)","mech":false,"ww":"Kleinspeicher","circ":"keine","wc_per":15,"sink_per":15,"shower_per":20,"sinks_ww":true},"Sporthalle":{"res":false,"days":280,"hours":14,"theta":17.0,"m2pp":12,"presence":1.5,"h":7.0,"floor_m2":1200,"max_floors":1,"room":300,"we_m2":1,"lux":300,"light_h":3900,"dl":0.4,"zones":[70,10,12,8],"plug_pp":15,"base":0.5,"wc":1.0,"hand":1.0,"shower":0.5,"misc_l":1,"misc_ww":0.2,"clean":0.1,"win":0.12,"cool":["keine",0],"cool_q":5,"n_hyg":0,"air_pp":30,"absenk":"Nachtabsenkung","heated":95,"bench":[140,25],"lift_cat":1,"meals":0,"kitchen":"keine","mech":true,"ww":"zentral","circ":"ja, zeitgesteuert","wc_per":30,"sink_per":30,"shower_per":15,"sinks_ww":true}},"BAUJAHR":{"bis 1918":{"y":1900,"ht":1.45,"ninf":0.4,"g":0.75,"vl":70,"dist":2},"1919–1948":{"y":1930,"ht":1.4,"ninf":0.4,"g":0.75,"vl":70,"dist":2},"1949–1957":{"y":1953,"ht":1.35,"ninf":0.38,"g":0.75,"vl":70,"dist":2},"1958–1968":{"y":1963,"ht":1.2,"ninf":0.35,"g":0.75,"vl":70,"dist":2},"1969–1978":{"y":1974,"ht":1.0,"ninf":0.3,"g":0.75,"vl":70,"dist":2},"1979–1983 (1. WSchVO)":{"y":1981,"ht":0.85,"ninf":0.25,"g":0.75,"vl":55,"dist":1},"1984–1994 (2. WSchVO)":{"y":1990,"ht":0.72,"ninf":0.22,"g":0.75,"vl":55,"dist":1},"1995–2001 (3. WSchVO)":{"y":1998,"ht":0.55,"ninf":0.15,"g":0.6,"vl":55,"dist":1},"2002–2008 (EnEV 2002/07)":{"y":2005,"ht":0.45,"ninf":0.12,"g":0.6,"vl":45,"dist":0},"2009–2015 (EnEV 2009)":{"y":2012,"ht":0.38,"ninf":0.1,"g":0.6,"vl":35,"dist":0},"2016–2020 (EnEV 2016)":{"y":2018,"ht":0.32,"ninf":0.08,"g":0.5,"vl":35,"dist":0},"ab 2021 (GEG)":{"y":2023,"ht":0.3,"ninf":0.07,"g":0.5,"vl":35,"dist":0}},"DEFAULT_BAUJAHR":"1969–1978","SAN_OPTS":["unsaniert / Originalzustand","teilsaniert (z. B. Fenster, Dach)","umfassend saniert (Hülle gedämmt, neue Fenster)"],"STANDARDS":{"GEG-Neubau-Mindeststandard":{"ht":0.32,"ninf":0.08,"g":0.5,"wrg":false},"KfW-Effizienzhaus 115":{"ht":0.45,"ninf":0.12,"g":0.6,"wrg":false},"KfW-Effizienzhaus 100":{"ht":0.4,"ninf":0.1,"g":0.6,"wrg":false},"KfW-Effizienzhaus 85":{"ht":0.35,"ninf":0.09,"g":0.55,"wrg":false},"KfW-Effizienzhaus 70":{"ht":0.3,"ninf":0.08,"g":0.5,"wrg":false},"KfW-Effizienzhaus 55":{"ht":0.26,"ninf":0.07,"g":0.5,"wrg":false},"KfW-Effizienzhaus 40":{"ht":0.22,"ninf":0.05,"g":0.5,"wrg":true},"Passivhaus":{"ht":0.15,"ninf":0.03,"g":0.5,"wrg":true},"Nullemissionsgebäude (EPBD-ZEB)":{"ht":0.15,"ninf":0.03,"g":0.5,"wrg":true}},"FENSTER":{"Einfachverglasung":0.85,"Zweischeiben-Isolierglas (bis ca. 1995)":0.75,"Zweischeiben-Wärmeschutzglas":0.6,"Dreischeiben-Wärmeschutzglas":0.5},"FORMS":{"freistehend":1.0,"einseitig angebaut (DHH, Reihenendhaus)":0.75,"beidseitig angebaut (Reihenmitte, Blockrand)":0.5},"MASS":{"leicht (Holz-/Leichtbau)":12,"mittel (Mischbauweise)":15,"schwer (Massivbau)":18},"U_AGE":{"bis 1918":[1.7,1.4,1.2,0.1],"1919–1948":[1.6,1.4,1.2,0.1],"1949–1957":[1.4,1.4,1.15,0.1],"1958–1968":[1.2,1.0,1.0,0.1],"1969–1978":[1.0,0.7,0.95,0.1],"1979–1983 (1. WSchVO)":[0.8,0.5,0.8,0.1],"1984–1994 (2. WSchVO)":[0.6,0.4,0.6,0.1],"1995–2001 (3. WSchVO)":[0.45,0.3,0.45,0.05],"2002–2008 (EnEV 2002/07)":[0.35,0.25,0.4,0.05],"2009–2015 (EnEV 2009)":[0.28,0.2,0.3,0.05],"2016–2020 (EnEV 2016)":[0.24,0.18,0.28,0.05],"ab 2021 (GEG)":[0.22,0.16,0.26,0.03]},"FENSTER_U":{"Einfachverglasung":5.0,"Zweischeiben-Isolierglas (bis ca. 1995)":2.8,"Zweischeiben-Wärmeschutzglas":1.3,"Dreischeiben-Wärmeschutzglas":0.9},"DACH_OPTS":{"Steildach mit beheiztem Dachgeschoss":1.0,"Flachdach":1.0,"oberste Geschossdecke (unbeheizter Dachraum)":0.8},"UNTEN_OPTS":{"Kellerdecke zum unbeheizten Keller":0.6,"Bodenplatte auf Erdreich (kein Keller)":0.5,"beheizter Keller (Wände/Boden gegen Erdreich)":0.6},"VERSCHATTUNG":{"gering (freie Lage)":1.0,"normal (übliche Bebauung)":0.9,"stark (enge Bebauung, Bäume)":0.6},"AUSRICHTUNG":{"gleichmäßig verteilt / unbekannt":1.0,"überwiegend Süd":1.3,"überwiegend Ost/West":0.95,"überwiegend Nord":0.6},"MODI":["realitätsnaher Verbrauch (Nutzerverhalten, Prebound-Effekt)","Normbedarf (Standard-Randbedingungen)"],"WITTERUNG":{"Normjahr (langjähriges Mittel)":0.0,"mildes Jahr (z. B. 2020, 2022–2024)":1.2,"kaltes Jahr (z. B. 2010)":-1.3},"BACS":{"D – keine Automation":[[1.1,1.08],[1.2,1.1]],"C – Standard (Referenz)":[[1.0,1.0],[1.0,1.0]],"B – erweiterte Automation":[[0.88,0.93],[0.8,0.93]],"A – hocheffiziente Automation":[[0.81,0.92],[0.7,0.87]]},"PV_M":[0.025,0.045,0.08,0.11,0.13,0.135,0.135,0.12,0.09,0.06,0.03,0.02],"VENT_OPTS":["Fensterlüftung (freie Lüftung)","Abluftanlage (ohne WRG)","Zu-/Abluftanlage mit Wärmerückgewinnung"],"ABSENK_OPTS":["keine","Nachtabsenkung","Nacht- und Wochenendabsenkung"],"HEIZFL":{"Fußboden-/Flächenheizung (35 °C)":35,"Niedertemperatur-Heizkörper (45 °C)":45,"Heizkörper (55 °C)":55,"Heizkörper Altbau (70 °C)":70},"DIST_OPTS":["neu (gedämmt, hydraulisch abgeglichen)","Standard","alt (ungedämmte Leitungen, kein Abgleich)"],"DIST_F":[1.05,1.1,1.18],"PUMP_OPTS":{"Hocheffizienzpumpe":0.6,"geregelte Standardpumpe":1.2,"alte ungeregelte Pumpe":2.2},"GEN_TYPES":{"Gas-Brennwertkessel":{"kind":"cond","carrier":"Erdgas","eta":0.94},"Gas-Brennwerttherme (Etage/Wand)":{"kind":"cond","carrier":"Erdgas","eta":0.93},"Gas-Niedertemperaturkessel":{"kind":"boiler","carrier":"Erdgas","eta":0.86},"Gas-Konstanttemperaturkessel (vor 1985)":{"kind":"boiler","carrier":"Erdgas","eta":0.75},"Flüssiggas-Brennwertkessel":{"kind":"cond","carrier":"Flüssiggas","eta":0.93},"Öl-Brennwertkessel":{"kind":"cond","carrier":"Heizöl","eta":0.92},"Öl-Niedertemperaturkessel":{"kind":"boiler","carrier":"Heizöl","eta":0.85},"Öl-Standardkessel (vor 1985)":{"kind":"boiler","carrier":"Heizöl","eta":0.74},"Pelletkessel":{"kind":"boiler","carrier":"Holzpellets","eta":0.86},"Hackschnitzelkessel":{"kind":"boiler","carrier":"Hackschnitzel","eta":0.82},"Scheitholzkessel (Holzvergaser)":{"kind":"boiler","carrier":"Scheitholz","eta":0.78},"Kaminofen / Kachelofen (Scheitholz)":{"kind":"boiler","carrier":"Scheitholz","eta":0.7},"Fernwärme / Nahwärme (Übergabestation)":{"kind":"fw","carrier":"Fernwärme","eta":0.97},"Wärmepumpe Luft/Wasser":{"kind":"wp","src":"luft"},"Wärmepumpe Sole/Wasser (Erdsonde)":{"kind":"wp","src":"sole"},"Wärmepumpe Wasser/Wasser (Grundwasser)":{"kind":"wp","src":"wasser"},"BHKW (Erdgas, wärmegeführt)":{"kind":"bhkw","carrier":"Erdgas","eta":0.58,"eta_el":0.32},"Elektro-Direktheizung / Infrarot":{"kind":"el","carrier":"Strom","eta":0.99},"Nachtspeicherheizung":{"kind":"el","carrier":"Strom","eta":0.95},"Elektro-Heizstab (Spitzenlast)":{"kind":"el","carrier":"Strom","eta":0.99}},"NO_GEN":"— keiner —","JAZ":{"luft":{"35":3.6,"45":3.1,"55":2.7,"70":2.2},"sole":{"35":4.4,"45":3.8,"55":3.2,"70":2.6},"wasser":{"35":4.8,"45":4.1,"55":3.5,"70":2.8}},"WW_OPTS":{"zentral über Wärmeerzeuger (Speicher)":"zentral","dezentral elektrisch (Durchlauferhitzer)":"dle","dezentral elektrisch (Kleinspeicher/Boiler)":"Kleinspeicher","Warmwasser-Wärmepumpe (Brauchwasser-WP)":"wwwp"},"CIRC_OPTS":["keine","ja, 24 h","ja, zeitgesteuert"],"WC_OPTS":{"Spartaste 6/3 L (Ø 4,5 L)":4.5,"Standard 6 L":6.0,"Altbestand 9 L":9.0},"ARM_OPTS":{"wassersparend (Spar-Duschkopf, Perlatoren)":[6.5,1.0],"Standardarmaturen":[9.0,1.5],"Komfort / Regendusche":[12.0,2.0]},"KITCHEN":{"keine":[0.0,0.0,0.0],"Teeküche (im Gerätestrom enthalten)":[0.0,0.0,0.0],"Aufwärm-/Verteilerküche":[0.45,6.0,3.0],"Vollküche (elektrisch)":[1.1,15.0,6.0]},"LEUCHTMITTEL":{"LED (neu, effizient)":1.6,"LED-Retrofit / ältere LED":2.2,"Mischbestand LED / Leuchtstoff":2.6,"Leuchtstoff T5 (EVG)":2.8,"Leuchtstoff T8 (KVG/VVG)":4.0,"Halogen / Glühlampe":12.0},"STEUERUNG":{"manuell (Schalter)":[0.5,1.0],"Zeitschaltung / Gebäudeleittechnik":[0.55,0.95],"Präsenz-/Bewegungsmelder":[0.5,0.85],"Präsenzmelder + tageslichtabhängige Regelung":[0.85,0.85]},"LIFT_CAT":{"1 – sehr gering (0,2 h/d)":0.2,"2 – gering (0,5 h/d)":0.5,"3 – mittel (1,5 h/d)":1.5,"4 – hoch (3 h/d)":3.0,"5 – sehr hoch (6 h/d)":6.0},"LIFT_TECH":{"modern (getriebelos, Standby-Abschaltung)":[50,0.75],"Seilaufzug mit Getriebe (älter)":[150,0.55],"Hydraulikaufzug":[200,0.4]},"COOL_OPTS":{"keine":null,"Splitgeräte / Teilklimatisierung":3.2,"Zentrale Kälteanlage (Kaltwasser)":3.0},"GERAETE_MODI":["pauschal + Geräteliste","nur pauschal","nur Geräteliste"],"CARRIERS":{"Erdgas":{"unit":"m³","per":10.0,"price":0.11,"co2":240,"fp":1.1,"color":"#f4a259"},"Flüssiggas":{"unit":"Liter","per":6.6,"price":0.13,"co2":270,"fp":1.1,"color":"#f7c873"},"Heizöl":{"unit":"Liter","per":10.0,"price":0.105,"co2":310,"fp":1.1,"color":"#8d6e63"},"Holzpellets":{"unit":"kg","per":4.9,"price":0.075,"co2":20,"fp":0.2,"color":"#8bc34a"},"Hackschnitzel":{"unit":"Srm","per":750.0,"price":0.05,"co2":20,"fp":0.2,"color":"#aed581"},"Scheitholz":{"unit":"rm","per":1800.0,"price":0.07,"co2":20,"fp":0.2,"color":"#689f38"},"Fernwärme":{"unit":"kWh","per":1.0,"price":0.14,"co2":180,"fp":0.7,"color":"#e57373"},"Strom":{"unit":"kWh","per":1.0,"price":0.33,"co2":380,"fp":1.8,"color":"#26a69a"}},"ENERGY_CLASSES":[["A+",30,"#00a650"],["A",50,"#4cb848"],["B",75,"#bed62f"],["C",100,"#fff200"],["D",130,"#fdb913"],["E",160,"#f7941d"],["F",200,"#f15a29"],["G",250,"#ed1c24"],["H",300,"#be1e2d"]],"EL_COLORS":{"Beleuchtung":"#f2c14e","Geräte & Arbeitshilfen":"#5b8def","Kleingeräte (Liste)":"#9db8ff","Küche / Kantine":"#c48df2","IT / Serverraum":"#7a6ff0","Sonderverbraucher":"#9aa5b1","Wärmepumpe":"#26a69a","Elektroheizung / el. Warmwasser":"#ef6f6c","Lüftung":"#7cc6fe","Kühlung / Klima":"#3aa0d8","Aufzüge & Fahrtreppen":"#a1887f","Hilfsenergie Heizung/WW":"#b0bec5","E-Mobilität (Laden)":"#ff8a65"},"EL_GROUP":{"Beleuchtung":"Beleuchtung","Geräte & Arbeitshilfen":"Nutzung","Kleingeräte (Liste)":"Nutzung","Küche / Kantine":"Nutzung","IT / Serverraum":"Nutzung","Sonderverbraucher":"Nutzung","Wärmepumpe":"Wärmepumpe","Elektroheizung / el. Warmwasser":"Heizung & Technik","Lüftung":"Heizung & Technik","Kühlung / Klima":"Heizung & Technik","Aufzüge & Fahrtreppen":"Heizung & Technik","Hilfsenergie Heizung/WW":"Heizung & Technik","E-Mobilität (Laden)":"E-Mobilität"},"DEVICE_PRESETS":{"Kühlschrank":[0.1,1800],"Gefrierschrank":[0.12,2000],"Kühl-/Getränkeautomat":[0.4,5000],"Wasserspender (gekühlt)":[0.1,3000],"Kaffeevollautomat":[1.3,250],"Wasserkocher":[2.0,100],"Mikrowelle":[0.9,100],"Spülmaschine":[2.0,150],"Waschmaschine":[2.0,90],"Wäschetrockner":[2.5,120],"Kochfeld (je Zone)":[2.0,150],"Backofen":[3.0,100],"Drucker / Kopierer":[0.4,1000],"Arbeitsplatz-PC + Monitor":[0.08,2000],"Notebook":[0.04,2000],"Server / NAS":[0.15,8760],"Netzwerk-Switch / WLAN":[0.05,8760],"Beamer / Display":[0.3,800],"Heizlüfter":[2.0,150],"Ventilator":[0.05,300],"Akku-Ladestation (Werkzeug/E-Bike)":[0.3,500]},"WATER_COLORS":["#3aa0d8","#7cc6fe","#9fd8cb","#5b8def","#c48df2","#f2c14e","#8bc34a","#b0bec5","#80cbc4"],"GROUP_COLORS":{"Beleuchtung":"#f2c14e","Nutzung":"#5b8def","Wärmepumpe":"#26a69a","Heizung & Technik":"#9aa5b1","E-Mobilität":"#ff8a65"},"GROUP_ORDER":["Beleuchtung","Nutzung","Wärmepumpe","Heizung & Technik","E-Mobilität"],"COMP_COLORS":["#ef6f6c","#5b8def","#f2c14e","#a1887f","#8d6e63","#b0bec5","#7cc6fe"],"NODE_COLORS":{"Netzstrom":"#26a69a","PV-Eigenverbrauch":"#f9a825","BHKW-Strom":"#7e57c2","Umweltwärme":"#80cbc4","Solarthermie":"#ffd54f","Stromverteilung":"#26a69a","Wärmeerzeugung":"#ef6f6c","Raumwärme":"#f4a259","Warmwasser":"#f7c873","Verluste":"#b0bec5","Beleuchtung":"#f2c14e","Geräte & Nutzung":"#5b8def","Gebäudetechnik":"#9aa5b1","E-Mobilität":"#ff8a65"},"TABS":[["overview","Übersicht"],["flow","Energiefluss"],["huelle","Hülle"],["strom","Strom"],["waerme","Wärme"],["wasser","Wasser"],["kosten","Kosten & CO₂"],["monat","Monate"],["massnahmen","Maßnahmen"]],"TAB_TITLES":{"overview":"Übersicht und Kennwerte","flow":"Energiefluss","huelle":"Gebäudehülle und Wärmebilanz","strom":"Strom","waerme":"Wärme","wasser":"Wasser","kosten":"Kosten, CO₂ und Primärenergie","monat":"Monatsverlauf","massnahmen":"Maßnahmen und Einsparpotenziale"},"COST_COLORS":{"Strom":"#26a69a","Strom Wärmepumpe (WP-Tarif)":"#80cbc4","Wasser/Abwasser":"#3aa0d8","Grundpreise / Zähler":"#b0bec5"},"GAUSS":[-2.7304826746150104,-4.683098283651432,2.9216418439635556,-6.446506464725051,2.0902307611386974,1.7459266540903737,-1.0593594630287322,-1.217255513607459,2.039393870006353,-2.3782689124505167,-1.0353828059509829,0.42542374812703043,-1.4883024017883981,-2.334575595374877,-0.9488695502877359,-0.678148027983738,4.601380709860033,0.5065530763414937,3.1673819915957195,3.3563707605615725,-3.0015766725810273,-1.8041059517073015,2.0696617252381175,-1.5287118688974526,0.7493292610335336,0.3736614905384476,0.594646211071082,1.595266071807583,0.4848121895376495,5.794934329441063,-0.7858541233614378,0.3310066468274607,-0.532042198442613,-2.246482216621603,4.577126919161038,3.4030959201846556,7.524515741708244,-0.8117089036815984,0.7749795401949552,-6.070349077788654,-0.249904857076865,-3.2245791183228807,-0.6805098244570911,-0.4551198207016851,0.20210073446316343,-5.763934938234064,-2.813350769409369,1.4295277013677525,1.4829201210660619,-2.5986516518226894,-2.355605568859406,4.658870510120573,-0.19757902140631936,-4.907754471385962,-2.869120853189253,1.4163216157254341,1.998074660213899,3.091038018923646,-0.33458093096564934,-2.7078961717282524,-2.359077905874626,-1.7166781834597693,-2.192093020111086,-3.6269552557744658,2.820212002071224,-3.61802704330389,2.2373649409433543,-2.3426988313896246,-0.9975153250715143,-2.8591615100207974,3.885394017943806,1.7875797180639479,-1.5557717901726809,-2.2785851972638382,-1.081192227978435,1.6753910326494492,-0.3467557092825702,-0.1802394662654532,-4.051234446916881,-0.34760720746050106,1.6456758750767362,-4.622175003679149,-6.390920855892142,-8.318005150537738,1.701057815376047,1.1297149444589971,-0.8021760196023432,-3.394617869370592,3.5219095714098168,-0.10551250173216341,-1.1987572197807908,-0.18464191969374555,-2.1624035986923156,-2.479985364784944,0.5862145908615412,-3.771025126258431,-2.119448021827266,0.9382826490559014,-0.14457819347602063,-1.3774975317909408,-0.006180306600427753,-0.21902705479147594,0.5156624394733204,-1.3370714172776716,2.525438473036251,0.034997308546830246,0.5940805399560607,-0.9655255943263334,-3.879976051246203,3.330227237477461,0.27220988277719627,-0.23627173678838428,-0.9853344892562041,-1.1572150522118507,-2.2239649016471397,-2.7341157599514143,1.6015333115825654,4.658809863615047,-1.1168957778995594,-2.162519035254532,-3.3885532307503414,-3.077122392240937,-3.6108599495347944,-0.27069223200529785,-2.6807679752984965,-2.624293466684908,-3.1000767681481114,-4.295388967576735,2.2931209198889433,3.7667002939938046,2.1664761071749687,-6.3396160929959136,-0.38605609782724487,-2.030736070344813,0.4532657114079464,-0.5781229165847586,3.669601125817946,0.8680344363789522,2.6770297560050795,4.129077615292415,-2.3430683943279353,1.2644064967238393,2.517658788805698,-1.0445128190895498,2.5435641907262947,-1.3537310420054378,-1.7772152713280507,1.0563162479384014,-3.0209233948854544,1.2213501521237558,-4.042100600758737,-1.3567839947120708,3.438430690705227,-2.5967450464624857,-1.0836576868989107,2.34072743733454,-5.0233989931671355,-0.3350706917711135,-0.8409384849992841,3.377381926347711,-0.5689634768878192,3.4774849851770937,1.5064934579928295,-6.01688490445801,-0.7690489402054723,4.84464325460363,-3.0243287517857453,0.9599073031610726,-0.9525690610154691,-0.5877975948205109,2.834674132351221,-2.904936134693687,0.9670769381893612,1.8868563998159869,-1.147610012911079,1.2523578706922285,1.679116271649232,-3.8479455988802593,2.3115732592045113,-4.316578399541812,2.0462616323848364,-0.6662747836830603,1.7036757231815667,-2.9003813509131695,0.22857203643032387,0.6716903465094257,-2.028043044545027,3.748213847595441,-0.2226540100749549,1.5358848552763418,1.2044954404234782,1.632181802760692,0.017208818572407407,-5.014964441070629,-0.24854481583882926,0.6637989100386013,0.7984440837307569,0.1432407571814768,2.7159509007978637,1.5075393591493973,3.837948831750934,1.8479049277478314,-1.0791992877907433,4.7208304684171525,0.43929227828431827,-1.519616439187978,-1.6389903848855931,-1.5359181111624052,2.787865585481115,4.404728630172124,0.08724481275945725,3.22715770751421,-0.5323836420423641,-2.3567958733548515,-2.3717898825118904,4.0856481538832545,-0.0824570885062667,2.322096560878415,2.6367774461516054,-0.2363273350821591,-1.2815141464289803,1.7901975110659225,1.4246985573949047,-4.11790863393555,-0.20588174593086442,1.0035173769267423,3.232400269656883,0.8507084145643508,2.9778418556845976,-1.7328745902469096,-0.5908164715568184,-4.75316598062517,3.888778910761292,-0.1184826740582944,-3.1460068437904116,-2.4510920320513296,-3.2400573513812247,0.05170970955012396,0.2891557711945564,-0.9888270816207202,0.24872459031468283,-0.5447018233609243,0.05230941466829694,-3.6656730676520812,-0.7893706559534706,0.40441156306737974,1.167950139498829,3.698472511646562,-2.175384702398544,-5.020825399773824,-0.4141925444887656,7.676799768026333,-4.496369158789953,3.730410532766175,-3.8442417933414426,1.804612652856234,0.6511981582233464,0.27952835711606777,-2.0780175265887753,-1.5516691477347873,4.913944459257169,0.343014885458907,3.664750750653283,1.7575662584869367,0.5458393797147814,-0.5882797164290066,4.014257908612108,-4.2390810851092535,-2.6549953610196977,-4.222660067547074,2.215325278373006,1.5243464232899673,-2.543655368264569,1.6106703928560395,-0.7897736658011802,-1.3485538165991344,0.3969457628665034,-3.4766415706892726,3.8815573855481422,-1.4954716854881906,-0.383363116169993,0.45067739492702347,-3.9437446911125447,-0.06594536536326054,-1.20573449638489,1.121383161431027,-3.420786863313571,-1.359303019596007,1.2102460829902029,0.04540820668114126,-3.9400072877011616,4.73018602700345,0.5178958093043251,3.961963455045603,-1.6027563386436594,1.1639941532405904,2.0276369679417763,1.388122869448479,-1.4245601735237332,-0.715441351307138,-2.947752005442298,-6.659640731399854,-0.8204005929281206,2.07024576275301,-2.6463382330885614,-3.9390249704400824,1.399458859253184,0.5731028610474862,-1.8001515968104815,-1.5209129639636723,-0.3413823284688317,-4.6090885926936815,1.1012626896297437,1.539402400223294,4.295887228503764,1.1217443850187996,-0.13211385812332416,0.7089449032329391,-0.9473669554737496,0.7154101725747094,2.0899073249080264,3.054645413981614,-0.6868782244405226,1.7675192013420724,-4.346742840811883,1.2722156570282315,-1.9672996818211164,-1.8731040694827137,-0.29083478389369405,-1.3849272522386498,1.4272257194953206,-0.5332809609973611,-3.1617938846018276,-2.250587611271779,2.1620500485462224,0.9252054630831549,-0.3004736090461769,0.4966308590306772,2.4331925808786417,-0.5591586800470939,-1.4826876977971968,-2.362969222180736,-0.40509121288309724,3.7137490531888684,0.09789429762199363,-1.9592646961854716,3.5796091209094447,-1.4121020691904704,-4.6197863318887995,1.3650904328710822,2.3291113568406523,-3.9613046364271347,2.1469615566390696,0.37078455461036836,-5.3833472309709505,0.8941928562402827,-0.8594362789496547,-3.777986312810584,5.168260679068354,1.6681944969304099,1.982495660333907,0.8399573896968944,-1.2102900516639858,3.780870747440151,2.6318263471704433]};
+
+</script>
+<script>
+/* =============================================================================
+   Gebäude-Energierechner – Rechenkern (1:1-Portierung der Python-Version)
+   DIN V 4108-6 / DIN EN ISO 13790, DIN EN 12831 (vereinfacht), DIN V 18599-4/-8/-10,
+   DIN EN 16798-1, DIN EN 12897 / DVGW W 551, VDI 4707, VDI 3807, VDI 4650-1,
+   DIN EN ISO 52120-1, GEG 2024 Anlage 4/9, IWU-Gebäudetypologie / TABULA
+   ============================================================================= */
+"use strict";
+
+const AVG_LABEL = D.AVG_LABEL, NO_GEN = D.NO_GEN;
+const keys = o => Object.keys(o);
+const sum = a => a.reduce((s, x) => s + x, 0);
+const range = n => Array.from({length: n}, (_, i) => i);
+
+/* Python-kompatibles Runden (half-to-even) */
+function pyRound(x, nd = 0) {
+  const f = Math.pow(10, nd);
+  const n = x * f;
+  const fl = Math.floor(n);
+  const diff = n - fl;
+  let r;
+  if (Math.abs(diff - 0.5) < 1e-9) r = (fl % 2 === 0) ? fl : fl + 1;
+  else r = diff > 0.5 ? fl + 1 : fl;
+  return r / f;
+}
+
+/* Zahl im deutschen Format (1.234,5) */
+function fnum(x, d = 0) {
+  if (x === null || x === undefined || x === "" || isNaN(Number(x))) return String(x ?? "");
+  let v = pyRound(Number(x), d);
+  let s = Math.abs(v).toFixed(d);
+  let [ip, dp] = s.split(".");
+  ip = ip.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  const neg = v < 0 || (Object.is(v, -0) && d >= 0 && Number(x) < 0);
+  return (neg ? "-" : "") + ip + (dp ? "," + dp : "");
+}
+
+/* Akzeptiert 1500 | 1.500 | 1500,5 | 1.500,5 | 1500.5 */
+function parseNum(s) {
+  s = String(s ?? "").trim().replace(/[\s ]/g, "");
+  if (!s) throw new Error("leer");
+  if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
+  const v = Number(s);
+  if (!isFinite(v)) throw new Error("keine Zahl");
+  return v;
+}
+
+/* Zahl für Eingabefelder (ohne Tausenderpunkt, Dezimalkomma) */
+function fplain(v) {
+  v = Number(v);
+  if (!isFinite(v)) return String(v);
+  if (Math.abs(v - Math.round(v)) < 1e-6 || Math.abs(v) >= 1000) return String(pyRound(v));
+  const d = Math.abs(v) >= 100 ? 1 : 2;
+  return v.toFixed(d).replace(/0+$/, "").replace(/\.$/, "").replace(".", ",");
+}
+
+function etaUtil(gamma, a) {
+  if (gamma <= 0) return 1.0;
+  if (Math.abs(gamma - 1.0) < 1e-6) return a / (a + 1.0);
+  return (1.0 - Math.pow(gamma, a)) / (1.0 - Math.pow(gamma, a + 1.0));
+}
+
+function jazLookup(src, vl) {
+  const tab = D.JAZ[src];
+  const ks = keys(tab).map(Number).sort((a, b) => a - b);
+  if (vl <= ks[0]) return tab[ks[0]];
+  if (vl >= ks[ks.length - 1]) return tab[ks[ks.length - 1]];
+  for (let i = 0; i < ks.length - 1; i++) {
+    const k0 = ks[i], k1 = ks[i + 1];
+    if (k0 <= vl && vl <= k1) return tab[k0] + (tab[k1] - tab[k0]) * (vl - k0) / (k1 - k0);
+  }
+  return tab[55];
+}
+
+const monthlyByDays = () => D.DAYS_M.map(d => d / 365.0);
+function monthlyLight() {
+  const w = range(12).map(i => D.LIGHT_W[i] * D.DAYS_M[i]);
+  const s = sum(w);
+  return w.map(x => x / s);
+}
+
+/* Stündliche Heizlast aus synthetischem Temperaturjahr (Monatsmittel + Tagesanomalie AR(1) + Tagesgang),
+   monatsweise auf die Monatsbilanz normiert, plus konstante Warmwasserlast. */
+function heatDurationCurve(months, H_tot, theta_set, Q_heat, Q_ww) {
+  const loads = [];
+  const q_h_tot = sum(months.map(m => m.Q_h));
+  const f_heat = q_h_tot > 0 ? Q_heat / q_h_tot : 0.0;
+  const ww_kw = Q_ww / 8760.0;
+  let anom = 0.0, hours_heat = 0, day = 0;
+  months.forEach((m, i) => {
+    const t_h = D.DAYS_M[i] * 24;
+    const amp = [0, 1, 10, 11].includes(i) ? 2.5 : 4.0;
+    const g_kw = t_h ? m.Q_gu / t_h : 0.0;
+    let vals = [];
+    for (let d = 0; d < D.DAYS_M[i]; d++) {
+      anom = 0.75 * anom + D.GAUSS[day++];
+      for (let hh = 0; hh < 24; hh++) {
+        const te = m.th_e + anom + amp * Math.sin((hh - 9) / 24.0 * 2 * Math.PI);
+        vals.push(Math.max(0.0, H_tot * (theta_set - te) / 1000.0 - g_kw));
+      }
+    }
+    const sv = sum(vals);
+    const target = m.Q_h * f_heat;
+    let fac = sv > 0 ? target / sv : 0.0;
+    if (target > 0 && sv === 0) { vals = new Array(t_h).fill(target / t_h); fac = 1.0; }
+    for (const v of vals) {
+      const x = v * fac;
+      if (x > 0) hours_heat++;
+      loads.push(x + ww_kw);
+    }
+  });
+  loads.sort((a, b) => b - a);
+  return [loads, hours_heat];
+}
+
+/* Energieflüsse für das Sankey-Diagramm: [Quelle, Ziel, kWh] */
+function energyFlows(R) {
+  const F = [];
+  const add = (a, b, v) => { if (v > 0.5) F.push([a, b, v]); };
+  const bh = R.bhkw_el;
+  for (const [k, q] of Object.entries(R.heat_end)) add(k, "Wärmeerzeugung", q - (k === "Erdgas" ? bh : 0.0));
+  add("Netzstrom", "Stromverteilung", R.grid);
+  add("PV-Eigenverbrauch", "Stromverteilung", R.pv_ev);
+  add("BHKW-Strom", "Stromverteilung", R.bhkw_ev);
+  add("Umweltwärme", "Wärmeerzeugung", R.amb);
+  add("Solarthermie", "Wärmeerzeugung", R.Q_sol);
+  add("Stromverteilung", "Wärmeerzeugung", R.E_wp + R.E_elheat);
+  if (R.ww_central) add("Wärmeerzeugung", "Warmwasser", R.Q_ww_use);
+  else { add("Stromverteilung", "Warmwasser", R.E_ww_el); add("Umweltwärme", "Warmwasser", R.amb_ww); }
+  add("Wärmeerzeugung", "Raumwärme", R.Q_h);
+  let loss = R.ww_central ? R.Q_sto + R.Q_circ : 0.0;
+  loss += R.Q_dist_loss + Math.max(0.0, R.gen_loss - bh);
+  add("Wärmeerzeugung", "Verluste", loss);
+  const el = R.el;
+  add("Stromverteilung", "Beleuchtung", el["Beleuchtung"]);
+  add("Stromverteilung", "Geräte & Nutzung", el["Geräte & Arbeitshilfen"] + el["Kleingeräte (Liste)"]
+      + el["Küche / Kantine"] + el["IT / Serverraum"] + el["Sonderverbraucher"]);
+  add("Stromverteilung", "Gebäudetechnik", el["Lüftung"] + el["Kühlung / Klima"] + el["Aufzüge & Fahrtreppen"]
+      + el["Hilfsenergie Heizung/WW"]);
+  add("Stromverteilung", "E-Mobilität", el["E-Mobilität (Laden)"]);
+  return F;
+}
+
+/* Liest Parameter; null = 'Ø unbekannt' -> Standardwert. Merkt sich verwendete Werte. */
+class Ctx {
+  constructor(p) { this.p = p; this.used = {}; }
+  num(key, def, lo = null, hi = null) {
+    let v = this.p[key];
+    v = (v === null || v === undefined) ? Number(def) : Number(v);
+    if (!isFinite(v)) v = Number(def);
+    if (lo !== null) v = Math.max(lo, v);
+    if (hi !== null) v = Math.min(hi, v);
+    this.used[key] = v;
+    return v;
+  }
+  choice(key, def, valid = null) {
+    let v = this.p[key];
+    const ok = valid === null ? true : (Array.isArray(valid) ? valid.includes(v) : Object.prototype.hasOwnProperty.call(valid, v));
+    if (!v || !ok) v = def;
+    this.used[key] = v;
+    return v;
+  }
+}
+const has = (o, k) => k !== null && k !== undefined && Object.prototype.hasOwnProperty.call(o, k);
+const P = (p, k) => (p[k] === undefined ? null : p[k]);
+
+/* ============================================================================= Berechnungsmodell */
+function compute(p, devices) {
+  devices = devices || [];
+  const c = new Ctx(p);
+  const warn = [];
+  const R = {};
+  const prof_name = has(D.PROFILES, p.profil) ? p.profil : "Mehrfamilienhaus";
+  const pr = D.PROFILES[prof_name];
+  const res = pr.res;
+  c.used.profil = prof_name;
+
+  // ------------------------------------------------------------------ Grunddaten
+  const A = c.num("flaeche", 1000, 10);
+  const floors = pyRound(c.num("geschosse", Math.min(pr.max_floors, Math.max(1, pyRound(A / pr.floor_m2))), 1, 80));
+  const h = c.num("raumhoehe", pr.h, 2.0, 25);
+  const rooms = pyRound(c.num("raeume", Math.max(1, pyRound(A / pr.room)), 1));
+  const persons = c.num("personen", Math.max(1, pyRound(A / pr.m2pp)), 0);
+  let we = pyRound(c.num("wohneinheiten", res ? Math.max(1, pyRound(A / pr.we_m2)) : 0, 0));
+  if (res) we = Math.max(1, we);
+  const days = c.num("nutzungstage", pr.days, 1, 365);
+  const hours = c.num("nutzungsstunden", pr.hours, 0.5, 24);
+  const theta_i = c.num("raumtemp", pr.theta, 10, 26);
+  const region = c.choice("region", D.DEFAULT_REGION, D.REGIONS);
+  const rg = D.REGIONS[region];
+
+  // ------------------------------------------------------------------ Gebäudehülle (Bauteilverfahren)
+  const by_key = c.choice("baujahr", D.DEFAULT_BAUJAHR, D.BAUJAHR);
+  const by = D.BAUJAHR[by_key];
+  const SAN = D.SAN_OPTS;
+  const san = c.choice("sanierung", by.y < 1979 ? SAN[1] : SAN[0], SAN);
+  let ninf = by.ninf, vl_def = by.vl, dist_def = by.dist;
+  let [u_w, u_r, u_b, du_wb] = D.U_AGE[by_key];
+  let fen_def = keys(D.FENSTER).reduce((best, k) => Math.abs(D.FENSTER[k] - by.g) < Math.abs(D.FENSTER[best] - by.g) ? k : best);
+  if (by.y >= 2016) fen_def = "Dreischeiben-Wärmeschutzglas";
+  if (san === SAN[1]) {
+    u_w = u_w * 0.85; u_r = Math.min(u_r, 0.30); ninf *= 0.75;
+    if (D.FENSTER_U[fen_def] > 1.3) fen_def = "Zweischeiben-Wärmeschutzglas";
+    dist_def = by.y >= 1958 ? Math.min(dist_def, 1) : dist_def;
+  } else if (san === SAN[2]) {
+    u_w = Math.min(u_w, 0.24); u_r = Math.min(u_r, 0.18); u_b = Math.min(u_b, 0.35);
+    du_wb = Math.min(du_wb, 0.05); ninf = Math.min(ninf, 0.12);
+    fen_def = "Dreischeiben-Wärmeschutzglas"; vl_def = Math.min(vl_def, 55); dist_def = Math.min(dist_def, 1);
+  }
+  const std_key = has(D.STANDARDS, p.standard) ? p.standard : null;
+  let high_std = false, ht_target = null;
+  if (std_key) {
+    const st = D.STANDARDS[std_key];
+    ht_target = st.ht; ninf = st.ninf; vl_def = 35; dist_def = 0;
+    [u_w, u_r, u_b, du_wb] = D.U_AGE["ab 2021 (GEG)"];
+    fen_def = st.g <= 0.55 ? "Dreischeiben-Wärmeschutzglas" : "Zweischeiben-Wärmeschutzglas";
+    du_wb = Math.min(du_wb, st.ht > 0.25 ? 0.05 : 0.03);
+    high_std = st.wrg;
+    c.used.standard = std_key;
+  } else c.used.standard = "aus Baujahr/Sanierung";
+  const is_new = std_key !== null || by.y >= 2016;
+  const fen = c.choice("fenster", fen_def, D.FENSTER);
+  const g_win = D.FENSTER[fen];
+  const u_f = D.FENSTER_U[fen];
+  const form = c.choice("gebaeudeform", "freistehend", D.FORMS);
+  const mass = c.choice("bauweise", "mittel (Mischbauweise)", D.MASS);
+  const dach = c.choice("dach", res ? "Steildach mit beheiztem Dachgeschoss" : "Flachdach", D.DACH_OPTS);
+  const unten = c.choice("unten", (by.y < 2002 || res) ? "Kellerdecke zum unbeheizten Keller"
+                                                        : "Bodenplatte auf Erdreich (kein Keller)", D.UNTEN_OPTS);
+
+  // Geometrie (Quader, Seitenverhältnis 1 : 1,6)
+  const ratio_ngf = res ? 0.80 : 0.85;
+  const bgf_f = A / floors / ratio_ngf;
+  const L = Math.sqrt(1.6 * bgf_f);
+  const Wd = bgf_f / L;
+  const perim = 2 * (L + Wd);
+  const hs = h + 0.35;
+  const Ve = bgf_f * floors * hs;
+  const A_wall = perim * floors * hs * D.FORMS[form];
+  const f_win = c.num("fensteranteil", pr.win * 100, 0, 80) / 100.0;
+  const A_win = Math.min(A * f_win, A_wall * 0.8);
+  const A_roof = bgf_f * (dach.startsWith("Steildach") ? 1.25 : 1.0);
+  const A_floor = bgf_f;
+  const A_kw = unten.startsWith("beheizter") ? perim * 2.4 * D.FORMS[form] : 0.0;
+  const A_env = A_wall + A_roof + A_floor + A_kw;
+  const AV = A_env / Ve;
+  const V_net = A * h;
+
+  const comp = [
+    ["Außenwand", A_wall - A_win, u_w, 1.0, "u_wand"],
+    ["Fenster / Türen", A_win, u_f, 1.0, "u_fenster"],
+    ["Dach / oberste Geschossdecke", A_roof, u_r, D.DACH_OPTS[dach], "u_dach"],
+    ["Boden / Kellerdecke", A_floor, u_b, D.UNTEN_OPTS[unten], "u_boden"],
+  ];
+  if (A_kw) comp.push(["Kellerwand gegen Erdreich", A_kw, u_b, 0.6, "u_boden"]);
+  const over = {};
+  for (const k of ["u_wand", "u_fenster", "u_dach", "u_boden"]) {
+    const v = P(p, k);
+    if (v !== null && isFinite(Number(v))) over[k] = Math.max(0.08, Math.min(6.0, Number(v)));
+  }
+  for (const cp of comp) if (has(over, cp[4])) cp[2] = over[cp[4]];
+  if (P(p, "du_wb") !== null) du_wb = Number(p.du_wb);
+  const ht_user = P(p, "ht_wert");
+  if (ht_user !== null && isFinite(Number(ht_user))) ht_target = Math.max(0.08, Math.min(3.5, Number(ht_user)));
+  let H_wb = du_wb * A_env;
+  if (ht_target !== null && !p._u_fixed) {
+    const keep = new Set(keys(over));
+    let fac = 1.0;
+    for (let it = 0; it < 2; it++) {
+      const H_fix = sum(comp.filter(cp => keep.has(cp[4])).map(cp => cp[1] * cp[2] * cp[3]));
+      const H_free = sum(comp.filter(cp => !keep.has(cp[4])).map(cp => cp[1] * cp[2] * cp[3])) + H_wb;
+      fac = H_free > 0 ? Math.max(0.15, (ht_target * A_env - H_fix) / H_free) : 1.0;
+      if (fac < 1.0 && !keep.has("u_fenster")) { keep.add("u_fenster"); continue; }
+      break;
+    }
+    for (const cp of comp) if (!keep.has(cp[4])) cp[2] *= fac;
+    H_wb *= fac; du_wb *= fac;
+  }
+  for (const cp of comp) if (!has(c.used, cp[4])) c.used[cp[4]] = pyRound(cp[2], 2);
+  const H_T = sum(comp.map(cp => cp[1] * cp[2] * cp[3])) + H_wb;
+  const ht = H_T / A_env;
+  c.used.ht_wert = pyRound(ht, 2);
+  const comp_out = comp.map(cp => ({name: cp[0], A: cp[1], U: cp[2], Fx: cp[3], H: cp[1] * cp[2] * cp[3]}));
+  comp_out.push({name: "Wärmebrücken (ΔU_WB)", A: A_env, U: du_wb, Fx: 1.0, H: H_wb});
+  if (ht > 1.6) warn.push(`H'T = ${fnum(ht, 2)} W/(m²K) ist sehr hoch – Eingaben zur Gebäudehülle prüfen.`);
+
+  const shade = c.choice("verschattung", "normal (übliche Bebauung)", D.VERSCHATTUNG);
+  const orient = c.choice("ausrichtung", "gleichmäßig verteilt / unbekannt", D.AUSRICHTUNG);
+  const f_sol = 0.7 * 0.9 * D.VERSCHATTUNG[shade] * D.AUSRICHTUNG[orient];
+  const wit = c.choice("witterung", keys(D.WITTERUNG)[0], D.WITTERUNG);
+  const dT_clim = rg.dT + D.WITTERUNG[wit];
+
+  // ------------------------------------------------------------------ Lüftung
+  const VO = D.VENT_OPTS;
+  let vent_def = VO[0];
+  if (high_std || (!res && pr.mech)) vent_def = VO[2];
+  else if (res && by.y >= 2016 && !std_key) vent_def = VO[1];
+  const vent = c.choice("lueftung", vent_def, VO);
+  const wrg = c.num("wrg", high_std ? 85 : 75, 0, 95) / 100.0;
+  let V_air, vent_h_def, n_hyg;
+  if (res) { V_air = pr.n_hyg * V_net; vent_h_def = 8760; n_hyg = pr.n_hyg; }
+  else {
+    const pres_frac = Math.min(1.0, pr.presence / Math.max(hours, 0.5));
+    V_air = Math.max(persons * pres_frac * pr.air_pp + 0.7 * A, 0.3 * V_net);
+    vent_h_def = Math.min(24, hours + 2) * days;
+    n_hyg = V_air / V_net * (vent_h_def / 8760.0);
+  }
+  let n_eff;
+  if (vent === VO[0]) n_eff = n_hyg * (res ? 1.0 : 1.1) + ninf;
+  else if (vent === VO[1]) n_eff = n_hyg + ninf;
+  else n_eff = n_hyg * (1 - wrg) + ninf + 0.03;
+  const H_V = 0.34 * n_eff * V_net;
+  const vent_h = c.num("lueft_h", vent_h_def, 0, 8760);
+  const sfp_def = vent === VO[0] ? 0.0 : (vent === VO[2] ? (res ? 0.30 : 0.45) : (res ? 0.15 : 0.25));
+  const sfp = c.num("sfp", sfp_def, 0, 3);
+  let E_vent = vent === VO[0] ? 0.0 : V_air * sfp * vent_h / 1000.0;
+
+  // ------------------------------------------------------------------ Wasser & Warmwasser
+  const use_days_w = res ? 365 * 0.92 : days;
+  const T_ww = c.num("ww_temp", 60, 40, 75);
+  let wc_def = (by.y < 1995 && san === SAN[0]) ? "Altbestand 9 L" : "Standard 6 L";
+  if (is_new) wc_def = "Spartaste 6/3 L (Ø 4,5 L)";
+  const wc_type = c.choice("wc_typ", wc_def, D.WC_OPTS);
+  const arm = c.choice("armaturen", "Standardarmaturen", D.ARM_OPTS);
+  const [shower_flow, hand_l] = D.ARM_OPTS[arm];
+  let n_wc_def, n_sink_def, n_shower_def;
+  if (res) {
+    n_wc_def = Math.max(1, pyRound(we * pr.wc_we));
+    n_sink_def = Math.max(1, pyRound(we * pr.sink_we));
+    n_shower_def = Math.max(1, pyRound(we * pr.shower_we));
+  } else {
+    n_wc_def = Math.max(1, Math.ceil(persons / pr.wc_per));
+    n_sink_def = Math.max(1, Math.ceil(persons / pr.sink_per));
+    n_shower_def = pr.shower_per ? Math.ceil(persons / pr.shower_per) : 0;
+  }
+  const n_wc = pyRound(c.num("anz_wc", n_wc_def, 0));
+  const n_sink = pyRound(c.num("anz_waschbecken", n_sink_def, 0));
+  const n_shower = pyRound(c.num("anz_duschen", n_shower_def, 0));
+  const n_washroom = pyRound(c.num("anz_waschraeume", !res ? Math.max(1, pyRound(n_wc / 2.5)) : Math.max(1, pyRound(we * 1.1)), 0));
+  const sinks_ww = c.choice("waschbecken_ww", pr.sinks_ww ? "ja" : "nein (nur Kaltwasser)", ["ja", "nein (nur Kaltwasser)"]) === "ja";
+  const shower_events_def = persons * pr.shower;
+  const per_shower = c.num("duschgaenge", n_shower ? shower_events_def / n_shower : 0, 0);
+  const shower_events = per_shower * n_shower;
+  const shower_min = c.num("duschdauer", 6.0, 1, 30);
+  const rain = c.choice("regenwasser", "nein", ["nein", "ja (WC-Spülung)"]) !== "nein";
+  const kitchen = c.choice("kueche", pr.kitchen, D.KITCHEN);
+  const meals = c.num("essen", D.KITCHEN[kitchen][0] > 0 ? pyRound(persons * pr.meals) : 0, 0);
+  const garden = c.num("garten", 0, 0);
+  const water_extra = c.num("wasser_sonst", 0, 0);
+  const hot_e = (litres, tmix, share = 1.0) => litres * share * (tmix - 10) * 1.163 / 1000.0;
+  const kitchen_days = (res || days > 330) ? 365 : days;
+
+  const w_rows = [];
+  const L_sh = shower_events * shower_min * shower_flow * (res ? 365 : days) * (res ? 0.92 : 1);
+  w_rows.push(["Duschen", L_sh / 1000, hot_e(L_sh, 40),
+    `${fnum(shower_events, 1)} Duschgänge/Tag × ${fnum(shower_min, 1)} min × ${fnum(shower_flow, 1)} L/min (40 °C)`]);
+  const bath = c.num("baeder", pr.bath ?? 0.0, 0, 14);
+  const L_bath = persons * bath / 7.0 * 140.0 * (res ? 365 : days) * (res ? 0.92 : 1);
+  if (L_bath > 0) w_rows.push(["Wannenbäder", L_bath / 1000, hot_e(L_bath, 40), `${fnum(bath, 2)} Bäder je Person und Woche × 140 L (40 °C)`]);
+  const flush = D.WC_OPTS[wc_type];
+  const L_wc = persons * pr.wc * flush * use_days_w;
+  const L_rain = rain ? L_wc * 0.9 : 0.0;
+  w_rows.push(["WC-Spülung", (L_wc - L_rain) / 1000, 0.0, `${fnum(pr.wc, 1)} Spülungen/(P·d) × ${fnum(flush, 1)} L` + (rain ? " – 90 % aus Regenwasser" : "")]);
+  const L_hand = persons * pr.hand * hand_l * use_days_w;
+  w_rows.push(["Händewaschen", L_hand / 1000, sinks_ww ? hot_e(L_hand, 35, 0.4) : 0.0,
+    `${fnum(pr.hand, 1)} × ${fnum(hand_l, 1)} L/(P·d)` + (sinks_ww ? ", 40 % warm" : ", nur kalt")]);
+  const L_misc = persons * (pr.misc_l + pr.misc_ww) * use_days_w;
+  w_rows.push(["Wäsche, Küche, Trinken, Sonstiges", L_misc / 1000, hot_e(persons * pr.misc_ww * use_days_w, 60),
+    `${fnum(pr.misc_l + pr.misc_ww, 1)} L/(P·d), davon ${fnum(pr.misc_ww, 1)} L warm`]);
+  const [kw_meal, l_meal, lww_meal] = D.KITCHEN[kitchen];
+  const L_kit = meals * l_meal * kitchen_days;
+  if (L_kit > 0) w_rows.push(["Küche / Kantine", L_kit / 1000, hot_e(meals * lww_meal * kitchen_days, 60), `${fnum(meals)} Essen/Tag × ${fnum(l_meal, 0)} L`]);
+  const L_clean = A * pr.clean * days;
+  if (L_clean > 0) w_rows.push(["Gebäudereinigung", L_clean / 1000, hot_e(L_clean, 40, 0.3), `${fnum(pr.clean, 2)} L/(m²·Nutzungstag)`]);
+  if (garden > 0) w_rows.push(["Außenanlagen / Bewässerung", garden * 0.1, 0.0, `${fnum(garden)} m² × 100 L/(m²a)`]);
+  if (water_extra > 0) w_rows.push(["Sonstiges (Vorgabe)", water_extra, 0.0, "manuelle Vorgabe"]);
+  const water_m3 = sum(w_rows.map(r => r[1]));
+  const Q_ww_use = sum(w_rows.map(r => r[2]));
+  const hot_m3 = Q_ww_use / ((T_ww - 10) * 1.163 / 1000.0) / 1000.0;
+  const abwasser = water_m3 - garden * 0.1;
+  const l_pd = water_m3 * 1000 / Math.max(persons, 1) / (res ? 365 : days);
+
+  // Warmwasserbereitung
+  const ww_def_label = keys(D.WW_OPTS).find(k => D.WW_OPTS[k] === pr.ww);
+  const ww_label = c.choice("ww_system", ww_def_label, D.WW_OPTS);
+  const ww_mode = D.WW_OPTS[ww_label];
+  let circ_def = ww_mode === "zentral" ? pr.circ : "keine";
+  if (ww_mode === "zentral" && !res && A < 500 && pr.circ !== "keine") circ_def = "keine";
+  const circ = c.choice("zirkulation", circ_def, D.CIRC_OPTS);
+  const hot_day_L = hot_m3 * 1000 / 365.0;
+  const V_sp = c.num("speicher", ["zentral", "wwwp"].includes(ww_mode) ? Math.max(120, pyRound(hot_day_L * 1.2 / 10) * 10) : 0, 0);
+  const taps_ww = (sinks_ww ? n_sink : 0) + n_shower + (L_kit > 0 ? 1 : 0) + (res ? we : 0);
+  let Q_sto = 0.0, Q_circ = 0.0, E_circ = 0.0, E_ww_el = 0.0, E_wwwp_amb = 0.0, L_circ = 0.0;
+  if (["zentral", "wwwp"].includes(ww_mode) && V_sp > 0) Q_sto = (0.4 + 0.2 * Math.pow(V_sp, 0.4)) * 365 * Math.max(0.3, (T_ww - 20) / 40.0);
+  if (ww_mode === "zentral" && circ !== "keine") {
+    L_circ = 5 + 0.04 * A + 1.5 * taps_ww;
+    const w_m = (by.y >= 1995 || san !== SAN[0] || std_key) ? 6.0 : 10.0;
+    const circ_h = circ === "ja, 24 h" ? 8760 : (res ? 16 * 365 : Math.min(24, hours + 2) * days);
+    Q_circ = L_circ * w_m * circ_h / 1000.0 * Math.max(0.3, (T_ww - 20) / 40.0);
+    E_circ = (A < 300 ? 0.010 : 0.025 + 0.00001 * A) * circ_h;
+  }
+  let Q_ww_gen;
+  if (ww_mode === "zentral") Q_ww_gen = Q_ww_use + Q_sto + Q_circ;
+  else {
+    Q_ww_gen = 0.0;
+    if (ww_mode === "dle") E_ww_el = Q_ww_use / 0.98;
+    else if (ww_mode === "Kleinspeicher") E_ww_el = Q_ww_use / 0.98 + Math.max(1, taps_ww) * 0.25 * 365;
+    else { const cop = 2.8; E_ww_el = (Q_ww_use + Q_sto) / cop; E_wwwp_amb = (Q_ww_use + Q_sto) - E_ww_el; }
+  }
+  if (ww_mode === "zentral" && T_ww < 60 && (V_sp > 400 || circ !== "keine"))
+    warn.push("Warmwasser < 60 °C bei Großanlage (> 400 L oder Zirkulation): Legionellenschutz nach DVGW W 551 prüfen.");
+  if (n_wc > 0 && persons / n_wc > 25 && !res) warn.push(`${fnum(persons / n_wc, 0)} Personen je WC – Ausstattung nach ASR A4.1 prüfen.`);
+  if (n_shower > 0 && per_shower > 25) warn.push(`${fnum(per_shower, 0)} Duschgänge je Dusche und Tag erscheinen sehr hoch.`);
+
+  // ------------------------------------------------------------------ Strom: Beleuchtung
+  const lm = c.choice("leuchtmittel", is_new ? "LED (neu, effizient)" : "Mischbestand LED / Leuchtstoff", D.LEUCHTMITTEL);
+  const pd = D.LEUCHTMITTEL[lm];
+  const ctrl_def = (is_new && !res) ? "Präsenzmelder + tageslichtabhängige Regelung" : "manuell (Schalter)";
+  const ctrl = c.choice("lichtsteuerung", ctrl_def, D.STEUERUNG);
+  const [du, pf] = D.STEUERUNG[ctrl];
+  const room_size = A / Math.max(rooms, 1);
+  const k_room = room_size < 15 ? 1.25 : room_size < 30 ? 1.10 : room_size < 60 ? 1.0 : 0.9;
+  const z_names = ["Hauptnutzung", "Verkehrsflächen (Flure, Treppen)", "Sanitär / Waschräume", "Neben-/Technik-/Kellerräume"];
+  const z_keys = ["haupt", "verkehr", "sanitaer", "neben"];
+  let z_h_def, z_dl;
+  if (res) { z_h_def = [pr.light_h, prof_name === "Mehrfamilienhaus" ? 600 : 400, 400, 150]; z_dl = [pr.dl, 0.1, 0.0, 0.0]; }
+  else { z_h_def = [pr.light_h, pr.light_h * 0.9, pr.light_h * 0.5, pr.light_h * 0.2]; z_dl = [pr.dl, 0.25, 0.0, 0.0]; }
+  const z_lux_def = [pr.lux, 100, 200, 100];
+  const zones = [];
+  const sh_raw = z_keys.map((k, i) => c.num(`lz_${k}_anteil`, pr.zones[i], 0, 100));
+  const sh_sum = sum(sh_raw) || 1.0;
+  let E_light_int = 0.0, P_light = 0.0;
+  z_keys.forEach((k, i) => {
+    const share = sh_raw[i] / sh_sum;
+    const lux = c.num(`lz_${k}_lux`, z_lux_def[i], 0, 2000);
+    const hz = c.num(`lz_${k}_h`, z_h_def[i], 0, 8760);
+    const area_z = A * share;
+    const p_z = area_z * lux / 100.0 * pd * k_room;
+    const h_eff = hz * (1 - z_dl[i] * du) * ((i !== 2 || ctrl !== "manuell (Schalter)") ? pf : 1.0);
+    const e_z = p_z * h_eff / 1000.0;
+    zones.push({name: z_names[i], area: area_z, lux, h: hz, h_eff, P: p_z, E: e_z});
+    E_light_int += e_z; P_light += p_z;
+  });
+  const garage = c.num("garage", 0, 0);
+  const garage_mode = c.choice("garage_licht", "Bewegungsmelder", ["Bewegungsmelder", "Dauerlicht"]);
+  const E_garage = garage * 75 / 100 * pd * (garage_mode === "Dauerlicht" ? 8760 : 2500) / 1000.0;
+  const out_w = c.num("aussen_w", res ? 0 : pyRound(A * 0.3), 0);
+  const out_h = c.num("aussen_h", 4100, 0, 8760);
+  const E_out = out_w * out_h / 1000.0;
+  const n_exit = pyRound(c.num("rettungszeichen", res ? 0 : Math.max(2, pyRound(A / 150)), 0));
+  const E_exit = n_exit * 4 * 8760 / 1000.0;
+  let E_light = E_light_int + E_garage + E_out + E_exit;
+
+  // ------------------------------------------------------------------ Strom: Nutzung
+  const mode = c.choice("geraete_modus", D.GERAETE_MODI[0], D.GERAETE_MODI);
+  let plug_def, plug_basis;
+  if (res) {
+    const ppw = Math.min(persons / Math.max(we, 1), 6);
+    const [hb, hp] = pr.hh || [600, 600];
+    plug_def = we * (hb + hp * ppw);
+    plug_basis = `${we} Haushalte × (${hb} + ${hp} × ${fnum(ppw, 1)} Pers.) kWh (Stromspiegel, ohne el. WW)`;
+  } else {
+    plug_def = persons * pr.plug_pp + pr.base * A * 8.76;
+    plug_basis = `${fnum(persons)} Pers. × ${fnum(pr.plug_pp)} kWh + Grundlast ${fnum(pr.base, 1)} W/m²`;
+  }
+  const plug_pauschal = c.num("geraete_pauschal", pyRound(plug_def), 0);
+  let E_dev_list = 0.0;
+  const dev_rows = [];
+  for (const d of devices) {
+    const kw = Number(d.kw), n = Number(d.n), hh = Number(d.h);
+    if (![kw, n, hh].every(isFinite)) continue;
+    const e = kw * n * hh;
+    dev_rows.push([d.name || "Gerät", kw, n, hh, e]);
+    E_dev_list += e;
+    if (kw > 3.0) warn.push(`Kleingerät „${d.name || ""}“ hat ${fnum(kw, 1)} kW (> 3 kW) – besser als Sonderverbraucher erfassen.`);
+  }
+  const E_plug = mode !== "nur Geräteliste" ? plug_pauschal : 0.0;
+  const E_devices = mode !== "nur pauschal" ? E_dev_list : 0.0;
+  const E_kitchen = meals * kw_meal * kitchen_days;
+  const it_kw = c.num("it_kw", 0, 0);
+  const pue = c.num("pue", 1.6, 1.0, 3.0);
+  const E_it = it_kw * 8760 * pue;
+  const sp_kw = c.num("sonder_kw", 0, 0);
+  const sp_h = c.num("sonder_h", 1000, 0, 8760);
+  const E_special = sp_kw * sp_h;
+  const ev_n = c.num("emob_n", 0, 0);
+  const ev_km = c.num("emob_km", res ? 12000 : 15000, 0);
+  const ev_cons = c.num("emob_verbrauch", 19, 8, 40);
+  const ev_share = c.num("emob_anteil", res ? 70 : 60, 0, 100) / 100.0;
+  const E_emob = ev_n * ev_km / 100.0 * ev_cons * ev_share * 1.10;
+
+  // Aufzüge (VDI 4707) & Fahrtreppen
+  let n_lift_def;
+  if (res) n_lift_def = floors < 5 ? 0 : Math.max(1, pyRound(we / 40));
+  else n_lift_def = (floors < 3 && !["Krankenhaus / Pflegeheim", "Hotel / Beherbergung"].includes(prof_name))
+    ? 0 : (floors > 1 ? Math.max(1, pyRound(A / 3000)) : 0);
+  const n_lift = pyRound(c.num("aufzuege", n_lift_def, 0));
+  const lift_cat = c.choice("aufzug_kat", keys(D.LIFT_CAT)[pr.lift_cat - 1], D.LIFT_CAT);
+  const lift_load = c.num("aufzug_last", res ? 630 : 1000, 100, 5000);
+  const lift_tech = c.choice("aufzug_technik", by.y >= 2002 ? keys(D.LIFT_TECH)[0] : keys(D.LIFT_TECH)[1], D.LIFT_TECH);
+  const [sb_w, eta_l] = D.LIFT_TECH[lift_tech];
+  const v_lift = floors > 6 ? 1.6 : 1.0;
+  const P_drive = lift_load * v_lift * 9.81 / 1000.0 / eta_l;
+  const E_lift_each = sb_w * 8760 / 1000.0 + P_drive * 0.5 * D.LIFT_CAT[lift_cat] * 365;
+  const E_lift = n_lift * E_lift_each;
+  const n_esc = pyRound(c.num("fahrtreppen", 0, 0));
+  const esc_h = c.num("fahrtreppen_h", pyRound(hours * days), 0, 8760);
+  const E_esc = n_esc * 3.5 * esc_h;
+  const E_lifts = E_lift + E_esc;
+
+  // Kühlung
+  const cool_mode = c.choice("kuehlung", pr.cool[0], D.COOL_OPTS);
+  const cool_share = c.num("kuehl_anteil", (cool_mode === pr.cool[0] && pr.cool[1]) ? pr.cool[1] : (cool_mode !== "keine" ? 60 : 0), 0, 100) / 100.0;
+  const eer = c.num("eer", D.COOL_OPTS[cool_mode] || 3.0, 1.0, 8.0);
+  let Q_cool = cool_mode === "keine" ? 0.0 : A * cool_share * pr.cool_q * Math.max(0.5, 1 + 0.08 * dT_clim);
+  let E_cool = Q_cool ? Q_cool / eer : 0.0;
+
+  // Gebäudeautomation (DIN EN ISO 52120-1)
+  const bacs = c.choice("gebaeudeautomation", "C – Standard (Referenz)", D.BACS);
+  const [f_bt, f_be] = D.BACS[bacs][res ? 0 : 1];
+  if (f_be !== 1.0) {
+    E_light_int *= f_be;
+    for (const z of zones) z.E *= f_be;
+    E_light = E_light_int + E_garage + E_out + E_exit;
+    E_vent *= f_be;
+  }
+  Q_cool *= f_bt;
+  E_cool = Q_cool ? Q_cool / eer : 0.0;
+
+  const md = monthlyByDays();
+  const ml = monthlyLight();
+  const el_internal_m = range(12).map(i => (E_light_int * ml[i] + (E_plug + E_devices + E_special) * md[i] + E_kitchen * 0.3 * md[i]) * 0.8);
+
+  // ------------------------------------------------------------------ Heizwärme (Monatsbilanz)
+  const absenk = c.choice("absenkung", pr.absenk, D.ABSENK_OPTS);
+  let d_abs;
+  if (absenk === "keine") d_abs = 0.0;
+  else if (absenk === "Nachtabsenkung") d_abs = (!res ? 24 - Math.min(hours, 16) : 8) / 24.0 * 4 * 0.6;
+  else d_abs = (1 - (Math.min(hours, 16) * days) / 8760.0) * 4 * 0.6;
+  const heated = c.num("beheizt", pr.heated, 0, 100) / 100.0;
+  const C_mass = D.MASS[mass] * Ve;
+  const tau = C_mass / Math.max(H_T + H_V, 1e-6);
+  const a_par = 1 + tau / 16.0;
+  const gain_pp_w = 70.0;
+  const pres_days = res ? 365 * 0.92 : days;
+  const months = [];
+  let Q_h = 0.0;
+  for (let i = 0; i < 12; i++) {
+    const th_e = D.T_REF[i] + dT_clim;
+    const t_h = D.DAYS_M[i] * 24;
+    const dT_m = Math.max(0.0, theta_i - d_abs - th_e);
+    const Q_l = (H_T + H_V) * dT_m * t_h / 1000.0;
+    const Q_s = A_win * g_win * f_sol * D.SOLAR_M[i];
+    const Q_ip = persons * gain_pp_w * pr.presence * pres_days * D.DAYS_M[i] / 365.0 / 1000.0;
+    const Q_i = Q_ip + el_internal_m[i];
+    const Q_g = Q_s + Q_i;
+    let qh, eta;
+    if (Q_l <= 0) { qh = 0.0; eta = 0.0; }
+    else {
+      const gam = Q_g / Q_l;
+      eta = etaUtil(gam, a_par);
+      qh = Math.max(0.0, Q_l - eta * Q_g);
+      if (gam > 2.5) qh = 0.0;
+    }
+    qh *= heated * f_bt;
+    months.push({Q_l, Q_T: H_T * dT_m * t_h / 1000.0, Q_V: H_V * dT_m * t_h / 1000.0, Q_s, Q_i, eta, Q_h: qh, th_e, Q_gu: eta * Q_g});
+    Q_h += qh;
+  }
+
+  // Realitätsnaher Verbrauch: Prebound-/Rebound-Effekt
+  const MODI = D.MODI;
+  const modus = c.choice("rechenmodus", res ? MODI[0] : MODI[1], MODI);
+  const Q_h_norm = Q_h;
+  let f_nutzer = 1.0;
+  if (modus === MODI[0] && Q_h > 0) {
+    const q_end_est = Q_h / A * 1.25;
+    f_nutzer = Math.max(0.50, Math.min(1.10, 1.15 - 0.0019 * q_end_est));
+    for (const m of months) m.Q_h *= f_nutzer;
+    Q_h *= f_nutzer;
+  }
+
+  // Heizlast (vereinfacht DIN EN 12831)
+  const n_des = res ? n_eff : (V_air / V_net) * (vent === VO[2] ? 1 - wrg : 1.0) * 0.7 + ninf;
+  const phi_hl = (H_T + 0.34 * n_des * V_net) * (theta_i - rg.tdes) / 1000.0 * heated;
+  const phi_ww = ww_mode === "zentral" ? (Q_ww_gen / 365.0) / 8.0 : 0.0;
+  const phi_rec = phi_hl + phi_ww;
+
+  // Verteilung / Übergabe
+  const hf_def = keys(D.HEIZFL).find(k => D.HEIZFL[k] === vl_def);
+  const hf = c.choice("heizflaechen", hf_def, D.HEIZFL);
+  const vl = D.HEIZFL[hf];
+  const dist = c.choice("verteilung", D.DIST_OPTS[dist_def], D.DIST_OPTS);
+  const e_dist = D.DIST_F[D.DIST_OPTS.indexOf(dist)];
+  const Q_heat_gen = Q_h * e_dist;
+  const Q_dist_loss = Q_heat_gen - Q_h;
+
+  // Solarthermie
+  const st_area = c.num("solarthermie", 0, 0);
+  let sol_ww = 0.0, sol_h = 0.0;
+  if (st_area > 0) {
+    const y_pot = st_area * 380.0;
+    if (ww_mode === "zentral") {
+      sol_ww = Math.min(y_pot, 0.55 * Q_ww_gen);
+      sol_h = Math.min(Math.max(0.0, y_pot - sol_ww) * 0.4, 0.12 * Q_heat_gen);
+    } else sol_h = Math.min(y_pot * 0.4, 0.12 * Q_heat_gen);
+  }
+  const Q_sol = sol_ww + sol_h;
+  const Q_heat_net = Q_heat_gen - sol_h;
+  const Q_ww_net = Q_ww_gen - sol_ww;
+  const Q_total = Q_heat_net + Q_ww_net;
+
+  // Jahresdauerlinie
+  const [dl_curve, heat_hours] = heatDurationCurve(months, H_T + H_V, theta_i - d_abs, Q_heat_net, Q_ww_net);
+  const dl_peak = dl_curve.length ? dl_curve[0] : 0.0;
+
+  // ------------------------------------------------------------------ Wärmeerzeuger
+  const gens = [];
+  for (let i = 1; i <= 4; i++) {
+    let t = P(p, `gen${i}_typ`);
+    if (i === 1 && (t === null || t === AVG_LABEL)) {
+      if (["KfW-Effizienzhaus 40", "Passivhaus", "Nullemissionsgebäude (EPBD-ZEB)"].includes(std_key) || by.y >= 2021) t = "Wärmepumpe Luft/Wasser";
+      else if (by.y >= 1979 || san !== SAN[0]) t = "Gas-Brennwertkessel";
+      else t = "Gas-Niedertemperaturkessel";
+      c.used.gen1_typ = t;
+    }
+    if (!t || !has(D.GEN_TYPES, t)) continue;
+    gens.push(Object.assign({idx: i, typ: t}, D.GEN_TYPES[t]));
+  }
+  const k_g = gens.length;
+  gens.forEach((g, j) => {
+    const i = g.idx;
+    let kw_def;
+    if (g.kind === "bhkw" && k_g > 1) kw_def = phi_rec * 0.2;
+    else if (k_g === 1) kw_def = phi_rec * 1.1;
+    else if (j === 0) kw_def = phi_rec * 0.5;
+    else kw_def = phi_rec * 0.8 / (k_g - 1);
+    const n = Math.max(1, pyRound(c.num(`gen${i}_n`, 1, 1)));
+    const kw_def_each = Math.max(1.0, pyRound(kw_def / n, 1));
+    g.kw = c.num(`gen${i}_kw`, kw_def_each, 0.1);
+    g.n = n;
+    g.kw_tot = g.kw * n;
+    g.share_spec = P(p, `gen${i}_anteil`);
+    g.hours_spec = P(p, `gen${i}_h`);
+    g.Q = 0.0;
+  });
+  let unmet = 0.0;
+  if (gens.length) {
+    const fixed = gens.filter(g => g.hours_spec !== null);
+    for (const g of fixed) g.Q = g.kw_tot * Number(g.hours_spec);
+    const Q_fixed = sum(fixed.map(g => g.Q));
+    if (Q_fixed > Q_total * 1.05) warn.push("Vorgegebene Volllaststunden ergeben mehr Wärme als berechnet – Vorgabe wurde übernommen.");
+    const remain = Math.max(0.0, Q_total - Q_fixed);
+    const shared = gens.filter(g => g.hours_spec === null && g.share_spec !== null);
+    const s_sum = sum(shared.map(g => Number(g.share_spec))) / 100.0;
+    const scale = (s_sum * Q_total <= remain || s_sum === 0) ? 1.0 : remain / (s_sum * Q_total);
+    for (const g of shared) g.Q = Number(g.share_spec) / 100.0 * Q_total * scale;
+    const remain2 = Math.max(0.0, remain - sum(shared.map(g => g.Q)));
+    const auto = gens.filter(g => g.hours_spec === null && g.share_spec === null);
+    if (auto.length) {
+      const fsc = Q_total > 0 ? remain2 / Q_total : 0.0;
+      const curve = dl_curve.map(x => x * fsc);
+      let cum = 0.0, prev_cov = 0.0;
+      for (const g of auto) {
+        cum += g.kw_tot;
+        let cov = 0;
+        for (const x of curve) cov += Math.min(x, cum);
+        g.Q = cov - prev_cov;
+        prev_cov = cov;
+      }
+      const rest = remain2 - prev_cov;
+      if (rest > 1) { auto[auto.length - 1].Q += rest; auto[auto.length - 1].overload = rest; }
+    } else unmet = remain2;
+    for (const g of gens) {
+      c.used[`gen${g.idx}_anteil`] = Q_total > 0 ? g.Q / Q_total * 100 : 0;
+      c.used[`gen${g.idx}_h`] = g.kw_tot > 0 ? g.Q / g.kw_tot : 0;
+    }
+  } else unmet = Q_total;
+  if (unmet > 1) warn.push(`${fnum(unmet)} kWh/a Wärmebedarf sind keinem Wärmeerzeuger zugeordnet.`);
+  const kw_inst = sum(gens.map(g => g.kw_tot));
+  if (gens.length && kw_inst < 0.9 * phi_rec)
+    warn.push(`Installierte Leistung ${fnum(kw_inst, 1)} kW < geschätzte Heizlast inkl. WW ${fnum(phi_rec, 1)} kW – Anlage evtl. unterdimensioniert.`);
+  if (gens.length && kw_inst > 2.0 * phi_rec && phi_rec > 3)
+    warn.push(`Installierte Leistung ${fnum(kw_inst, 1)} kW > 2× Heizlast (${fnum(phi_rec, 1)} kW) – Anlage überdimensioniert (Taktverluste).`);
+
+  let jaz_user = P(p, "jaz_wp");
+  if (jaz_user !== null) jaz_user = isFinite(Number(jaz_user)) ? Math.max(1.2, Math.min(7.0, Number(jaz_user))) : null;
+  const heat_end = {};
+  let E_wp = 0.0, E_elheat = 0.0, amb = 0.0, E_bhkw_el = 0.0;
+  const fh = Q_total > 0 ? Q_heat_net / Q_total : 1.0;
+  for (const g of gens) {
+    const Q = g.Q;
+    if (g.kind === "wp") {
+      let jh = jazLookup(g.src, vl);
+      let jw = jazLookup(g.src, Math.max(55, T_ww - 5)) - 0.3;
+      if (g.src === "luft") { jh += 0.06 * dT_clim; jw += 0.06 * dT_clim; }
+      if (g.overload) jh = Q > 0 ? Q * fh / (Q * fh / jh + g.overload * (1 - 1 / jh)) : jh;
+      if (jaz_user !== null) { jh = jaz_user; jw = Math.max(1.5, jaz_user - 0.6); }
+      const e = Q * fh / jh + Q * (1 - fh) / jw;
+      g.eff = e > 0 ? Q / e : 0;
+      g.eff_lbl = `JAZ ${fnum(g.eff, 2)}`;
+      g.E = e; g.carrier = "Strom";
+      E_wp += e; amb += Q - e;
+      if (vl >= 60) warn.push(`${g.typ}: Vorlauf ${vl} °C – Wärmepumpe arbeitet ineffizient, Heizflächen prüfen.`);
+    } else if (g.kind === "bhkw") {
+      const fuel = Q / g.eta;
+      g.E = fuel; g.eff = g.eta;
+      g.eff_lbl = `ηth ${fnum(g.eta * 100)} %, ηel ${fnum(g.eta_el * 100)} %`;
+      E_bhkw_el += fuel * g.eta_el;
+      heat_end[g.carrier] = (heat_end[g.carrier] || 0) + fuel;
+    } else {
+      let eta = g.eta;
+      if (g.kind === "cond") eta = Math.min(0.99, eta + (55 - vl) * 0.0012);
+      const e = Q / eta;
+      g.E = e; g.eff = eta; g.eff_lbl = `η ${fnum(eta * 100)} %`;
+      if (g.carrier === "Strom") E_elheat += e;
+      else heat_end[g.carrier] = (heat_end[g.carrier] || 0) + e;
+    }
+    g.vbh = g.kw_tot > 0 ? Q / g.kw_tot : 0;
+    if (g.kind === "wp" && !has(c.used, "jaz_wp")) c.used.jaz_wp = pyRound(g.eff, 2);
+    if (["wp", "cond", "boiler", "bhkw"].includes(g.kind) && g.vbh > 0 && g.vbh < 800 && Q > 0 && gens.length === 1)
+      warn.push(`${g.typ}: nur ${fnum(g.vbh)} Volllaststunden – Leistung vermutlich zu groß.`);
+  }
+  const E_elheat_total = E_elheat + E_ww_el;
+
+  // Hilfsenergie
+  const pump = c.choice("pumpe", (by.y >= 2009 || std_key) ? "Hocheffizienzpumpe" : "geregelte Standardpumpe", D.PUMP_OPTS);
+  const hydronic = gens.some(g => g.kind !== "el");
+  const E_aux = ((hydronic ? A * D.PUMP_OPTS[pump] * Math.pow(500.0 / Math.max(A, 100), 0.15) : 0.0) + E_circ) * f_be;
+
+  // ------------------------------------------------------------------ Strombilanz
+  const el = {
+    "Beleuchtung": E_light, "Geräte & Arbeitshilfen": E_plug, "Kleingeräte (Liste)": E_devices,
+    "Küche / Kantine": E_kitchen, "IT / Serverraum": E_it, "Sonderverbraucher": E_special, "Wärmepumpe": E_wp,
+    "Elektroheizung / el. Warmwasser": E_elheat_total, "Lüftung": E_vent, "Kühlung / Klima": E_cool,
+    "Aufzüge & Fahrtreppen": E_lifts, "Hilfsenergie Heizung/WW": E_aux, "E-Mobilität (Laden)": E_emob,
+  };
+  const el_basis = {
+    "Beleuchtung": `${fnum(P_light / A, 1)} W/m² installiert (${lm}, k=${fnum(k_room, 2)}), ${ctrl}`
+      + (out_w ? `; außen ${fnum(out_w)} W × ${fnum(out_h)} h` : "") + (n_exit ? `; ${n_exit} Rettungszeichen` : "")
+      + (garage ? `; Garage ${fnum(garage)} m²` : ""),
+    "Geräte & Arbeitshilfen": mode !== "nur Geräteliste" ? plug_basis : "deaktiviert (nur Geräteliste)",
+    "Kleingeräte (Liste)": mode !== "nur pauschal" ? `${dev_rows.length} Positionen` : "deaktiviert",
+    "Küche / Kantine": `${fnum(meals)} Essen/Tag × ${fnum(kw_meal, 2)} kWh × ${kitchen_days.toFixed(0)} d (${kitchen})`,
+    "IT / Serverraum": `${fnum(it_kw, 1)} kW IT-Last × 8.760 h × PUE ${fnum(pue, 2)}`,
+    "Sonderverbraucher": `${fnum(sp_kw, 1)} kW × ${fnum(sp_h)} h`,
+    "Wärmepumpe": "aus Wärmebedarf ÷ Jahresarbeitszahl",
+    "Elektroheizung / el. Warmwasser": `Direktheizung ${fnum(E_elheat)} kWh + el. WW ${fnum(E_ww_el)} kWh (${ww_label})`,
+    "Lüftung": E_vent ? `${fnum(V_air)} m³/h × ${fnum(sfp, 2)} W/(m³/h) × ${fnum(vent_h)} h` : "keine Ventilatoren",
+    "Kühlung / Klima": `${fnum(Q_cool)} kWh Nutzkälte ÷ EER ${fnum(eer, 1)} (${cool_mode}, ${fnum(cool_share * 100)} % der Fläche)`,
+    "Aufzüge & Fahrtreppen": `${n_lift} Aufzug/Aufzüge à ${fnum(E_lift_each)} kWh (VDI 4707), ${n_esc} Fahrtreppe(n)`,
+    "Hilfsenergie Heizung/WW": `Pumpen/Regelung (${pump})` + (E_circ ? ` + Zirkulationspumpe ${fnum(E_circ)} kWh` : ""),
+    "E-Mobilität (Laden)": `${fnum(ev_n)} Fahrzeuge × ${fnum(ev_km)} km × ${fnum(ev_cons)} kWh/100 km × ${fnum(ev_share * 100)} % am Gebäude geladen + 10 % Ladeverluste`,
+  };
+  const E_el = sum(Object.values(el));
+
+  // PV / Eigenverbrauch
+  const pv_kwp = c.num("pv_kwp", 0, 0);
+  const pv_y = c.num("pv_ertrag", rg.pv, 300, 1500);
+  const bat = c.num("speicher_kwh", 0, 0);
+  const pv_gen = pv_kwp * pv_y;
+  let pv_ev = 0.0;
+  if (pv_gen > 0) {
+    const s_base = res ? 0.30 : 0.45;
+    const bonus = Math.min(0.30, 0.30 * bat / Math.max(pv_kwp, 0.1));
+    const s = Math.min(0.9, s_base * Math.pow(E_el / pv_gen, 0.35) + bonus);
+    pv_ev = Math.min(pv_gen * s, E_el * 0.8);
+  }
+  const bhkw_ev = Math.min(E_bhkw_el * 0.7, Math.max(0.0, E_el - pv_ev) * 0.9);
+  const grid = Math.max(0.0, E_el - pv_ev - bhkw_ev);
+  const feed_in = (pv_gen - pv_ev) + (E_bhkw_el - bhkw_ev);
+
+  // ------------------------------------------------------------------ Preise / CO2 / Primärenergie
+  const prices = {};
+  for (const [k, v] of Object.entries(D.CARRIERS)) prices[k] = c.num(`preis_${k.toLowerCase()}`, v.price, 0);
+  const p_water = c.num("preis_wasser", 5.5, 0);
+  const p_feed = c.num("preis_einspeisung", 0.08, 0);
+  const co2_el = c.num("co2_strom", D.CARRIERS["Strom"].co2, 0);
+  const cost = {};
+  for (const [k, q] of Object.entries(heat_end)) cost[k] = q * prices[k];
+  const p_wp = c.num("preis_wp", 0.27, 0);
+  const wp_grid = E_el > 0 ? grid * (E_wp / E_el) : 0.0;
+  cost["Strom"] = (grid - wp_grid) * prices["Strom"];
+  if (wp_grid > 0) cost["Strom Wärmepumpe (WP-Tarif)"] = wp_grid * p_wp;
+  cost["Wasser/Abwasser"] = water_m3 * p_water;
+  cost["Einspeisung (Gutschrift)"] = -feed_in * p_feed;
+  const n_meter = res ? we : 1;
+  const hasHE = keys(heat_end).length > 0;
+  const gp_def = n_meter * 130 + (hasHE ? 250 : 0) + (hasHE ? 60 * Math.pow(Math.max(1, n_meter), 0.5) : 0) + 120 + (res ? 30 * n_meter : 0);
+  cost["Grundpreise / Zähler"] = c.num("grundpreise", pyRound(gp_def, -1), 0);
+  const cost_total = sum(Object.values(cost));
+  const co2_price = c.num("co2_preis", 55, 0);
+  const co2_levy = sum(Object.entries(heat_end).filter(([k]) => ["Erdgas", "Flüssiggas", "Heizöl"].includes(k))
+                     .map(([k, q]) => q * D.CARRIERS[k].co2 / 1e6)) * co2_price;
+  const co2 = {};
+  for (const [k, q] of Object.entries(heat_end)) co2[k] = q * D.CARRIERS[k].co2 / 1e6;
+  co2["Strom (Netzbezug)"] = grid * co2_el / 1e6;
+  const co2_total = sum(Object.values(co2));
+  const pe = sum(Object.entries(heat_end).map(([k, q]) => q * D.CARRIERS[k].fp)) + grid * D.CARRIERS["Strom"].fp;
+
+  // ------------------------------------------------------------------ Kennwerte
+  const heat_fuel_total = sum(Object.values(heat_end));
+  const heat_el = E_wp + E_elheat_total;
+  const heat_endenergy = heat_fuel_total + heat_el;
+  const ea_value = (heat_fuel_total + E_wp + E_elheat_total + E_aux + E_vent + (res ? 0 : E_cool)) / A;
+  const EC = D.ENERGY_CLASSES;
+  let ea_class = EC[EC.length - 1][0];
+  for (const [name, lim] of EC) if (ea_value <= lim) { ea_class = name; break; }
+  if (ea_value > EC[EC.length - 2][1]) ea_class = "H";
+
+  // Monatswerte
+  const q_heat_m = months.map(m => m.Q_h);
+  const sh_heat = q_heat_m.map(q => Q_h > 0 ? q / Q_h : 0);
+  const heat_heiz_m = range(12).map(i => (Q_heat_gen - sol_h) * sh_heat[i]);
+  const heat_m = range(12).map(i => heat_heiz_m[i] + (Q_ww_gen - sol_ww) * md[i]);
+  const ww_m = range(12).map(i => (ww_mode === "zentral" ? Q_ww_gen - sol_ww : Q_ww_use) * md[i]);
+  const wp_m = range(12).map(i => E_wp * (Q_total > 0 ? (Q_heat_net * sh_heat[i] + Q_ww_net * md[i]) / Q_total : md[i]));
+  const elh_m = range(12).map(i => E_elheat * sh_heat[i] + E_ww_el * md[i]);
+  const el_m = {
+    "Beleuchtung": range(12).map(i => E_light * ml[i]),
+    "Nutzung": range(12).map(i => (E_plug + E_devices + E_kitchen + E_it + E_special) * md[i]),
+    "Wärmepumpe": wp_m,
+    "Heizung & Technik": range(12).map(i => elh_m[i] + (E_vent + E_lifts) * md[i] + E_cool * D.COOL_SHARE[i] + E_aux * (0.7 * sh_heat[i] + 0.3 * md[i])),
+    "E-Mobilität": range(12).map(i => E_emob * md[i] * ([0, 1, 10, 11].includes(i) ? 1.15 : 0.9) / 1.0333),
+  };
+  const pv_sum_m = sum(D.PV_M);
+  const pv_m = D.PV_M.map(x => pv_gen * x / pv_sum_m);
+
+  const gen_rows = gens.map(g => ({idx: g.idx, typ: g.typ, kw: g.kw, n: g.n, kw_tot: g.kw_tot, Q: g.Q,
+    share: Q_total > 0 ? g.Q / Q_total * 100 : 0, E: g.E || 0, carrier: g.carrier || "Strom", eff: g.eff_lbl || "", vbh: g.vbh || 0}));
+  const carriers_out = Object.entries(heat_end).map((e, i) => [e, i]).sort((a, b) => (b[0][1] - a[0][1]) || (a[1] - b[1]))
+    .map(([[k, q]]) => ({name: k, kwh: q, amount: q / D.CARRIERS[k].per, unit: D.CARRIERS[k].unit, color: D.CARRIERS[k].color}));
+  if (E_wp) carriers_out.push({name: "Strom (Wärmepumpe)", kwh: E_wp, amount: E_wp, unit: "kWh", color: "#26a69a"});
+  if (E_elheat_total) carriers_out.push({name: "Strom (Direktheizung/el. WW)", kwh: E_elheat_total, amount: E_elheat_total, unit: "kWh", color: "#ef6f6c"});
+  const renew_out = [];
+  if (amb + E_wwwp_amb > 0) renew_out.push({name: "Umweltwärme (Wärmepumpe)", kwh: amb + E_wwwp_amb, color: "#80cbc4"});
+  if (Q_sol > 0) renew_out.push({name: "Solarthermie", kwh: Q_sol, color: "#ffd54f"});
+  const gen_loss = sum(gens.filter(g => g.kind !== "wp").map(g => g.E || 0)) - sum(gens.filter(g => g.kind !== "wp").map(g => g.Q));
+  const heat_balance = [
+    ["Heizwärme", Q_h], ["Warmwasser", Q_ww_use],
+    ["Speicher/Zirkulation", ["zentral", "wwwp"].includes(ww_mode) ? Q_sto + Q_circ : 0],
+    ["Verteilverluste", Q_dist_loss], ["Erzeugerverluste", Math.max(0.0, gen_loss)],
+  ];
+
+  Object.assign(R, {
+    profil: prof_name, res, A, floors, h, rooms, persons, we, days, hours, theta_i, region, Ve, A_env, AV, V_net, ht, H_T,
+    H_V, n_eff, A_win, g_win, tau, months, Q_h, Q_ww_use, Q_sto, Q_circ, L_circ, V_sp, Q_ww_gen, Q_heat_gen,
+    Q_dist_loss, Q_sol, Q_total, unmet, phi_hl, phi_ww, phi_rec, kw_inst, vl, e_dist, gens: gen_rows, carriers: carriers_out,
+    renew: renew_out, heat_endenergy, heat_fuel_total, heat_el, heat_balance, el, el_basis, E_el, zones, P_light,
+    E_light_int, E_garage, E_out, E_exit, dev_rows, pv_gen, pv_ev, bhkw_el: E_bhkw_el, bhkw_ev, grid, feed_in,
+    water_m3, hot_m3, abwasser, rain_m3: L_rain / 1000, l_pd, w_rows, n_wc, n_sink, n_shower, n_washroom, shower_events,
+    ww_label, ww_mode, circ, T_ww, cost, cost_total, prices, co2, co2_total, pe, ea_value, ea_class, bench: pr.bench,
+    heat_m, ww_m, el_m, heat_heiz_m, q_heat_m, vent, wrg, E_vent, Q_cool, n_lift, lm, ctrl, k_room,
+    std_label: c.used.standard, baujahr: by_key, sanierung: san, warn, used: c.used,
+    comp: comp_out, A_roof, A_floor, A_wall, bgf_f, f_sol, dl_curve: dl_curve.filter((_, i) => i % 24 === 0), dl_peak, heat_hours,
+    pv_m, pv_kwp, E_emob, ev_n, bacs, f_bt, f_be, witterung: wit, dach, unten, fenster: fen, u_f, gp: cost["Grundpreise / Zähler"],
+    co2_levy, co2_price, E_wp, E_elheat, E_ww_el, amb, amb_ww: E_wwwp_amb, sol_ww, sol_h, gen_loss: Math.max(0.0, gen_loss),
+    heat_end, E_light, E_aux, E_cool, E_lifts, Q_ww_net, Q_heat_net, ww_central: ww_mode === "zentral", n_meter, A_kw,
+    p_wp, wp_grid, modus, f_nutzer, Q_h_norm,
+    projekt: Object.fromEntries(["projekt_name", "projekt_adresse", "projekt_bearbeiter"].map(k => [k, String(p[k] || "").trim()])),
+    ist: Object.fromEntries(["ist_strom", "ist_waerme", "ist_wasser"].map(k => [k, P(p, k)])),
+  });
+  R.flows = energyFlows(R);
+  R.report = buildReport(R);
+  return R;
+}
+
+/* ============================================================================= Maßnahmen */
+const investWp = kw => 9000 + 2300 * Math.pow(Math.max(kw, 4), 0.85);
+const investPv = kwp => kwp * (1000 + 6000 / (kwp + 5));
+const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+
+function measures(p, devices, R) {
+  const base = Object.assign({}, p);
+  const A = R.A, u = R.used;
+  const comp = Object.fromEntries(R.comp.map(c => [c.name, c]));
+  const env = {_u_fixed: true, du_wb: R.comp[R.comp.length - 1].U};
+  for (const k of ["u_wand", "u_fenster", "u_dach", "u_boden"]) env[k] = u[k] ?? null;
+  const A_wall_op = comp["Außenwand"].A, A_win = comp["Fenster / Türen"].A;
+  const roof = comp["Dach / oberste Geschossdecke"], floor = comp["Boden / Kellerdecke"];
+  const gens = R.gens;
+  const has_wp_only = gens.length && gens.every(g => g.typ.includes("Wärmepumpe"));
+  const cand = [];
+  const add = (name, desc, changes, invest, env_change = false) => {
+    const q = Object.assign({}, base);
+    if (env_change) Object.assign(q, env);
+    Object.assign(q, changes);
+    cand.push([name, desc, q, invest]);
+  };
+  if (env.u_wand && env.u_wand > 0.30)
+    add("Fassade dämmen", `Außenwand auf U = 0,20 W/(m²K) (WDVS ca. 16 cm), ${fnum(A_wall_op)} m²`,
+        {u_wand: 0.20, du_wb: Math.min(env.du_wb, 0.05)}, A_wall_op * 190, true);
+  if (env.u_dach && env.u_dach > 0.25) {
+    const oben = roof.Fx < 1 ? "oberste Geschossdecke" : "Dach";
+    add(`${capitalize(oben)} dämmen`, `${oben} auf U = 0,14 W/(m²K), ${fnum(roof.A)} m²`, {u_dach: 0.14},
+        roof.A * (roof.Fx < 1 ? 55 : 210), true);
+  }
+  if (env.u_boden && env.u_boden > 0.40 && floor.Fx >= 0.55)
+    add("Kellerdecke / Boden dämmen", `auf U = 0,30 W/(m²K), ${fnum(floor.A)} m²`, {u_boden: 0.30}, floor.A * 60, true);
+  if (env.u_fenster && env.u_fenster > 1.6)
+    add("Fenster tauschen", `Dreifachverglasung U_w = 0,9 W/(m²K), ${fnum(A_win)} m²`,
+        {u_fenster: 0.9, fenster: "Dreischeiben-Wärmeschutzglas"}, A_win * 750, true);
+  if (u.verteilung !== D.DIST_OPTS[0] || u.pumpe !== "Hocheffizienzpumpe")
+    add("Hydraulischer Abgleich + HE-Pumpe", "Optimierung Heizungsverteilung (GEG § 60c), Hocheffizienzpumpe",
+        {verteilung: D.DIST_OPTS[0], pumpe: "Hocheffizienzpumpe"}, 1200 + 4 * A);
+  if ((u.raumtemp ?? 20) > 19.5)
+    add("Raumtemperatur −1 K", "Absenkung Sollwert, Thermostate einstellen (je K ca. 6 % Heizwärme)",
+        {raumtemp: u.raumtemp - 1.0}, !R.res ? 15 * R.rooms : 30 * Math.max(1, R.we));
+  const led_ok = u.leuchtmittel === "LED (neu, effizient)";
+  const ctrl_ok = R.res || u.lichtsteuerung === "Präsenzmelder + tageslichtabhängige Regelung";
+  if (!(led_ok && ctrl_ok)) {
+    const ch = {leuchtmittel: "LED (neu, effizient)"};
+    if (!R.res) ch.lichtsteuerung = "Präsenzmelder + tageslichtabhängige Regelung";
+    add("LED-Beleuchtung" + (R.res ? "" : " + Präsenz-/Tageslichtregelung"), "Umrüstung der Innenbeleuchtung", ch, A * (R.res ? 6 : 32));
+  }
+  if (R.vent !== D.VENT_OPTS[2])
+    add("Lüftung mit Wärmerückgewinnung", "Zu-/Abluftanlage, WRG 80 %", {lueftung: D.VENT_OPTS[2], wrg: 80}, A * (R.res ? 65 : 110));
+  if (gens.length && !has_wp_only) {
+    const kw = Math.max(R.phi_rec, 3.0);
+    const ch = {gen1_typ: "Wärmepumpe Luft/Wasser", gen1_kw: pyRound(kw, 1), gen1_n: 1, gen1_anteil: null, gen1_h: null};
+    for (let i = 2; i <= 4; i++) ch[`gen${i}_typ`] = NO_GEN;
+    const hint = R.vl >= 60 ? " – Vorlauf ≥ 60 °C: Heizflächen prüfen!" : "";
+    add("Wärmepumpe statt Kessel", `Luft/Wasser-WP ${fnum(kw, 1)} kW monovalent${hint}`, ch, investWp(kw));
+  }
+  if (R.pv_kwp <= 0) {
+    const kwp = Math.max(3.0, Math.min(750.0, pyRound(R.bgf_f * 0.45 / 5.5, 1)));
+    const ch = {pv_kwp: kwp};
+    if (R.res) ch.speicher_kwh = pyRound(Math.min(kwp, 20 * Math.max(1, R.we)), 0);
+    add("Photovoltaik", `${fnum(kwp, 1)} kWp auf ca. 45 % der Dachfläche` + (R.res ? ` + ${fnum(ch.speicher_kwh || 0)} kWh Speicher` : ""),
+        ch, investPv(kwp) + (ch.speicher_kwh || 0) * 650);
+  }
+  if (R.ww_central && R.Q_sol <= 0 && (R.res || R.Q_ww_use / A > 5)) {
+    const area = pyRound(Math.max(4.0, Math.min(R.persons * 1.2, A * 0.04)), 0);
+    add("Solarthermie Warmwasser", `${fnum(area)} m² Kollektorfläche`, {solarthermie: area}, 3000 + 850 * area);
+  }
+  if (u.armaturen !== keys(D.ARM_OPTS)[0] || u.wc_typ !== keys(D.WC_OPTS)[0])
+    add("Wassersparende Armaturen", "Spar-Duschköpfe, Perlatoren, WC-Spartaste",
+        {armaturen: keys(D.ARM_OPTS)[0], wc_typ: keys(D.WC_OPTS)[0]}, R.n_shower * 60 + R.n_sink * 25 + R.n_wc * 120);
+
+  const out = [];
+  const base_end = R.heat_endenergy + R.E_el - R.heat_el;
+  const diff = (V, extra) => {
+    const v_end = V.heat_endenergy + V.E_el - V.heat_el;
+    return Object.assign({R: V, d_end: base_end - v_end, d_heat: R.heat_fuel_total - V.heat_fuel_total, d_el: R.grid - V.grid,
+      d_cost: R.cost_total - V.cost_total, d_co2: R.co2_total - V.co2_total, d_water: R.water_m3 - V.water_m3}, extra);
+  };
+  for (const [name, desc, q, invest] of cand) {
+    let V;
+    try { V = compute(q, devices); } catch (e) { continue; }
+    const d = diff(V, {name, desc, invest});
+    d.amort = d.d_cost > 1 ? invest / d.d_cost : null;
+    out.push(d);
+  }
+  const pk = Object.assign({}, base);
+  const names = [];
+  let inv = 0.0;
+  for (const [name, , q, invest] of cand) {
+    if (name === "Raumtemperatur −1 K") continue;
+    for (const [k, v] of Object.entries(q)) if (!(k in base) || base[k] !== v) pk[k] = v;
+    names.push(name);
+    inv += invest;
+  }
+  if (names.length >= 2) {
+    const V = compute(pk, devices);
+    const d = diff(V, {name: "Gesamtpaket (alle Maßnahmen)", desc: names.join(", "), invest: inv, paket: true});
+    d.amort = d.d_cost > 1 ? inv / d.d_cost : null;
+    out.push(d);
+  }
+  out.sort((a, b) => ((a.paket ? 1 : 0) - (b.paket ? 1 : 0)) || (b.d_co2 - a.d_co2));
+  return out;
+}
+
+/* ============================================================================= Textbericht */
+const padR = (s, n) => { s = String(s); return s.length >= n ? s : s + " ".repeat(n - s.length); };
+const padL = (s, n) => { s = String(s); return s.length >= n ? s : " ".repeat(n - s.length) + s; };
+
+function buildReport(R) {
+  const A = R.A, L = [], add = s => L.push(s), line = "─".repeat(78);
+  const now = new Date();
+  const dt = `${String(now.getDate()).padStart(2, "0")}.${String(now.getMonth() + 1).padStart(2, "0")}.${now.getFullYear()} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  add("GEBÄUDE-ENERGIERECHNER – Ergebnisbericht");
+  add(`erstellt: ${dt}`);
+  add(line);
+  add("Grobabschätzung nach vereinfachten Verfahren (DIN V 4108-6, DIN V 18599, VDI 3807/4707).");
+  add("Ersetzt keinen Energieausweis und keine Heizlastberechnung nach DIN EN 12831.");
+  const pj = R.projekt || {};
+  if (Object.values(pj).some(Boolean)) {
+    add("");
+    for (const [k, lbl] of [["projekt_name", "Projekt"], ["projekt_adresse", "Adresse"], ["projekt_bearbeiter", "Bearbeiter"]])
+      if (pj[k]) add(padR(lbl + ":", 25) + pj[k]);
+  }
+  add(padR("Rechenmodus:", 25) + R.modus + (R.f_nutzer !== 1 ? ` (Faktor ${fnum(R.f_nutzer, 2)} auf Heizwärme)` : ""));
+  add(padR("Witterung:", 25) + R.witterung);
+  add("");
+  add("1  GEBÄUDE & NUTZUNG"); add(line);
+  add(`Nutzung:                 ${R.profil}`);
+  add(`Nutzfläche (beheizt):    ${fnum(A)} m²   |  Geschosse: ${R.floors}  |  Raumhöhe: ${fnum(R.h, 2)} m`);
+  add(`Räume:                   ${R.rooms} (Ø ${fnum(A / Math.max(R.rooms, 1), 1)} m²/Raum)`);
+  add(`Personen:                ${fnum(R.persons)} (${fnum(A / Math.max(R.persons, 1), 1)} m²/Person)` + (R.res ? `  |  Wohneinheiten: ${R.we}` : ""));
+  add(`Nutzungszeit:            ${fnum(R.days)} Tage/Jahr × ${fnum(R.hours, 1)} h/Tag`);
+  add(`Klimaregion:             ${R.region}`);
+  add(`Raumsolltemperatur:      ${fnum(R.theta_i, 1)} °C`);
+  add("");
+  add("2  GEBÄUDEHÜLLE & LÜFTUNG"); add(line);
+  add(`Baualter / Sanierung:    ${R.baujahr} / ${R.sanierung}`);
+  add(`Energiestandard:         ${R.std_label}`);
+  add(`Bruttovolumen Ve:        ${fnum(R.Ve)} m³  |  Hüllfläche A: ${fnum(R.A_env)} m²  |  A/V: ${fnum(R.AV, 2)} 1/m`);
+  add(`H'T:                     ${fnum(R.ht, 2)} W/(m²K)  →  H_T = ${fnum(R.H_T)} W/K`);
+  add(`Lüftung:                 ${R.vent}` + (R.vent.startsWith("Zu-") ? ` (WRG ${fnum(R.wrg * 100)} %)` : ""));
+  add(`wirksamer Luftwechsel:   ${fnum(R.n_eff, 2)} 1/h  →  H_V = ${fnum(R.H_V)} W/K`);
+  add(`Fensterfläche:           ${fnum(R.A_win)} m² (g = ${fnum(R.g_win, 2)}, solarer Faktor ${fnum(R.f_sol, 2)})  |  Zeitkonstante τ = ${fnum(R.tau)} h`);
+  add(`Gebäudeautomation:       ${R.bacs}`);
+  add("");
+  const Ht = R.H_T + R.H_V;
+  add(`  ${padR("Bauteil", 32)} ${padL("Fläche m²", 10)} ${padL("U W/(m²K)", 10)} ${padL("Fx", 6)} ${padL("H W/K", 9)} ${padL("Anteil", 7)}`);
+  for (const cp of R.comp)
+    add(`  ${padR(cp.name, 32)} ${padL(fnum(cp.A), 10)} ${padL(fnum(cp.U, 2), 10)} ${padL(fnum(cp.Fx, 2), 6)} ${padL(fnum(cp.H), 9)} ${padL(fnum(cp.H / Ht * 100, 1), 6)} %`);
+  add(`  ${padR("Lüftung / Infiltration", 32)} ${padL("", 10)} ${padL("", 10)} ${padL("", 6)} ${padL(fnum(R.H_V), 9)} ${padL(fnum(R.H_V / Ht * 100, 1), 6)} %`);
+  add("");
+  add("3  WÄRME"); add(line);
+  add(`Heizlast (vereinfacht):  ${fnum(R.phi_hl, 1)} kW  + WW-Zuschlag ${fnum(R.phi_ww, 1)} kW  = ${fnum(R.phi_rec, 1)} kW  (${fnum(R.phi_hl * 1000 / A)} W/m²)`);
+  add(`installierte Leistung:   ${fnum(R.kw_inst, 1)} kW  |  Spitzenlast Dauerlinie ${fnum(R.dl_peak, 1)} kW  |  ${fnum(R.heat_hours)} Heizstunden/a`);
+  add("");
+  add("Monatsbilanz Heizwärme (kWh):");
+  add("        " + D.MONTHS.map(m => padL(m, 8)).join(""));
+  add("θe °C   " + R.months.map(m => padL(fnum(m.th_e, 1), 8)).join(""));
+  add("Verl.   " + R.months.map(m => padL(fnum(m.Q_l), 8)).join(""));
+  add("Gew.    " + R.months.map(m => padL(fnum(m.Q_s + m.Q_i), 8)).join(""));
+  add("η       " + R.months.map(m => padL(fnum(m.eta, 2), 8)).join(""));
+  add("Q_h     " + R.months.map(m => padL(fnum(m.Q_h), 8)).join(""));
+  add("");
+  for (const [name, val] of R.heat_balance) add(`  ${padR(name, 38)} ${padL(fnum(val), 12)} kWh/a  ${padL(fnum(val / A, 1), 7)} kWh/(m²a)`);
+  if (R.Q_sol) add(`  ${padR("– Solarthermie-Ertrag", 38)} ${padL(fnum(R.Q_sol), 12)} kWh/a`);
+  add(`  ${padR("Wärme ab Erzeuger", 38)} ${padL(fnum(R.Q_total), 12)} kWh/a`);
+  add("");
+  add("Wärmeerzeuger:");
+  for (const g of R.gens)
+    add(`  [${g.idx}] ${g.typ}: ${g.n} × ${fnum(g.kw, 1)} kW | Wärme ${fnum(g.Q)} kWh (${fnum(g.share, 0)} %) | Endenergie ${fnum(g.E)} kWh ${g.carrier} | ${g.eff} | ${fnum(g.vbh)} Vollbenutzungsstunden`);
+  add("");
+  add("Endenergie Wärme nach Energieträger:");
+  for (const cr of R.carriers) {
+    const amt = cr.unit === "kWh" ? "" : `  ≈ ${fnum(cr.amount, cr.amount > 100 ? 0 : 1)} ${cr.unit}`;
+    add(`  ${padR(cr.name, 34)} ${padL(fnum(cr.kwh), 12)} kWh/a${amt}`);
+  }
+  for (const rn of R.renew) add(`  ${padR(rn.name, 34)} ${padL(fnum(rn.kwh), 12)} kWh/a  (Umgebung, nicht eingekauft)`);
+  add(`  ${padR("Summe Endenergie Wärme", 34)} ${padL(fnum(R.heat_endenergy), 12)} kWh/a  = ${fnum(R.heat_endenergy / A, 1)} kWh/(m²a)`);
+  add("");
+  add("Warmwasser:");
+  add(`  System: ${R.ww_label} | ${fnum(R.T_ww)} °C | Speicher ${fnum(R.V_sp)} L | Zirkulation: ${R.circ}` + (R.L_circ ? ` (≈ ${fnum(R.L_circ)} m Leitung)` : ""));
+  add(`  Nutzenergie ${fnum(R.Q_ww_use)} kWh/a, Speicherverlust ${fnum(R.Q_sto)} kWh/a, Zirkulationsverlust ${fnum(R.Q_circ)} kWh/a`);
+  add("");
+  add("4  STROM"); add(line);
+  for (const [k, v] of Object.entries(R.el)) {
+    if (v <= 0) continue;
+    add(`  ${padR(k, 34)} ${padL(fnum(v), 12)} kWh/a  ${padL(fnum(v / A, 1), 7)} kWh/(m²a)   [${D.EL_GROUP[k]}]`);
+    add(`      ↳ ${R.el_basis[k]}`);
+  }
+  add(`  ${padR("SUMME Strom", 34)} ${padL(fnum(R.E_el), 12)} kWh/a  ${padL(fnum(R.E_el / A, 1), 7)} kWh/(m²a)`);
+  add("");
+  add("  Beleuchtungszonen:");
+  for (const z of R.zones)
+    add(`    ${padR(z.name, 34)} ${padL(fnum(z.area), 7)} m² | ${padL(fnum(z.lux), 4)} lx | ${padL(fnum(z.P / Math.max(z.area, 1), 1), 4)} W/m² | ${fnum(z.h)} h → eff. ${fnum(z.h_eff)} h | ${fnum(z.E)} kWh`);
+  if (R.dev_rows.length) {
+    add("  Kleingeräte:");
+    for (const d of R.dev_rows) add(`    ${padR(d[0], 30)} ${fnum(d[2])} × ${fnum(d[1], 2)} kW × ${fnum(d[3])} h = ${fnum(d[4])} kWh`);
+  }
+  if (R.pv_gen || R.bhkw_el) {
+    add("");
+    add(`  PV-Erzeugung ${fnum(R.pv_gen)} kWh, davon Eigenverbrauch ${fnum(R.pv_ev)} kWh`);
+    if (R.bhkw_el) add(`  BHKW-Strom ${fnum(R.bhkw_el)} kWh, davon Eigenverbrauch ${fnum(R.bhkw_ev)} kWh`);
+    add(`  Netzbezug ${fnum(R.grid)} kWh | Einspeisung ${fnum(R.feed_in)} kWh`);
+  }
+  add("");
+  add("5  WASSER"); add(line);
+  for (const [name, m3, , basis] of R.w_rows) add(`  ${padR(name, 34)} ${padL(fnum(m3, 1), 9)} m³/a   (${basis})`);
+  add(`  ${padR("SUMME Trinkwasser", 34)} ${padL(fnum(R.water_m3, 1), 9)} m³/a = ${fnum(R.l_pd, 0)} L/(Person·Nutzungstag)`);
+  add(`  davon erwärmt (${fnum(R.T_ww)} °C-Äquivalent):    ${fnum(R.hot_m3, 1)} m³/a`);
+  if (R.rain_m3) add(`  Regenwassernutzung (WC):            ${fnum(R.rain_m3, 1)} m³/a`);
+  add(`  Abwasser:                           ${fnum(R.abwasser, 1)} m³/a`);
+  add(`  Ausstattung: ${R.n_wc} WC, ${R.n_sink} Waschbecken, ${R.n_shower} Duschen, ${R.n_washroom} Sanitärräume`);
+  add("");
+  add("6  KOSTEN, CO2, PRIMÄRENERGIE"); add(line);
+  for (const [k, v] of Object.entries(R.cost)) if (Math.abs(v) > 0.5) add(`  ${padR(k, 34)} ${padL(fnum(v), 10)} €/a`);
+  add(`  ${padR("SUMME", 34)} ${padL(fnum(R.cost_total), 10)} €/a`);
+  if (R.co2_levy > 1) add(`  darin CO2-Abgabe (BEHG, ${fnum(R.co2_price)} €/t):  ca. ${fnum(R.co2_levy)} €/a`);
+  add(`  CO2-Emissionen: ${fnum(R.co2_total, 1)} t/a (${fnum(R.co2_total * 1e3 / A, 1)} kg/(m²a))`);
+  add(`  Primärenergie (GEG-Faktoren): ${fnum(R.pe)} kWh/a (${fnum(R.pe / A, 1)} kWh/(m²a))`);
+  add(`  Energieausweis-ähnlicher Endenergiekennwert: ${fnum(R.ea_value, 1)} kWh/(m²a)` + (R.res ? ` → Klasse ${R.ea_class}` : ""));
+  if (R.bench) add(`  Vergleichswerte NWG: Wärme ${R.bench[0]} | Strom ${R.bench[1]} kWh/(m²a)  – Ist: Wärme ${fnum(R.heat_endenergy / A, 0)} | Strom ${fnum(R.E_el / A, 0)}`);
+  const ist = [["ist_strom", "Strom", "kWh", R.E_el], ["ist_waerme", "Wärme (Endenergie)", "kWh", R.heat_endenergy], ["ist_wasser", "Wasser", "m³", R.water_m3]]
+    .filter(([k]) => R.ist[k]);
+  if (ist.length) {
+    add(""); add("  Vergleich mit gemessenem Verbrauch:");
+    for (const [k, n, u, v] of ist) {
+      const m = Number(R.ist[k]);
+      add(`    ${padR(n, 22)} berechnet ${padL(fnum(v), 10)} ${u} | gemessen ${padL(fnum(m), 10)} ${u} | Abweichung ${padL(fnum((v - m) / m * 100, 1), 6)} %`);
+    }
+  }
+  if (R.warn.length) { add(""); add("7  HINWEISE"); add(line); for (const w of R.warn) add("  • " + w); }
+  return L.join("\n");
+}
+
+if (typeof module !== "undefined") module.exports = {compute, measures, fnum, parseNum, fplain, pyRound};
+
+</script>
+<script>
+/* =============================================================================
+   Diagramme (SVG) und Tabellen – gemeinsam für Bildschirm und PDF-Bericht
+   ============================================================================= */
+"use strict";
+
+const C = {TXT: "#1f2933", MUTED: "#6b7785", BORDER: "#d5dbe3", GRID: "#e9edf2", DARK: "#1f2a37", ACCENT: "#1f6feb"};
+const FS = {title: 15, label: 12.5, small: 11.5, tiny: 10.5, big: 20};
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const trunc = (s, n) => (s.length <= n ? s : s.slice(0, n - 1) + "…");
+
+/* -------------------------------------------------------------------------- SVG-Grundgerüst */
+class Fig {
+  constructor(W = 1000, H = 400) { this.W = W; this.H = H; this.parts = []; this.defs = []; this.uid = Math.random().toString(36).slice(2, 7); }
+  X(f) { return f * this.W; }
+  Y(f) { return (1 - f) * this.H; }
+  add(s) { this.parts.push(s); }
+  text(x, y, s, o = {}) {
+    const a = o.anchor || "start", fs = o.size || FS.label, col = o.color || C.TXT, fw = o.bold ? 700 : (o.weight || 400);
+    const base = o.base || "middle";
+    const lines = String(s).split("\n");
+    const dy = fs * 1.2;
+    let y0 = y;
+    if (base === "middle") y0 = y - (lines.length - 1) * dy / 2;
+    else if (base === "bottom") y0 = y - (lines.length - 1) * dy;
+    const db = base === "top" ? "hanging" : base === "bottom" ? "alphabetic" : "central";
+    const tspans = lines.map((l, i) => `<tspan x="${x.toFixed(1)}" y="${(y0 + i * dy).toFixed(1)}">${esc(l)}</tspan>`).join("");
+    const style = o.italic ? ' font-style="italic"' : "";
+    const rot = o.rotate ? ` transform="rotate(${o.rotate} ${x.toFixed(1)} ${y.toFixed(1)})"` : "";
+    const bg = o.bg ? ` paint-order="stroke" stroke="${o.bg}" stroke-width="4" stroke-linejoin="round"` : "";
+    this.add(`<text font-size="${fs}" fill="${col}" font-weight="${fw}" text-anchor="${a}" dominant-baseline="${db}"${style}${rot}${bg}>${tspans}</text>`);
+  }
+  rect(x, y, w, h, fill, o = {}) {
+    if (w < 0) { x += w; w = -w; }
+    if (h < 0) { y += h; h = -h; }
+    const t = o.title ? `<title>${esc(o.title)}</title>` : "";
+    this.add(`<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${Math.max(0, w).toFixed(2)}" height="${Math.max(0, h).toFixed(2)}" fill="${fill}"${o.stroke ? ` stroke="${o.stroke}" stroke-width="${o.sw || 1}"` : ""}${o.rx ? ` rx="${o.rx}"` : ""}${o.opacity ? ` fill-opacity="${o.opacity}"` : ""}>${t}</rect>`);
+  }
+  line(x1, y1, x2, y2, col, w = 1, dash = null) {
+    this.add(`<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke="${col}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ""}/>`);
+  }
+  path(d, fill, o = {}) {
+    const t = o.title ? `<title>${esc(o.title)}</title>` : "";
+    this.add(`<path d="${d}" fill="${fill}"${o.opacity !== undefined ? ` fill-opacity="${o.opacity}"` : ""}${o.stroke ? ` stroke="${o.stroke}" stroke-width="${o.sw || 1}" stroke-linejoin="round"` : ""}>${t}</path>`);
+  }
+  circle(x, y, r, fill, title) { this.add(`<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="${r}" fill="${fill}">${title ? `<title>${esc(title)}</title>` : ""}</circle>`); }
+  svg(cls = "") {
+    return `<svg class="${cls}" viewBox="0 0 ${this.W} ${this.H}" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" preserveAspectRatio="xMidYMid meet"><defs>${this.defs.join("")}</defs><rect width="100%" height="100%" fill="white"/>${this.parts.join("")}</svg>`;
+  }
+}
+
+/* Achsen in Figurbruchteilen [links, unten, Breite, Höhe] wie matplotlib */
+class Ax {
+  constructor(fig, rect) {
+    this.f = fig;
+    this.x0 = fig.X(rect[0]); this.x1 = fig.X(rect[0] + rect[2]);
+    this.y1 = fig.Y(rect[1]); this.y0 = fig.Y(rect[1] + rect[3]);
+    this.xmin = 0; this.xmax = 1; this.ymin = 0; this.ymax = 1;
+  }
+  xlim(a, b) { this.xmin = a; this.xmax = b === a ? a + 1 : b; return this; }
+  ylim(a, b) { this.ymin = a; this.ymax = b === a ? a + 1 : b; return this; }
+  px(x) { return this.x0 + (x - this.xmin) / (this.xmax - this.xmin) * (this.x1 - this.x0); }
+  py(y) { return this.y1 - (y - this.ymin) / (this.ymax - this.ymin) * (this.y1 - this.y0); }
+  get w() { return this.x1 - this.x0; }
+  get h() { return this.y1 - this.y0; }
+  title(t) { this.f.text(this.x0, this.y0 - 14, t, {size: FS.title - 1, bold: true, base: "bottom"}); }
+}
+
+function niceStep(range, n) {
+  const raw = range / Math.max(n, 1);
+  const mag = Math.pow(10, Math.floor(Math.log10(raw || 1)));
+  const r = raw / mag;
+  return (r <= 1 ? 1 : r <= 2 ? 2 : r <= 2.5 ? 2.5 : r <= 5 ? 5 : 10) * mag;
+}
+function ticks(lo, hi, n = 5) {
+  const st = niceStep(hi - lo, n);
+  const out = [];
+  for (let v = Math.ceil(lo / st - 1e-9) * st; v <= hi + 1e-9; v += st) out.push(Math.abs(v) < 1e-9 ? 0 : v);
+  return out;
+}
+const tickFmt = (v, st) => fnum(v, st < 1 ? (st < 0.1 ? 2 : 1) : 0);
+
+function xAxis(ax, label, n = 6, grid = false) {
+  const f = ax.f, tk = ticks(ax.xmin, ax.xmax, n), st = tk.length > 1 ? tk[1] - tk[0] : 1;
+  f.line(ax.x0, ax.y1, ax.x1, ax.y1, C.BORDER, 1);
+  for (const t of tk) {
+    const x = ax.px(t);
+    if (grid) f.line(x, ax.y0, x, ax.y1, C.GRID, 1);
+    f.line(x, ax.y1, x, ax.y1 + 4, C.BORDER, 1);
+    f.text(x, ax.y1 + 8, tickFmt(t, st), {size: FS.tiny, color: C.MUTED, anchor: "middle", base: "top"});
+  }
+  if (label) f.text((ax.x0 + ax.x1) / 2, ax.y1 + 28, label, {size: FS.small, color: C.MUTED, anchor: "middle", base: "top"});
+}
+function yAxis(ax, label, n = 5, grid = true, right = false, color = C.MUTED) {
+  const f = ax.f, tk = ticks(ax.ymin, ax.ymax, n), st = tk.length > 1 ? tk[1] - tk[0] : 1;
+  const xa = right ? ax.x1 : ax.x0;
+  f.line(xa, ax.y0, xa, ax.y1, C.BORDER, 1);
+  for (const t of tk) {
+    const y = ax.py(t);
+    if (grid) f.line(ax.x0, y, ax.x1, y, C.GRID, 1);
+    f.text(right ? xa + 7 : xa - 7, y, tickFmt(t, st), {size: FS.tiny, color, anchor: right ? "start" : "end"});
+  }
+  if (label) f.text(right ? xa + 44 : xa - 44, (ax.y0 + ax.y1) / 2, label, {size: FS.small, color, anchor: "middle", rotate: -90});
+}
+function monthAxis(ax) {
+  const f = ax.f;
+  f.line(ax.x0, ax.y1, ax.x1, ax.y1, C.BORDER, 1);
+  D.MONTHS.forEach((m, i) => f.text(ax.px(i), ax.y1 + 8, m, {size: FS.tiny, color: C.MUTED, anchor: "middle", base: "top"}));
+}
+function legend(fig, items, x, y, opt = {}) {
+  const ncol = opt.ncol || 1, fs = opt.size || FS.small, colW = opt.colW || 190, rowH = fs * 1.55;
+  const nrow = Math.ceil(items.length / ncol);
+  let x0 = x;
+  if (opt.center) x0 = x - (Math.min(ncol, items.length) * colW) / 2;
+  items.forEach((it, i) => {
+    const cx = x0 + Math.floor(i / nrow) * colW, cy = y + (i % nrow) * rowH;
+    if (it.type === "line") { fig.line(cx, cy, cx + 16, cy, it.color, 2.2, it.dash); if (it.marker) fig.circle(cx + 8, cy, 3, it.color); }
+    else fig.rect(cx, cy - fs * 0.42, fs * 0.85, fs * 0.85, it.color, {rx: 1.5});
+    fig.text(cx + 22, cy, it.label, {size: fs});
+  });
+}
+function scaleOf(values) {
+  const m = Math.max(0, ...values.map(Math.abs));
+  return m >= 20000 ? [1000, "MWh"] : [1, "kWh"];
+}
+
+/* -------------------------------------------------------------------------- Bausteine */
+function donut(fig, rect, items, center, unit, opt = {}) {
+  items = items.filter(([, v]) => v > 0.5);
+  const cx = fig.X(rect[0] + rect[2] / 2), cy = fig.Y(rect[1] + rect[3] / 2);
+  const r = Math.min(fig.X(rect[2]), fig.H * rect[3]) * 0.46, ri = r * 0.64;
+  if (!items.length) { fig.text(cx, cy, "keine Werte", {color: C.MUTED, anchor: "middle"}); return; }
+  const tot = sum(items.map(i => i[1]));
+  let a0 = -Math.PI / 2;
+  const pt = (a, rr) => [cx + rr * Math.cos(a), cy + rr * Math.sin(a)];
+  for (const [lab, v, col] of items) {
+    let a1 = a0 + v / tot * 2 * Math.PI;
+    if (a1 - a0 >= 2 * Math.PI - 1e-6) a1 = a0 + 2 * Math.PI - 1e-4;
+    const lg = a1 - a0 > Math.PI ? 1 : 0;
+    const [x0, y0] = pt(a0, r), [x1, y1] = pt(a1, r), [x2, y2] = pt(a1, ri), [x3, y3] = pt(a0, ri);
+    fig.path(`M${x0},${y0} A${r},${r} 0 ${lg} 1 ${x1},${y1} L${x2},${y2} A${ri},${ri} 0 ${lg} 0 ${x3},${y3} Z`, col,
+      {stroke: "#fff", sw: 2, title: `${lab}: ${fnum(v)} (${fnum(v / tot * 100, 1)} %)`});
+    a0 = a1;
+  }
+  fig.text(cx, cy - 6, center, {size: FS.big, bold: true, anchor: "middle"});
+  fig.text(cx, cy + 18, unit, {size: FS.tiny, color: C.MUTED, anchor: "middle"});
+  if (opt.title) fig.text(cx - r, cy - r - 16, opt.title, {size: FS.title - 1, bold: true, base: "bottom"});
+  if (opt.legend !== false) {
+    const lx = cx + r + 22, rowH = FS.small * 1.6;
+    legend(fig, items.map(([l, v, c]) => ({label: `${trunc(l, 34)}  ${fnum(v / tot * 100, 1)} %`, color: c})), lx, cy - (items.length - 1) * rowH / 2, {size: FS.small});
+  }
+}
+
+function barh(fig, rect, labels, values, colors, title, unit, annot) {
+  const ax = new Ax(fig, rect);
+  const mx = Math.max(1e-9, ...values.map(Math.abs)), mn = Math.min(0, ...values);
+  ax.xlim(mn < 0 ? mn * 1.35 : 0, mx * 1.3).ylim(0, labels.length);
+  const bh = ax.h / labels.length * 0.62;
+  labels.forEach((l, i) => {
+    const yc = ax.y0 + (i + 0.5) * ax.h / labels.length;
+    const v = values[i];
+    fig.rect(ax.px(0), yc - bh / 2, ax.px(v) - ax.px(0), bh, colors[i % colors.length], {title: `${l}: ${fnum(v, mx < 100 ? 1 : 0)} ${unit}`});
+    fig.text(ax.x0 - 8, yc, trunc(l, 34), {size: FS.small, anchor: "end"});
+    const txt = fnum(v, mx < 100 ? 1 : 0) + (annot ? annot[i] : "");
+    fig.text(ax.px(v) + (v >= 0 ? 5 : -5), yc, txt, {size: FS.tiny + 0.5, anchor: v >= 0 ? "start" : "end"});
+  });
+  if (mn < 0) fig.line(ax.px(0), ax.y0, ax.px(0), ax.y1, C.BORDER, 1);
+  xAxis(ax, unit, 5);
+  if (title) ax.title(title);
+  return ax;
+}
+
+const istRows = R => {
+  const out = [];
+  for (const [k, n, u, v] of [["ist_strom", "Strom", "kWh", R.E_el], ["ist_waerme", "Wärme", "kWh", R.heat_endenergy], ["ist_wasser", "Wasser", "m³", R.water_m3]]) {
+    const m = Number(R.ist[k]);
+    if (R.ist[k] !== null && R.ist[k] !== undefined && isFinite(m) && m > 0) out.push([n, v, m, u]);
+  }
+  return out;
+};
+const genColor = g => g.typ.includes("Wärmepumpe") ? "#26a69a" : g.typ.includes("BHKW") ? "#7e57c2"
+  : g.carrier === "Strom" ? "#ef6f6c" : ((D.CARRIERS[g.carrier] || {}).color || "#9aa5b1");
+
+function gradientId(fig) {
+  const id = "grad" + fig.uid;
+  const stops = D.ENERGY_CLASSES.map(([, , c], i, a) => `<stop offset="${(i / (a.length - 1) * 100).toFixed(1)}%" stop-color="${c}"/>`).join("");
+  fig.defs.push(`<linearGradient id="${id}" x1="0" x2="1" y1="0" y2="0">${stops}</linearGradient>`);
+  return `url(#${id})`;
+}
+
+/* -------------------------------------------------------------------------- Auswertungen */
+function chartOverview(fig, R) {
+  const A = R.A, ist = istRows(R);
+  const right0 = ist.length ? 0.60 : 0.73;
+  if (R.res) {
+    const ax = new Ax(fig, [0.03, 0.20, right0 - 0.14, 0.52]).xlim(0, 300).ylim(-1.3, 2.3);
+    let x0 = 0;
+    for (const [name, lim, col] of D.ENERGY_CLASSES) {
+      fig.rect(ax.px(x0) + 1, ax.py(0.5), ax.px(lim) - ax.px(x0) - 2, ax.py(-0.5) - ax.py(0.5), col, {title: `Klasse ${name}: bis ${lim} kWh/(m²a)`});
+      fig.text((ax.px(x0) + ax.px(lim)) / 2, ax.py(0), name, {size: FS.label + 1, bold: true, anchor: "middle",
+        color: ["A+", "A", "F", "G", "H"].includes(name) ? "#fff" : C.TXT});
+      fig.text(ax.px(lim), ax.py(-0.75), String(lim), {size: FS.tiny, color: C.MUTED, anchor: "middle", base: "top"});
+      x0 = lim;
+    }
+    const v = Math.min(R.ea_value, 298), xv = ax.px(v);
+    fig.line(xv, ax.py(1.45), xv, ax.py(0.62), C.TXT, 2);
+    fig.path(`M${xv - 6},${ax.py(0.75)} L${xv + 6},${ax.py(0.75)} L${xv},${ax.py(0.55)} Z`, C.TXT);
+    fig.text(xv, ax.py(1.6), `${fnum(R.ea_value)} kWh/(m²a)`, {size: FS.label + 1, bold: true, anchor: "middle", base: "bottom"});
+    ax.title(`Endenergiekennwert – Effizienzklasse ${R.ea_class}`);
+  } else {
+    const gid = gradientId(fig);
+    const b = R.bench || [100, 50];
+    const items = [["Wärme (Endenergie)", R.heat_endenergy / A, b[0]], ["Strom", R.E_el / A, b[1]]];
+    const w = right0 - (ist.length ? 0.19 : 0.13);
+    fig.text(fig.X(0.03), fig.Y(0.93), `Energiekennwerte – Vergleich mit ${R.profil} (Bandtacho wie NWG-Energieausweis)`, {size: FS.title - 1, bold: true, base: "top"});
+    items.forEach(([name, val, ref], j) => {
+      const ax = new Ax(fig, [0.03, 0.46 - j * 0.38, w, 0.22]);
+      const xmax = Math.max(2.0 * ref, val * 1.12, 10);
+      ax.xlim(0, xmax).ylim(-1.1, 3.4);
+      fig.rect(ax.px(0), ax.py(1), ax.px(xmax) - ax.px(0), ax.py(0) - ax.py(1), gid, {title: `${name}: Skala 0–${fnum(xmax)} kWh/(m²a)`});
+      const st = Math.max(10, Math.round(xmax / 8 / 10) * 10);
+      for (let t = 0; t <= xmax + 1e-9; t += st) fig.text(ax.px(t), ax.py(-0.12), String(t), {size: FS.tiny, color: C.MUTED, anchor: "middle", base: "top"});
+      fig.line(ax.px(ref), ax.py(-0.05), ax.px(ref), ax.py(1.05), C.TXT, 1.6, "5,3");
+      fig.text(ax.px(ref), ax.py(-0.62), `Vergleichswert ${fnum(ref)}`, {size: FS.small, anchor: "middle", base: "top"});
+      const v = Math.min(val, xmax), xv = ax.px(v), pct = ref ? val / ref * 100 : 0;
+      const anc = v < 0.18 * xmax ? "start" : v > 0.82 * xmax ? "end" : "middle";
+      fig.line(xv, ax.py(1.7), xv, ax.py(1.2), C.TXT, 2);
+      fig.path(`M${xv - 6},${ax.py(1.3)} L${xv + 6},${ax.py(1.3)} L${xv},${ax.py(1.05)} Z`, C.TXT);
+      fig.text(xv, ax.py(1.8), `${fnum(val)} kWh/(m²a)  (${fnum(pct)} % des Vergleichswerts)`, {size: FS.label, bold: true, anchor: anc, base: "bottom"});
+      fig.text(ax.px(0), ax.py(3.4), name, {size: FS.label + 0.5, bold: true, color: C.ACCENT, base: "top"});
+    });
+  }
+  const labels = ["Heizwärme (Nutz)", "Warmwasser (Nutz)", "Wärme Endenergie", "Strom gesamt", "Primärenergie"];
+  const vals = [R.Q_h / A, R.Q_ww_use / A, R.heat_endenergy / A, R.E_el / A, R.pe / A];
+  barh(fig, [right0, 0.16, ist.length ? 0.15 : 0.24, 0.68], labels, vals, ["#f4a259", "#f7c873", "#ef6f6c", "#26a69a", "#9aa5b1"], "Kennwerte", "kWh/(m²a)");
+  if (ist.length) {
+    const pct = ist.map(([, v, m]) => v / m * 100);
+    const ax = new Ax(fig, [0.84, 0.16, 0.14, 0.68]).xlim(-0.5, ist.length - 0.5).ylim(0, Math.max(...pct, 100) * 1.25);
+    yAxis(ax, "", 5, true);
+    ist.forEach(([n], i) => {
+      const col = n === "Strom" ? "#26a69a" : n === "Wärme" ? "#ef6f6c" : "#3aa0d8";
+      const bw = ax.w / ist.length * 0.6;
+      fig.rect(ax.px(i) - bw / 2, ax.py(pct[i]), bw, ax.py(0) - ax.py(pct[i]), col, {title: `${n}: berechnet ${fnum(ist[i][1])} / gemessen ${fnum(ist[i][2])} ${ist[i][3]}`});
+      fig.text(ax.px(i), ax.py(pct[i]) - 5, `${fnum(pct[i])} %`, {size: FS.tiny + 0.5, anchor: "middle", base: "bottom"});
+      fig.text(ax.px(i), ax.y1 + 8, n, {size: FS.small, anchor: "middle", base: "top"});
+    });
+    fig.line(ax.x0, ax.py(100), ax.x1, ax.py(100), C.TXT, 1.4, "6,4");
+    fig.line(ax.x0, ax.y1, ax.x1, ax.y1, C.BORDER, 1);
+    ax.title("Berechnet / gemessen");
+  }
+}
+
+function chartFlow(fig, R) {
+  const flows = R.flows;
+  fig.text(fig.X(0.01), fig.Y(0.975), "Energiefluss – vom Energiebezug bis zur Nutzung [kWh/a]", {size: FS.title - 1, bold: true, base: "top"});
+  if (!flows.length) return;
+  const ax = new Ax(fig, [0, 0, 1, 0.91]);
+  const orders = [[...keys(R.heat_end), "Umweltwärme", "Solarthermie", "Netzstrom", "PV-Eigenverbrauch", "BHKW-Strom"], ["Stromverteilung"],
+    ["Wärmeerzeugung", "Beleuchtung", "Geräte & Nutzung", "Gebäudetechnik", "E-Mobilität"], ["Raumwärme", "Warmwasser", "Verluste"]];
+  const present = new Set(flows.flatMap(f => [f[0], f[1]]));
+  const cols = orders.map(o => o.filter(n => present.has(n)));
+  const vin = {}, vout = {};
+  for (const [a, b, v] of flows) { vout[a] = (vout[a] || 0) + v; vin[b] = (vin[b] || 0) + v; }
+  const nv = {};
+  for (const n of present) nv[n] = Math.max(vin[n] || 0, vout[n] || 0);
+  const X = [0.20, 0.42, 0.62, 0.84], gap = 0.035, top_y = 0.93, usable = 0.88;
+  const k = Math.min(...cols.filter(c => c.length).map(c => (usable - gap * (c.length - 1)) / Math.max(sum(c.map(n => nv[n])), 1e-9)));
+  const pos = {};
+  cols.forEach((c, ci) => {
+    if (ci === 1) return;
+    let y = top_y;
+    for (const n of c) { const h = Math.max(nv[n] * k, 0.004); pos[n] = [X[ci], y, h]; y -= h + gap; }
+  });
+  if (cols[1].length) {
+    const n = cols[1][0], h = Math.max(nv[n] * k, 0.004);
+    const srcs = flows.filter(f => f[1] === n && pos[f[0]]).map(f => pos[f[0]]);
+    const yc = srcs.length ? sum(srcs.map(p => p[1] - p[2] / 2)) / srcs.length : 0.5;
+    pos[n] = [X[1], Math.max(Math.min(top_y, yc + h / 2), h + 0.01), h];
+  }
+  const nw = 0.014;
+  const offOut = {}, offIn = {};
+  const ordOut = range(flows.length).sort((i, j) => -pos[flows[i][1]][1] + pos[flows[j][1]][1]);
+  const ordIn = range(flows.length).sort((i, j) => -pos[flows[i][0]][1] + pos[flows[j][0]][1]);
+  let acc = {};
+  for (const i of ordOut) { const a = flows[i][0]; offOut[i] = acc[a] || 0; acc[a] = offOut[i] + flows[i][2] * k; }
+  acc = {};
+  for (const i of ordIn) { const b = flows[i][1]; offIn[i] = acc[b] || 0; acc[b] = offIn[i] + flows[i][2] * k; }
+  const colOf = {};
+  cols.forEach((c, ci) => c.forEach(n => colOf[n] = ci));
+  const nodeCol = n => D.NODE_COLORS[n] || (D.CARRIERS[n] || {}).color || "#9aa5b1";
+  const PX = x => ax.px(x), PY = y => ax.py(y);
+  flows.forEach(([a, b, v], i) => {
+    const x0 = PX(pos[a][0] + nw / 2), x1 = PX(pos[b][0] - nw / 2), hh = v * k;
+    const y0t = pos[a][1] - offOut[i], y1t = pos[b][1] - offIn[i], xm = (x0 + x1) / 2;
+    const d = `M${x0},${PY(y0t)} C${xm},${PY(y0t)} ${xm},${PY(y1t)} ${x1},${PY(y1t)} L${x1},${PY(y1t - hh)} C${xm},${PY(y1t - hh)} ${xm},${PY(y0t - hh)} ${x0},${PY(y0t - hh)} Z`;
+    fig.path(d, colOf[a] === 0 ? nodeCol(a) : nodeCol(b), {opacity: 0.38, title: `${a} → ${b}: ${fnum(v)} kWh/a`});
+  });
+  const tot_in = sum(cols[0].map(n => nv[n]));
+  const labY = {};
+  for (const c of cols) {
+    let last = null;
+    for (const n of c) {
+      if (!pos[n]) continue;
+      let yc = pos[n][1] - pos[n][2] / 2;
+      if (last !== null && yc > last - 0.062) yc = last - 0.062;
+      labY[n] = yc; last = yc;
+    }
+  }
+  for (const [n, [x, yt, h]] of Object.entries(pos)) {
+    fig.rect(PX(x - nw / 2), PY(yt), PX(nw) - PX(0), PY(yt - h) - PY(yt), nodeCol(n), {stroke: "#fff", sw: 0.5, title: `${n}: ${fnum(nv[n])} kWh/a`});
+    const ci = colOf[n];
+    let lbl = `${n}\n${fnum(nv[n])} kWh`;
+    if (ci === 0) {
+      if (tot_in) lbl += ` (${fnum(nv[n] / tot_in * 100)} %)`;
+      fig.text(PX(x - nw / 2 - 0.008), PY(labY[n]), lbl, {size: FS.small, anchor: "end"});
+    } else if (n === "Stromverteilung" || n === "Wärmeerzeugung") {
+      fig.text(PX(x), PY(yt + 0.006), lbl.replace("\n", "  "), {size: FS.small, bold: true, anchor: "middle", base: "bottom", bg: "#fff"});
+    } else fig.text(PX(x + nw / 2 + 0.008), PY(labY[n]), lbl, {size: FS.small});
+  }
+}
+
+function chartHuelle(fig, R) {
+  const A = R.A, q_loss = sum(R.months.map(m => m.Q_l)), Ht = R.H_T + R.H_V;
+  const items = [...R.comp.map(c => [c.name, c.H]), ["Lüftung / Infiltration", R.H_V]].sort((a, b) => b[1] - a[1]);
+  barh(fig, [0.20, 0.15, 0.22, 0.70], items.map(i => i[0]), items.map(([, h]) => Ht ? h / Ht * q_loss / A : 0),
+    D.COMP_COLORS, "Wärmeverluste nach Bauteil", "kWh/(m²a)", items.map(([, h]) => `  (${fnum(h / Ht * 100)} %)`));
+  const mo = R.months, [sc, un] = scaleOf(mo.map(m => m.Q_l));
+  const qt = mo.map(m => m.Q_T / sc), qv = mo.map(m => m.Q_V / sc), gs = mo.map(m => -m.eta * m.Q_s / sc), gi = mo.map(m => -m.eta * m.Q_i / sc);
+  const lo = Math.min(...range(12).map(i => gs[i] + gi[i])), hi = Math.max(...range(12).map(i => qt[i] + qv[i]));
+  const ax = new Ax(fig, [0.54, 0.15, 0.44, 0.70]).xlim(-0.6, 11.6).ylim(lo * 1.15, hi * 1.75);
+  yAxis(ax, "", 6, true);
+  const bw = ax.w / 12 * 0.7;
+  range(12).forEach(i => {
+    const x = ax.px(i) - bw / 2, mo_ = D.MONTHS[i];
+    fig.rect(x, ax.py(qt[i]), bw, ax.py(0) - ax.py(qt[i]), "#ef6f6c", {title: `${mo_}: Transmission ${fnum(qt[i] * sc)} kWh`});
+    fig.rect(x, ax.py(qt[i] + qv[i]), bw, ax.py(qt[i]) - ax.py(qt[i] + qv[i]), "#f4a259", {title: `${mo_}: Lüftung ${fnum(qv[i] * sc)} kWh`});
+    fig.rect(x, ax.py(0), bw, ax.py(gs[i]) - ax.py(0), "#ffd54f", {title: `${mo_}: solare Gewinne (genutzt) ${fnum(-gs[i] * sc)} kWh`});
+    fig.rect(x, ax.py(gs[i]), bw, ax.py(gs[i] + gi[i]) - ax.py(gs[i]), "#9fd8cb", {title: `${mo_}: innere Gewinne (genutzt) ${fnum(-gi[i] * sc)} kWh`});
+  });
+  fig.line(ax.x0, ax.py(0), ax.x1, ax.py(0), C.MUTED, 1);
+  const pts = mo.map((m, i) => [ax.px(i), ax.py(m.Q_h / sc)]);
+  fig.path("M" + pts.map(p => p.join(",")).join(" L"), "none", {stroke: C.DARK, sw: 2});
+  pts.forEach((p, i) => fig.circle(p[0], p[1], 3.5, C.DARK, `${D.MONTHS[i]}: Heizwärmebedarf ${fnum(mo[i].Q_h)} kWh`));
+  monthAxis(ax);
+  legend(fig, [{label: "Transmission", color: "#ef6f6c"}, {label: "Lüftung", color: "#f4a259"}, {label: "solare Gewinne (genutzt)", color: "#ffd54f"},
+    {label: "innere Gewinne (genutzt)", color: "#9fd8cb"}, {label: "Heizwärmebedarf", color: C.DARK, type: "line", marker: true}],
+    (ax.x0 + ax.x1) / 2 + 15, ax.y0 + 12, {ncol: 3, center: true, colW: 150, size: FS.tiny});
+  ax.title(`Monatsbilanz Verluste / Gewinne (DIN V 4108-6) [${un}]`);
+}
+
+function chartStrom(fig, R) {
+  const A = R.A, items = Object.entries(R.el).filter(([, v]) => v > 0).map(([k, v]) => [k, v, D.EL_COLORS[k]]);
+  const [sc, un] = scaleOf([R.E_el]);
+  donut(fig, [0.0, 0.05, 0.27, 0.9], items, fnum(R.E_el / sc, sc > 1 ? 1 : 0), `${un}/a Strom`);
+  items.sort((a, b) => b[1] - a[1]);
+  barh(fig, [0.77, 0.15, 0.20, 0.70], items.map(i => i[0]), items.map(i => i[1] / A), items.map(i => i[2]), "Spezifischer Stromverbrauch", "kWh/(m²a)");
+}
+
+function chartWaerme(fig, R) {
+  const items = [...R.carriers.map(c => [c.name, c.kwh, c.color]), ...R.renew.map(r => [r.name, r.kwh, r.color])];
+  const total = sum(items.map(i => i[1])), [sc, un] = scaleOf([total]);
+  donut(fig, [0.0, 0.05, 0.27, 0.9], items, fnum(total / sc, sc > 1 ? 1 : 0), `${un}/a Wärme`);
+  const curve = R.dl_curve;
+  if (!curve.length || !R.gens.length) return;
+  const ymax = Math.max(Math.max(...curve), R.phi_rec) * 1.35;
+  const ax = new Ax(fig, [0.63, 0.16, 0.35, 0.68]).xlim(0, 8760).ylim(0, ymax);
+  yAxis(ax, "kW", 5, true);
+  const x = curve.map((_, i) => i * 24);
+  let prev = curve.map(() => 0), cum = 0;
+  const layers = [];
+  for (const g of R.gens) {
+    cum += g.kw_tot;
+    const cur = curve.map(v => Math.min(v, cum));
+    layers.push([prev, cur, `${g.idx} ${trunc(g.typ, 28)}`, genColor(g), g]);
+    prev = cur;
+  }
+  if (Math.max(...curve.map((v, i) => v - prev[i])) > 0.01) layers.push([prev, curve.slice(), "nicht gedeckt (Heizstab/Überlast)", "#e53935", null]);
+  for (const [lo, hi, lab, col, g] of layers) {
+    const up = x.map((xx, i) => `${ax.px(xx).toFixed(1)},${ax.py(hi[i]).toFixed(1)}`);
+    const dn = x.map((xx, i) => `${ax.px(xx).toFixed(1)},${ax.py(lo[i]).toFixed(1)}`).reverse();
+    fig.path(`M${up.join(" L")} L${dn.join(" L")} Z`, col, {opacity: 0.9, title: g ? `${lab}: ${fnum(g.Q)} kWh/a, ${fnum(g.vbh)} Volllaststunden` : lab});
+  }
+  fig.path("M" + x.map((xx, i) => `${ax.px(xx).toFixed(1)},${ax.py(curve[i]).toFixed(1)}`).join(" L"), "none", {stroke: C.DARK, sw: 1.2});
+  fig.line(ax.x0, ax.py(R.phi_rec), ax.x1, ax.py(R.phi_rec), C.MUTED, 1.2, "6,4");
+  fig.text(ax.x1, ax.py(R.phi_rec) - 4, `Heizlast ${fnum(R.phi_rec, 1)} kW`, {size: FS.tiny, color: C.MUTED, anchor: "end", base: "bottom"});
+  xAxis(ax, `Stunden im Jahr (${fnum(R.heat_hours)} Heizstunden)`, 8);
+  legend(fig, layers.map(l => ({label: l[2], color: l[3]})), ax.x1 - 230, ax.y0 + 14, {size: FS.tiny});
+  ax.title("Geordnete Jahresdauerlinie & Erzeugerdeckung");
+}
+
+function chartWasser(fig, R) {
+  const rows = R.w_rows.map(([n, m3], i) => [n, m3, D.WATER_COLORS[i % D.WATER_COLORS.length]]);
+  donut(fig, [0.0, 0.05, 0.27, 0.9], rows, fnum(R.water_m3), "m³/a Trinkwasser");
+  const div = Math.max(R.persons, 1) * (R.res ? 365 : R.days);
+  const rs = rows.slice().sort((a, b) => b[1] - a[1]);
+  barh(fig, [0.77, 0.15, 0.20, 0.70], rs.map(r => r[0]), rs.map(r => r[1] * 1000 / div), rs.map(r => r[2]), "Liter je Person und Nutzungstag", "L/(P·d)");
+}
+
+function chartKosten(fig, R) {
+  const items = Object.entries(R.cost).filter(([, v]) => v > 0.5)
+    .map(([k, v]) => [k, v, D.COST_COLORS[k] || (D.CARRIERS[k] || {}).color || "#9aa5b1"]);
+  donut(fig, [0.0, 0.05, 0.25, 0.85], items, `${fnum(R.cost_total)} €`, "pro Jahr (netto Gutschrift)", {title: "Kosten"});
+  const co2 = Object.entries(R.co2).filter(([, v]) => v > 0).map(([k, v]) => [k, v, (D.CARRIERS[k.split(" (")[0]] || {}).color || "#26a69a"]);
+  donut(fig, [0.50, 0.05, 0.25, 0.85], co2, `${fnum(R.co2_total, 1)} t`, "CO₂ pro Jahr", {title: "CO₂-Emissionen"});
+}
+
+function chartMonat(fig, R) {
+  const hz = R.heat_heiz_m, ww = R.ww_m;
+  const [sc, un] = scaleOf(range(12).map(i => hz[i] + ww[i]));
+  const hmax = Math.max(...range(12).map(i => (hz[i] + ww[i]) / sc));
+  const ax = new Ax(fig, [0.07, 0.15, 0.36, 0.70]).xlim(-0.6, 11.6).ylim(0, (hmax || 1) * 1.32);
+  yAxis(ax, "", 5, true);
+  const bw = ax.w / 12 * 0.7;
+  range(12).forEach(i => {
+    const x = ax.px(i) - bw / 2;
+    fig.rect(x, ax.py(hz[i] / sc), bw, ax.py(0) - ax.py(hz[i] / sc), "#ef6f6c", {title: `${D.MONTHS[i]}: Heizung ${fnum(hz[i])} kWh`});
+    fig.rect(x, ax.py((hz[i] + ww[i]) / sc), bw, ax.py(hz[i] / sc) - ax.py((hz[i] + ww[i]) / sc), "#f7c873", {title: `${D.MONTHS[i]}: Warmwasser ${fnum(ww[i])} kWh`});
+  });
+  const te = R.months.map(m => m.th_e);
+  const at = new Ax(fig, [0.07, 0.15, 0.36, 0.70]).xlim(-0.6, 11.6).ylim(Math.min(...te, 0) - 2, Math.max(...te) * 1.5);
+  const pts = te.map((t, i) => [at.px(i), at.py(t)]);
+  fig.path("M" + pts.map(p => p.join(",")).join(" L"), "none", {stroke: "#3aa0d8", sw: 2});
+  pts.forEach((p, i) => fig.circle(p[0], p[1], 3, "#3aa0d8", `${D.MONTHS[i]}: ${fnum(te[i], 1)} °C`));
+  yAxis(at, "°C", 5, false, true, "#3aa0d8");
+  monthAxis(ax);
+  legend(fig, [{label: "Heizung", color: "#ef6f6c"}, {label: "Warmwasser", color: "#f7c873"}, {label: "Außentemp.", color: "#3aa0d8", type: "line", marker: true}],
+    (ax.x0 + ax.x1) / 2, ax.y0 + 12, {ncol: 3, center: true, colW: 120, size: FS.tiny});
+  ax.title(`Wärmebedarf am Erzeuger [${un}]`);
+
+  const tot = range(12).map(i => sum(Object.values(R.el_m).map(v => v[i])));
+  const [sc2, un2] = scaleOf([...tot, ...R.pv_m]);
+  const ymax = Math.max(...tot, ...R.pv_m) / sc2;
+  const ax2 = new Ax(fig, [0.56, 0.15, 0.42, 0.70]).xlim(-0.6, 11.6).ylim(0, (ymax || 1) * 1.32);
+  yAxis(ax2, "", 5, true);
+  const bottom = new Array(12).fill(0), leg = [];
+  for (const k of D.GROUP_ORDER) {
+    const vv = (R.el_m[k] || new Array(12).fill(0)).map(v => v / sc2);
+    if (sum(vv) <= 0) continue;
+    range(12).forEach(i => {
+      fig.rect(ax2.px(i) - bw / 2, ax2.py(bottom[i] + vv[i]), bw, ax2.py(bottom[i]) - ax2.py(bottom[i] + vv[i]), D.GROUP_COLORS[k],
+        {title: `${D.MONTHS[i]}: ${k} ${fnum(vv[i] * sc2)} kWh`});
+      bottom[i] += vv[i];
+    });
+    leg.push({label: k, color: D.GROUP_COLORS[k]});
+  }
+  if (R.pv_gen > 0) {
+    const pp = R.pv_m.map((v, i) => [ax2.px(i), ax2.py(v / sc2)]);
+    fig.path("M" + pp.map(p => p.join(",")).join(" L"), "none", {stroke: "#f9a825", sw: 2.2});
+    pp.forEach((p, i) => fig.circle(p[0], p[1], 3.5, "#f9a825", `${D.MONTHS[i]}: PV ${fnum(R.pv_m[i])} kWh`));
+    leg.push({label: "PV-Erzeugung", color: "#f9a825", type: "line", marker: true});
+  }
+  monthAxis(ax2);
+  legend(fig, leg, (ax2.x0 + ax2.x1) / 2, ax2.y0 + 12, {ncol: 3, center: true, colW: 135, size: FS.tiny});
+  ax2.title(`Stromverbrauch [${un2}]`);
+}
+
+function chartMassnahmen(fig, R, M) {
+  if (!M || !M.length) {
+    fig.text(fig.W / 2, fig.H / 2, M ? "Keine sinnvollen Maßnahmen gefunden." : "Maßnahmen werden berechnet …", {anchor: "middle", color: C.MUTED, size: FS.label + 1});
+    return;
+  }
+  const names = M.map(m => m.name);
+  barh(fig, [0.25, 0.12, 0.29, 0.76], names, M.map(m => m.d_co2), M.map(m => m.d_co2 >= 0 ? "#2e7d32" : "#e53935"), "CO₂-Einsparung", "t CO₂/a");
+  const ann = M.map(m => (m.amort && m.amort < 100) ? `  (${fnum(m.amort, m.amort < 10 ? 1 : 0)} J.)` : "");
+  const ax = new Ax(fig, [0.62, 0.12, 0.34, 0.76]);
+  const vals = M.map(m => m.d_cost), mx = Math.max(1e-9, ...vals.map(Math.abs)), mn = Math.min(0, ...vals);
+  ax.xlim(mn < 0 ? mn * 1.35 : 0, mx * 1.3);
+  const bh = ax.h / M.length * 0.62;
+  M.forEach((m, i) => {
+    const yc = ax.y0 + (i + 0.5) * ax.h / M.length, v = m.d_cost;
+    fig.rect(ax.px(0), yc - bh / 2, ax.px(v) - ax.px(0), bh, v >= 0 ? C.ACCENT : "#e53935",
+      {title: `${m.name}: ${fnum(v)} €/a, Invest ca. ${fnum(pyRound(m.invest, -2))} €`});
+    fig.text(ax.px(v) + (v >= 0 ? 5 : -5), yc, fnum(v) + ann[i], {size: FS.tiny + 0.5, anchor: v >= 0 ? "start" : "end"});
+  });
+  if (mn < 0) fig.line(ax.px(0), ax.y0, ax.px(0), ax.y1, C.BORDER, 1);
+  xAxis(ax, "€/a", 5);
+  ax.title("Kostenersparnis (statische Amortisation)");
+}
+
+const CHARTS = {overview: chartOverview, flow: chartFlow, huelle: chartHuelle, strom: chartStrom, waerme: chartWaerme,
+  wasser: chartWasser, kosten: chartKosten, monat: chartMonat, massnahmen: chartMassnahmen};
+
+/* ============================================================================= Tabellen */
+const row = (level, cells, style = null) => ({level, cells, style});
+
+function buildTables(key, R, M) {
+  const A = R.A, T = [];
+  if (key === "overview") {
+    const cols = [["Bereich", 250, "w"], ["Jahreswert", 110, "e"], ["Einheit", 70, "w"], ["je m²", 90, "e"], ["Herleitung / Hinweis", 430, "w"]];
+    const rows = [row(0, ["Strom gesamt", fnum(R.E_el), "kWh/a", fnum(R.E_el / A, 1), "Summe aller Stromverbraucher"], "total")];
+    const grp = {};
+    for (const [k, v] of Object.entries(R.el)) grp[D.EL_GROUP[k]] = (grp[D.EL_GROUP[k]] || 0) + v;
+    const hints = {"Beleuchtung": `${fnum(R.P_light / A, 1)} W/m² installiert, ${R.lm}`, "Nutzung": "Geräte, Arbeitshilfen, Küche, IT, Sonderverbraucher",
+      "Wärmepumpe": "Wärmepumpenstrom (Heizung + WW)", "Heizung & Technik": "Direktheizung, el. WW, Lüftung, Kühlung, Aufzüge, Pumpen",
+      "E-Mobilität": `${fnum(R.ev_n)} Fahrzeuge`};
+    for (const name of D.GROUP_ORDER) if ((grp[name] || 0) > 0) rows.push(row(1, [name, fnum(grp[name]), "kWh/a", fnum(grp[name] / A, 1), hints[name]]));
+    if (R.pv_gen || R.bhkw_el) rows.push(row(1, ["Netzbezug (nach Eigenerzeugung)", fnum(R.grid), "kWh/a", fnum(R.grid / A, 1),
+      `PV ${fnum(R.pv_gen)} kWh, Eigenverbrauch ${fnum(R.pv_ev + R.bhkw_ev)} kWh`], "muted"));
+    rows.push(row(0, ["Wärme – Endenergie", fnum(R.heat_endenergy), "kWh/a", fnum(R.heat_endenergy / A, 1),
+      `Heizwärme ${fnum(R.Q_h / A, 1)} + WW ${fnum(R.Q_ww_use / A, 1)} kWh/(m²a) Nutzenergie`], "total"));
+    for (const cr of R.carriers) rows.push(row(1, [cr.name, fnum(cr.kwh), "kWh/a", fnum(cr.kwh / A, 1), cr.unit === "kWh" ? "" : `≈ ${fnum(cr.amount)} ${cr.unit}`]));
+    for (const rn of R.renew) rows.push(row(1, [rn.name, fnum(rn.kwh), "kWh/a", fnum(rn.kwh / A, 1), "Umgebungsenergie, nicht eingekauft"], "muted"));
+    rows.push(row(0, ["Wasser", fnum(R.water_m3, 1), "m³/a", fnum(R.water_m3 * 1000 / A), `Liter je m²  ·  ${fnum(R.l_pd)} L/(Person·Tag)`], "total"));
+    rows.push(row(1, ["davon erwärmt", fnum(R.hot_m3, 1), "m³/a", "", `${fnum(R.T_ww)} °C-Äquivalent`]));
+    rows.push(row(1, ["Abwasser", fnum(R.abwasser, 1), "m³/a", "", ""]));
+    rows.push(row(0, ["Kosten (inkl. Grundpreise)", fnum(R.cost_total), "€/a", fnum(R.cost_total / A, 2),
+      `CO₂ ${fnum(R.co2_total, 1)} t/a · Primärenergie ${fnum(R.pe / A)} kWh/(m²a)`], "group"));
+    const cls = R.res ? `Klasse ${R.ea_class} (Energieausweis-Skala)` : (R.bench ? `Vergleichswert NWG: Wärme ${R.bench[0]}, Strom ${R.bench[1]} kWh/(m²a)` : "");
+    rows.push(row(0, ["Endenergiekennwert", "", "", fnum(R.ea_value, 1), cls], "group"));
+    for (const [n, v, m, u] of istRows(R)) rows.push(row(0, [`Soll-Ist ${n}`, fnum(m, u === "m³" ? 1 : 0), u, "",
+      `gemessen; berechnet ${fnum(v)} ${u} → Abweichung ${fnum((v - m) / m * 100, 1)} %`], "muted"));
+    T.push({title: "Jahresbilanz", cols, rows});
+  } else if (key === "flow") {
+    const cols = [["Energiefluss", 320, "w"], ["kWh/a", 110, "e"], ["Anteil am Bezug", 120, "e"]];
+    const src = new Set([...keys(R.heat_end), "Netzstrom", "PV-Eigenverbrauch", "BHKW-Strom", "Umweltwärme", "Solarthermie"]);
+    const tot = sum(R.flows.filter(f => src.has(f[0])).map(f => f[2]));
+    T.push({title: "Energieflüsse", cols, rows: R.flows.map(([a, b, v]) => row(0, [`${a}  →  ${b}`, fnum(v), tot ? `${fnum(v / tot * 100, 1)} %` : ""]))});
+  } else if (key === "huelle") {
+    const q_loss = sum(R.months.map(m => m.Q_l)), Ht = R.H_T + R.H_V;
+    const cols = [["Bauteil", 250, "w"], ["Fläche m²", 85, "e"], ["U W/(m²K)", 85, "e"], ["Fx", 55, "e"], ["H W/K", 80, "e"], ["Verlust kWh/a", 105, "e"], ["Anteil", 70, "e"]];
+    const rows = R.comp.map(cp => row(0, [cp.name, fnum(cp.A), fnum(cp.U, 2), fnum(cp.Fx, 2), fnum(cp.H), fnum(cp.H / Ht * q_loss), `${fnum(cp.H / Ht * 100, 1)} %`]));
+    rows.push(row(0, [`Lüftung / Infiltration (n = ${fnum(R.n_eff, 2)} 1/h)`, "", "", "", fnum(R.H_V), fnum(R.H_V / Ht * q_loss), `${fnum(R.H_V / Ht * 100, 1)} %`]));
+    rows.push(row(0, [`Summe  (H'T = ${fnum(R.ht, 2)} W/(m²K), A/V = ${fnum(R.AV, 2)})`, fnum(R.A_env), "", "", fnum(Ht), fnum(q_loss), "100 %"], "total"));
+    T.push({title: "Bauteile und Wärmeverluste", cols, rows});
+    const mcols = [["kWh", 200, "w"], ...D.MONTHS.map(m => [m, 56, "e"]), ["Jahr", 76, "e"]];
+    const mrow = (name, vals, style = null) => row(0, [name, ...vals.map(v => fnum(v)), fnum(sum(vals))], style);
+    const mo = R.months;
+    T.push({title: "Monatsbilanz", cols: mcols, rows: [
+      row(0, ["Außentemperatur °C", ...mo.map(m => fnum(m.th_e, 1)), ""], "muted"),
+      mrow("Transmissionsverluste", mo.map(m => m.Q_T)), mrow("Lüftungsverluste", mo.map(m => m.Q_V)),
+      mrow("solare Gewinne", mo.map(m => m.Q_s)), mrow("innere Gewinne", mo.map(m => m.Q_i)),
+      row(0, ["Ausnutzungsgrad η", ...mo.map(m => fnum(m.eta, 2)), ""], "muted"),
+      mrow("Heizwärmebedarf", mo.map(m => m.Q_h), "total")]});
+  } else if (key === "strom") {
+    const cols = [["Kategorie", 250, "w"], ["kWh/a", 100, "e"], ["kWh/(m²a)", 85, "e"], ["Anteil", 65, "e"], ["Grundlage / Annahme", 520, "w"]];
+    const tot = R.E_el || 1, groups = {}, rows = [];
+    for (const [k, v] of Object.entries(R.el)) (groups[D.EL_GROUP[k]] = groups[D.EL_GROUP[k]] || []).push([k, v]);
+    for (const g of D.GROUP_ORDER) {
+      const items = groups[g] || [], gs = sum(items.map(i => i[1]));
+      if (gs <= 0 && g !== "Wärmepumpe") continue;
+      rows.push(row(0, [g, fnum(gs), fnum(gs / A, 1), `${fnum(gs / tot * 100, 1)} %`, ""], "group"));
+      for (const [k, v] of items) {
+        if (v <= 0) continue;
+        rows.push(row(1, [k, fnum(v), fnum(v / A, 1), `${fnum(v / tot * 100, 1)} %`, R.el_basis[k]]));
+        if (k === "Beleuchtung") for (const z of R.zones) rows.push(row(2, [z.name, fnum(z.E), fnum(z.E / A, 2), "",
+          `${fnum(z.area)} m², ${fnum(z.lux)} lx, ${fnum(z.P / Math.max(z.area, 1), 1)} W/m², ${fnum(z.h)} h → eff. ${fnum(z.h_eff)} h`], "muted"));
+        if (k === "Kleingeräte (Liste)") for (const d of R.dev_rows) rows.push(row(2, [d[0], fnum(d[4]), "", "", `${fnum(d[2])} × ${fnum(d[1], 2)} kW × ${fnum(d[3])} h`], "muted"));
+      }
+    }
+    rows.push(row(0, ["Summe Strom", fnum(R.E_el), fnum(R.E_el / A, 1), "100 %", `Netzbezug ${fnum(R.grid)} kWh` +
+      (R.pv_gen ? ` · PV ${fnum(R.pv_gen)} kWh (Eigenverbrauch ${fnum(R.pv_ev)} kWh, Einspeisung ${fnum(R.feed_in)} kWh)` : "")], "total"));
+    T.push({title: "Stromverbrauch", cols, rows});
+  } else if (key === "waerme") {
+    const cols = [["Wärmeerzeuger", 250, "w"], ["installiert", 95, "e"], ["Wärme kWh/a", 95, "e"], ["Anteil", 55, "e"], ["Endenergie", 90, "e"],
+      ["Träger", 75, "w"], ["Volllast h/a", 85, "e"], ["Effizienz", 150, "w"]];
+    const rows = R.gens.map(g => row(0, [`${g.idx}  ${g.typ}`, `${g.n} × ${fnum(g.kw, 1)} kW`, fnum(g.Q), `${fnum(g.share)} %`, fnum(g.E), g.carrier, fnum(g.vbh), g.eff]));
+    rows.push(row(0, ["Heizlast inkl. WW-Zuschlag", `${fnum(R.phi_rec, 1)} kW`, fnum(R.Q_total), "", "", "", "", `${fnum(R.phi_hl * 1000 / A)} W/m² (Raum)`], "total"));
+    T.push({title: "Wärmeerzeuger", cols, rows});
+    const c2 = [["Energieträger / Bilanzposten", 300, "w"], ["kWh/a", 105, "e"], ["Menge", 120, "e"], ["kWh/(m²a)", 85, "e"], ["Kosten €/a", 95, "e"], ["CO₂ t/a", 75, "e"]];
+    const r2 = [];
+    for (const cr of R.carriers) {
+      const base = cr.name.split(" (")[0];
+      const price = cr.name === "Strom (Wärmepumpe)" ? R.p_wp : (R.prices[base] ?? R.prices["Strom"] ?? 0);
+      const co2f = (D.CARRIERS[base] || D.CARRIERS["Strom"]).co2;
+      r2.push(row(0, [cr.name, fnum(cr.kwh), cr.unit !== "kWh" ? `${fnum(cr.amount)} ${cr.unit}` : "–", fnum(cr.kwh / A, 1), fnum(cr.kwh * price), fnum(cr.kwh * co2f / 1e6, 2)]));
+    }
+    for (const rn of R.renew) r2.push(row(0, [rn.name, fnum(rn.kwh), "kostenlos", fnum(rn.kwh / A, 1), "0", "0"], "muted"));
+    r2.push(row(0, ["Summe Endenergie Wärme", fnum(R.heat_endenergy), "", fnum(R.heat_endenergy / A, 1), "", ""], "total"));
+    for (const [n, v] of R.heat_balance) r2.push(row(1, [`Bilanz: ${n}`, fnum(v), "", fnum(v / A, 1), "", ""], "muted"));
+    T.push({title: "Energieträger und Wärmebilanz", cols: c2, rows: r2});
+  } else if (key === "wasser") {
+    const cols = [["Verwendung", 230, "w"], ["m³/a", 85, "e"], ["L/(P·d)", 75, "e"], ["Anteil", 65, "e"], ["Warmwasser kWh/a", 115, "e"], ["Grundlage", 430, "w"]];
+    const tot = R.water_m3 || 1, div = Math.max(R.persons, 1) * (R.res ? 365 : R.days);
+    const rows = R.w_rows.map(([n, m3, q, b]) => row(0, [n, fnum(m3, 1), fnum(m3 * 1000 / div, 1), `${fnum(m3 / tot * 100, 1)} %`, fnum(q), b]));
+    if (R.rain_m3) rows.push(row(0, ["Regenwasser (WC)", fnum(R.rain_m3, 1), "", "", "", "nicht im Trinkwasser enthalten"], "muted"));
+    rows.push(row(0, ["Summe Trinkwasser", fnum(R.water_m3, 1), fnum(R.l_pd, 1), "100 %", fnum(R.Q_ww_use),
+      `${R.n_wc} WC · ${R.n_sink} Waschbecken · ${R.n_shower} Duschen · ${fnum(R.shower_events, 1)} Duschgänge/Tag`], "total"));
+    T.push({title: "Wasserverbrauch", cols, rows});
+  } else if (key === "kosten") {
+    const cols = [["Position", 280, "w"], ["€/a", 95, "e"], ["€/(m²a)", 80, "e"], ["Anteil", 65, "e"], ["CO₂ t/a", 75, "e"], ["Primärenergie kWh/a", 135, "e"], ["Hinweis", 260, "w"]];
+    const tot = R.cost_total || 1, rows = [];
+    for (const [k, v] of Object.entries(R.cost)) {
+      if (Math.abs(v) < 0.5) continue;
+      let co2 = R.co2[k], pe = "", hint = "";
+      if (k in R.heat_end) { pe = fnum(R.heat_end[k] * D.CARRIERS[k].fp); hint = `${fnum(R.heat_end[k])} kWh × ${fnum(R.prices[k], 3)} €/kWh, fP = ${fnum(D.CARRIERS[k].fp, 1)}`; }
+      else if (k === "Strom") { co2 = R.co2["Strom (Netzbezug)"]; pe = fnum(R.grid * D.CARRIERS["Strom"].fp); hint = `${fnum(R.grid - R.wp_grid)} kWh × ${fnum(R.prices["Strom"], 3)} €/kWh`; }
+      else if (k.startsWith("Strom Wärmepumpe")) hint = `${fnum(R.wp_grid)} kWh × ${fnum(R.p_wp, 3)} €/kWh`;
+      else if (k.startsWith("Wasser")) hint = `${fnum(R.water_m3, 1)} m³`;
+      else if (k.startsWith("Einspeisung")) hint = `${fnum(R.feed_in)} kWh`;
+      rows.push(row(0, [k, fnum(v), fnum(v / A, 2), `${fnum(v / tot * 100, 1)} %`, co2 !== undefined ? fnum(co2, 2) : "", pe, hint]));
+    }
+    rows.push(row(0, ["Summe", fnum(R.cost_total), fnum(R.cost_total / A, 2), "100 %", fnum(R.co2_total, 2), fnum(R.pe), `${fnum(R.co2_total * 1000 / A, 1)} kg CO₂/(m²a)`], "total"));
+    if (R.co2_levy > 1) rows.push(row(1, ["darin CO₂-Abgabe (BEHG)", fnum(R.co2_levy), "", "", "", "", `${fnum(R.co2_price)} €/t auf fossile Brennstoffe`], "muted"));
+    T.push({title: "Kosten, CO₂ und Primärenergie", cols, rows});
+  } else if (key === "monat") {
+    const cols = [["kWh", 200, "w"], ...D.MONTHS.map(m => [m, 56, "e"]), ["Jahr", 76, "e"]];
+    const mrow = (name, vals, style = null) => row(0, [name, ...vals.map(v => fnum(v)), fnum(sum(vals))], style);
+    const rows = [row(0, ["Außentemperatur °C", ...R.months.map(m => fnum(m.th_e, 1)), ""], "muted"),
+      mrow("Heizwärme ab Erzeuger", R.heat_heiz_m), mrow("Warmwasser" + (R.ww_mode === "zentral" ? "" : " (dezentral)"), R.ww_m)];
+    for (const k of D.GROUP_ORDER) { const v = R.el_m[k]; if (v && sum(v) > 0) rows.push(mrow(`Strom: ${k}`, v)); }
+    rows.push(mrow("Strom gesamt", range(12).map(i => sum(Object.values(R.el_m).map(v => v[i]))), "total"));
+    if (R.pv_gen > 0) rows.push(mrow("PV-Erzeugung", R.pv_m, "muted"));
+    T.push({title: "Monatswerte", cols, rows});
+  } else if (key === "massnahmen") {
+    const cols = [["Maßnahme", 240, "w"], ["Δ Endenergie kWh/a", 115, "e"], ["Δ Netzstrom kWh/a", 110, "e"], ["Δ Kosten €/a", 90, "e"], ["Δ CO₂ t/a", 70, "e"],
+      ["Invest € *", 95, "e"], ["Amort. J.", 70, "e"], ["Beschreibung", 380, "w"]];
+    const rows = (M || []).map(m => row(0, [m.name, fnum(m.d_end), fnum(m.d_el), fnum(m.d_cost), fnum(m.d_co2, 1), fnum(pyRound(m.invest, -2)),
+      m.amort ? fnum(m.amort, 1) : "–", m.desc], m.paket ? "total" : null));
+    T.push({title: "Maßnahmen (Einsparung gegenüber Ist-Zustand)", cols, rows,
+      note: "* Investitionen: Richtwerte brutto (Preisstand 2025/26) ohne Förderung (BEG/KfW). Bei ohnehin fälligen Arbeiten nur die energiebedingten " +
+            "Mehrkosten ansetzen (ca. 30–50 %). Amortisation statisch ohne Preissteigerung. Jede Maßnahme einzeln gegenüber dem Ist-Zustand gerechnet."});
+  }
+  return T;
+}
+
+function kpiValues(R) {
+  const A = R.A, g = {};
+  for (const [k, v] of Object.entries(R.el)) g[D.EL_GROUP[k]] = (g[D.EL_GROUP[k]] || 0) + v;
+  return [
+    ["Strom", `${fnum(R.E_el)} kWh`, `${fnum(R.E_el / A, 1)} kWh/(m²a)`, `Licht ${fnum((g["Beleuchtung"] || 0) / A, 1)} · Nutzung ${fnum((g["Nutzung"] || 0) / A, 1)} · WP ${fnum((g["Wärmepumpe"] || 0) / A, 1)}`, "#26a69a"],
+    ["Wärme · Endenergie", `${fnum(R.heat_endenergy)} kWh`, `${fnum(R.heat_endenergy / A, 1)} kWh/(m²a)`, `Nutzwärme ${fnum((R.Q_h + R.Q_ww_use) / A, 1)} kWh/(m²a)`, "#ef6f6c"],
+    ["Wasser", `${fnum(R.water_m3)} m³`, `${fnum(R.l_pd)} L/(Person·Tag)`, `davon warm ${fnum(R.hot_m3)} m³`, "#3aa0d8"],
+    ["Heizlast", `${fnum(R.phi_rec, 1)} kW`, `${fnum(R.phi_hl * 1000 / A)} W/m² (Raum)`, `installiert ${fnum(R.kw_inst, 1)} kW`, "#f4a259"],
+    ["Kosten", `${fnum(R.cost_total)} €`, `${fnum(R.cost_total / A, 2)} €/(m²a)`, "inkl. Wasser & Grundpreise", "#7a6ff0"],
+    ["CO₂", `${fnum(R.co2_total, 1)} t`, `${fnum(R.co2_total * 1000 / A, 1)} kg/(m²a)`, `Primärenergie ${fnum(R.pe / A)} kWh/(m²a)`, "#6b7785"],
+  ];
+}
+
+</script>
+<script>
+/* =============================================================================
+   Oberfläche, Speichern/Laden, Exporte, PDF-Bericht (Druckansicht)
+   ============================================================================= */
+"use strict";
+
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v === null || v === undefined || v === false) continue;
+    if (k === "class") el.className = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (k === "html") el.innerHTML = v;
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of kids.flat()) if (c !== null && c !== undefined && c !== false) el.append(c.nodeType ? c : document.createTextNode(c));
+  return el;
+};
+
+const APP = {fields: {}, meta: {}, devices: [], R: null, M: null, dirty: new Set(), tab: "overview", timer: null, auto: true, sec: ""};
+const STORE_KEY = "gebaeude-energierechner-v2";
+
+/* -------------------------------------------------------------------------- Feldtypen */
+function numField(key, label, unit = "", o = {}) {
+  const allowAvg = o.avg !== false;
+  const inp = h("input", {type: "text", inputmode: "decimal", class: "num", "aria-label": label});
+  const cb = allowAvg ? h("input", {type: "checkbox", title: "Ø = Wert unbekannt → Durchschnittswert verwenden"}) : null;
+  if (o.default !== undefined && o.default !== null) inp.value = fplain(o.default);
+  if (cb) cb.checked = o.default === undefined || o.default === null;
+  const apply = () => { if (cb) { inp.disabled = cb.checked; inp.classList.toggle("avg", cb.checked); } };
+  apply();
+  inp.addEventListener("input", () => { inp.classList.remove("bad"); schedule(); });
+  if (cb) cb.addEventListener("change", () => { apply(); if (!cb.checked) { inp.focus(); inp.select(); } schedule(); });
+  const f = {
+    type: "num",
+    el: h("span", {class: "numwrap"}, inp, cb ? h("label", {class: "avgcb"}, cb, "Ø") : null),
+    get() {
+      if (cb && cb.checked) return null;
+      if (!inp.value.trim()) return null;
+      try { return parseNum(inp.value); } catch (e) { inp.classList.add("bad"); return null; }
+    },
+    isAvg: () => !!(cb && cb.checked),
+    showDefault(v) { if (cb && cb.checked) inp.value = (v === null || v === undefined) ? "" : fplain(v); },
+    toJSON: () => ({avg: !!(cb && cb.checked), v: inp.value}),
+    fromJSON(d) {
+      if (d && typeof d === "object") { inp.value = d.v ?? ""; if (cb) cb.checked = !!d.avg; }
+      else if (d !== undefined && d !== null) { inp.value = String(d); if (cb) cb.checked = false; }
+      apply();
+    },
+  };
+  return reg(key, f, label, unit, o.tip);
+}
+
+function choiceField(key, label, options, o = {}) {
+  const allowAvg = o.avg !== false;
+  const opts = (allowAvg ? [AVG_LABEL] : []).concat(options);
+  const sel = h("select", {"aria-label": label}, opts.map(x => h("option", {value: x}, x)));
+  sel.value = (o.default && opts.includes(o.default)) ? o.default : opts[0];
+  const hint = h("div", {class: "hint"});
+  sel.addEventListener("change", schedule);
+  const f = {
+    type: "choice",
+    el: h("span", {class: "choicewrap"}, sel, hint),
+    get: () => (sel.value === AVG_LABEL ? null : sel.value),
+    isAvg: () => sel.value === AVG_LABEL,
+    showDefault(v) {
+      if (sel.value === AVG_LABEL && v !== null && v !== undefined && v !== "") {
+        hint.textContent = "→ angenommen: " + (typeof v === "number" ? fplain(v) : String(v));
+        hint.hidden = false;
+      } else hint.hidden = true;
+    },
+    toJSON: () => sel.value,
+    fromJSON(v) { if (opts.includes(v)) sel.value = v; },
+  };
+  f.showDefault(null);
+  return reg(key, f, label, "", o.tip);
+}
+
+function textField(key, label) {
+  const inp = h("input", {type: "text", class: "txt", "aria-label": label});
+  inp.addEventListener("input", schedule);
+  const f = {type: "text", el: inp, get: () => inp.value.trim() || null, isAvg: () => false, showDefault() {},
+    toJSON: () => inp.value, fromJSON(v) { inp.value = v || ""; }};
+  return reg(key, f, label, "");
+}
+
+function reg(key, f, label, unit, tip) {
+  APP.fields[key] = f;
+  APP.meta[key] = [APP.sec, label, unit];
+  f.label = label; f.unit = unit; f.tip = tip;
+  return f;
+}
+
+/* -------------------------------------------------------------------------- Abschnitte */
+function section(parent, title, note) {
+  APP.sec = title;
+  const body = h("div", {class: "grid"});
+  const sec = h("fieldset", {class: "card"}, h("legend", {}, title), note ? h("p", {class: "note"}, note) : null, body);
+  parent.append(sec);
+  return body;
+}
+function rowOf(body, f) {
+  const lbl = h("label", {class: "lbl"}, f.label, f.tip ? h("span", {class: "tip", tabindex: "0", "data-tip": f.tip}, "ⓘ") : null);
+  body.append(lbl, h("div", {class: "ctl"}, f.el), h("span", {class: "unit"}, f.unit || ""));
+}
+const N = (body, ...a) => rowOf(body, numField(...a));
+const CH = (body, ...a) => rowOf(body, choiceField(...a));
+const TX = (body, ...a) => rowOf(body, textField(...a));
+
+function buildInputs() {
+  const tabs = [["geb", "Gebäude"], ["huelle", "Hülle"], ["heiz", "Heizung"], ["wasser", "Wasser"], ["licht", "Licht"], ["technik", "Technik"], ["preise", "Preise & Ist"]];
+  const nav = $("#in-tabs"), wrap = $("#in-panels");
+  const panels = {};
+  tabs.forEach(([k, t], i) => {
+    nav.append(h("button", {class: "tab" + (i ? "" : " active"), "data-tab": k, onclick: () => {
+      nav.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.tab === k));
+      wrap.querySelectorAll(".panel").forEach(p => p.hidden = p.dataset.tab !== k);
+    }}, t));
+    panels[k] = h("div", {class: "panel", "data-tab": k, hidden: i ? true : null});
+    wrap.append(panels[k]);
+  });
+  let s, t;
+  // Gebäude
+  t = panels.geb;
+  s = section(t, "Projekt");
+  TX(s, "projekt_name", "Bezeichnung"); TX(s, "projekt_adresse", "Adresse / Standort"); TX(s, "projekt_bearbeiter", "Bearbeitung");
+  s = section(t, "Nutzung & Größe", "Ø = Wert unbekannt → ein typischer Durchschnittswert wird angenommen und grün angezeigt. Häkchen entfernen, um einen eigenen Wert einzugeben.");
+  CH(s, "profil", "Gebäudenutzung", keys(D.PROFILES), {avg: false, default: "Mehrfamilienhaus",
+    tip: "Legt das Nutzungsprofil fest (DIN V 18599-10): Nutzungszeiten, Personendichte, Beleuchtung, Wasser- und Gerätebedarf, Vergleichswerte."});
+  N(s, "flaeche", "Nutzfläche / Wohnfläche (beheizt)", "m²", {avg: false, default: 1000, tip: "Beheizte Netto-Raumfläche bzw. Wohnfläche. Bezugsgröße aller Kennwerte (kWh/m²a)."});
+  N(s, "geschosse", "Anzahl Vollgeschosse");
+  N(s, "raumhoehe", "lichte Raumhöhe", "m", {tip: "Bestimmt das beheizte Luftvolumen (Lüftungsverluste) und das Bruttovolumen (Hüllfläche)."});
+  N(s, "raeume", "Anzahl Räume", "", {tip: "Über die mittlere Raumgröße wird der Raumwirkungsgrad der Beleuchtung berücksichtigt (kleine Räume → mehr W/m²)."});
+  N(s, "personen", "Anzahl Personen / Nutzer", "", {tip: "Wohngebäude: Bewohner. NWG: Beschäftigte bzw. Schüler, Betten, Sitzplätze, tägliche Nutzer."});
+  N(s, "wohneinheiten", "Wohneinheiten (nur Wohngebäude)");
+  CH(s, "region", "Klimaregion", keys(D.REGIONS));
+  s = section(t, "Nutzungszeiten & Heizbetrieb");
+  N(s, "nutzungstage", "Nutzungstage pro Jahr", "d/a"); N(s, "nutzungsstunden", "Nutzungsstunden pro Tag", "h/d");
+  N(s, "raumtemp", "Raumsolltemperatur", "°C", {tip: "Je Kelvin ändert sich der Heizwärmebedarf um ca. 6 %."});
+  CH(s, "absenkung", "Absenkbetrieb Heizung", D.ABSENK_OPTS); N(s, "beheizt", "beheizter Flächenanteil", "%");
+  s = section(t, "Berechnungsgrundlagen");
+  CH(s, "rechenmodus", "Rechenmodus", D.MODI, {tip: "Realitätsnaher Verbrauch: Bestandsgebäude mit hohem rechnerischem Bedarf werden real sparsamer genutzt (Teilbeheizung, Nutzerverhalten) – Prebound-Effekt nach IWU/TABULA. Sehr effiziente Gebäude verbrauchen eher etwas mehr (Rebound). Normbedarf: Standard-Randbedingungen wie im Bedarfsausweis."});
+  CH(s, "witterung", "Witterung des Bezugsjahres", keys(D.WITTERUNG), {tip: "Für den Vergleich mit gemessenen Verbräuchen eines bestimmten Jahres."});
+  // Hülle
+  t = panels.huelle;
+  s = section(t, "Baualter, Sanierung, Standard", "Ist der genaue Standard unbekannt, reicht das Baujahr. Ein bekannter Energiestandard (KfW, Passivhaus, Nullemission) bzw. ein bekannter H'T-Wert skaliert die Bauteile.");
+  CH(s, "baujahr", "Baualtersklasse", keys(D.BAUJAHR)); CH(s, "sanierung", "Sanierungsstand", D.SAN_OPTS);
+  CH(s, "standard", "Energiestandard (falls bekannt)", keys(D.STANDARDS));
+  N(s, "ht_wert", "H'T (falls bekannt)", "W/(m²K)", {tip: "Spezifischer Transmissionswärmeverlust je m² Hüllfläche inkl. Wärmebrücken. Nur ändern, wenn aus Energieausweis/GEG-Nachweis bekannt."});
+  s = section(t, "Bauteile (U-Werte nach Baualter, IWU-Typologie)", "Ø-Werte ergeben sich aus Baualter und Sanierung. Bekannte U-Werte (z. B. aus Sanierungsunterlagen) einfach eintragen.");
+  CH(s, "dach", "oberer Abschluss", keys(D.DACH_OPTS)); CH(s, "unten", "unterer Abschluss", keys(D.UNTEN_OPTS));
+  N(s, "u_wand", "U-Wert Außenwand", "W/(m²K)"); N(s, "u_dach", "U-Wert Dach / oberste Decke", "W/(m²K)"); N(s, "u_boden", "U-Wert Boden / Kellerdecke", "W/(m²K)");
+  CH(s, "fenster", "Verglasung", keys(D.FENSTER)); N(s, "u_fenster", "U-Wert Fenster (U_w)", "W/(m²K)");
+  N(s, "fensteranteil", "Fensterfläche bezogen auf Nutzfläche", "%");
+  s = section(t, "Geometrie & solare Gewinne");
+  CH(s, "gebaeudeform", "Gebäudeform", keys(D.FORMS)); CH(s, "bauweise", "Bauweise (Speichermasse)", keys(D.MASS));
+  CH(s, "verschattung", "Verschattung", keys(D.VERSCHATTUNG)); CH(s, "ausrichtung", "Hauptausrichtung der Fenster", keys(D.AUSRICHTUNG));
+  s = section(t, "Lüftung");
+  CH(s, "lueftung", "Lüftungsart", D.VENT_OPTS); N(s, "wrg", "Wärmerückgewinnungsgrad", "%");
+  N(s, "sfp", "spez. Ventilatorleistung", "W/(m³/h)", {tip: "Ca. 0,25–0,35 für Wohnungslüftung, 0,4–0,6 für RLT-Anlagen in NWG."});
+  N(s, "lueft_h", "Betriebsstunden Lüftungsanlage", "h/a");
+  s = section(t, "Gebäudeautomation");
+  CH(s, "gebaeudeautomation", "Automationsklasse (DIN EN ISO 52120-1)", keys(D.BACS), {tip: "Klasse A–D nach DIN EN ISO 52120-1 (ehem. DIN EN 15232). Faktoren auf Heizwärme/Kälte sowie Beleuchtung, Lüftung und Hilfsenergie. C = Referenz."});
+  // Heizung
+  t = panels.heiz;
+  s = section(t, "Wärmeverteilung");
+  CH(s, "heizflaechen", "Heizflächen / Vorlauftemperatur", keys(D.HEIZFL)); CH(s, "verteilung", "Zustand Verteilung", D.DIST_OPTS);
+  CH(s, "pumpe", "Heizungspumpe", keys(D.PUMP_OPTS));
+  APP.sec = "Wärmeerzeuger";
+  const gsec = h("fieldset", {class: "card"}, h("legend", {}, "Wärmeerzeuger (Reihenfolge = Priorität, 1 = Grundlast)"),
+    h("p", {class: "note"}, "Leistung je Gerät × Anzahl. Ohne Vorgabe wird die Wärme über die stündliche Jahresdauerlinie verteilt: Erzeuger 1 deckt die Grundlast, die folgenden die Spitzenlast. Optional: fester Deckungsanteil oder bekannte Volllaststunden vorgeben."));
+  const gt = h("div", {class: "gengrid"}, ["#", "Erzeuger", "kW je Gerät", "Anzahl", "Anteil %", "Volllast h/a"].map(x => h("div", {class: "gh"}, x)));
+  for (let i = 1; i <= 4; i++) {
+    const tf = i === 1 ? choiceField(`gen${i}_typ`, `Erzeuger ${i}: Typ`, keys(D.GEN_TYPES))
+                       : choiceField(`gen${i}_typ`, `Erzeuger ${i}: Typ`, [NO_GEN, ...keys(D.GEN_TYPES)], {avg: false, default: NO_GEN});
+    gt.append(h("div", {class: "gi"}, String(i)), h("div", {}, tf.el));
+    for (const [k, lbl, unit] of [["kw", "Leistung je Gerät", "kW"], ["n", "Anzahl", ""], ["anteil", "Deckungsanteil", "%"], ["h", "Volllaststunden", "h/a"]])
+      gt.append(h("div", {}, numField(`gen${i}_${k}`, `Erzeuger ${i}: ${lbl}`, unit).el));
+  }
+  gsec.append(gt);
+  t.append(gsec);
+  s = section(t, "Wärmepumpe");
+  N(s, "jaz_wp", "Jahresarbeitszahl (falls gemessen)", "", {tip: "Ø = aus Wärmequelle und Vorlauftemperatur (VDI 4650-1 / Feldtests). Bei bekannter JAZ (z. B. aus Wärmemengen- und Stromzähler) hier eintragen."});
+  s = section(t, "Warmwasser");
+  CH(s, "ww_system", "Warmwasserbereitung", keys(D.WW_OPTS)); N(s, "ww_temp", "Speicher-/Auslauftemperatur", "°C");
+  N(s, "speicher", "Speichervolumen", "Liter"); CH(s, "zirkulation", "Zirkulation", D.CIRC_OPTS); N(s, "solarthermie", "Solarthermie Kollektorfläche", "m²");
+  // Wasser
+  t = panels.wasser;
+  s = section(t, "Sanitärausstattung");
+  N(s, "anz_wc", "Toiletten (WC)", "Stk"); N(s, "anz_waschbecken", "Waschbecken", "Stk"); N(s, "anz_duschen", "Duschen", "Stk");
+  N(s, "anz_waschraeume", "Waschräume / Bäder", "Stk"); CH(s, "waschbecken_ww", "Warmwasser an Waschbecken", ["ja", "nein (nur Kaltwasser)"]);
+  s = section(t, "Nutzung & Technik");
+  N(s, "duschgaenge", "Duschgänge je Dusche und Tag", "1/d"); N(s, "duschdauer", "Duschdauer", "min");
+  N(s, "baeder", "Wannenbäder je Person und Woche", "1/Wo", {tip: "Ein Wannenbad ≈ 140 L bei 40 °C."});
+  CH(s, "armaturen", "Armaturen / Duschköpfe", keys(D.ARM_OPTS)); CH(s, "wc_typ", "WC-Spülung", keys(D.WC_OPTS));
+  CH(s, "regenwasser", "Regenwassernutzung", ["nein", "ja (WC-Spülung)"]);
+  s = section(t, "Küche / Kantine");
+  CH(s, "kueche", "Küchenart", keys(D.KITCHEN)); N(s, "essen", "Essen pro Tag", "Stk/d");
+  s = section(t, "Sonstiges");
+  N(s, "garten", "bewässerte Außenanlagen", "m²"); N(s, "wasser_sonst", "sonstiger Wasserverbrauch", "m³/a");
+  // Licht
+  t = panels.licht;
+  s = section(t, "Beleuchtungstechnik (DIN V 18599-4 vereinfacht)");
+  CH(s, "leuchtmittel", "Leuchtmittel", keys(D.LEUCHTMITTEL)); CH(s, "lichtsteuerung", "Steuerung", keys(D.STEUERUNG));
+  APP.sec = "Beleuchtungszonen";
+  const zsec = h("fieldset", {class: "card"}, h("legend", {}, "Zonen: wo und wie lange wird beleuchtet?"),
+    h("p", {class: "note"}, "Flächenanteile werden auf 100 % normiert. Betriebsstunden vor Abzug von Tageslicht und Präsenzerfassung."));
+  const zg = h("div", {class: "zonegrid"}, ["Zone", "Anteil %", "Lux", "Betrieb h/a"].map(x => h("div", {class: "gh"}, x)));
+  for (const [k, name] of [["haupt", "Hauptnutzung"], ["verkehr", "Flure / Treppen"], ["sanitaer", "Sanitär / Waschräume"], ["neben", "Neben-/Technik/Keller"]]) {
+    zg.append(h("div", {class: "gi"}, name));
+    for (const [sub, unit] of [["anteil", "%"], ["lux", "lx"], ["h", "h/a"]]) zg.append(h("div", {}, numField(`lz_${k}_${sub}`, `${name}: ${sub}`, unit).el));
+  }
+  zsec.append(zg);
+  t.append(zsec);
+  s = section(t, "Außen- und Sonderbeleuchtung");
+  N(s, "aussen_w", "Außenbeleuchtung installiert", "W");
+  N(s, "aussen_h", "Außenbeleuchtung Betrieb", "h/a", {tip: "Dämmerung bis Dämmerung ≈ 4.100 h/a, mit Nachtabschaltung ≈ 2.000 h/a."});
+  N(s, "garage", "Tiefgarage / Parkhaus", "m²"); CH(s, "garage_licht", "Garagenbeleuchtung", ["Bewegungsmelder", "Dauerlicht"], {avg: false});
+  N(s, "rettungszeichen", "Rettungszeichenleuchten (Dauerlicht)", "Stk");
+  // Technik
+  t = panels.technik;
+  s = section(t, "Geräte- und Nutzerstrom");
+  CH(s, "geraete_modus", "Berechnung", D.GERAETE_MODI, {avg: false, default: D.GERAETE_MODI[0],
+    tip: "Pauschale nach Nutzungsprofil (Haushaltsstrom nach Stromspiegel bzw. Arbeitshilfen je Person nach VDI 3807). Geräteliste für zusätzliche oder bekannte Verbraucher."});
+  N(s, "geraete_pauschal", "Pauschale Gerätestrom", "kWh/a");
+  buildDevices(t);
+  s = section(t, "IT & Sonderverbraucher");
+  N(s, "it_kw", "Serverraum IT-Last (Dauerbetrieb)", "kW"); N(s, "pue", "PUE (Kühlung/USV Serverraum)");
+  N(s, "sonder_kw", "Sonderverbraucher (Maschinen, Druckluft …)", "kW"); N(s, "sonder_h", "Sonderverbraucher Volllaststunden", "h/a");
+  s = section(t, "E-Mobilität (Laden am Gebäude)");
+  N(s, "emob_n", "Anzahl E-Fahrzeuge / Ladepunkte", "Stk"); N(s, "emob_km", "Fahrleistung je Fahrzeug", "km/a");
+  N(s, "emob_verbrauch", "Verbrauch", "kWh/100 km"); N(s, "emob_anteil", "Anteil am Gebäude geladen", "%");
+  s = section(t, "Aufzüge & Fahrtreppen (VDI 4707)");
+  N(s, "aufzuege", "Anzahl Aufzüge", "Stk"); CH(s, "aufzug_kat", "Nutzungskategorie", keys(D.LIFT_CAT)); N(s, "aufzug_last", "Nennlast", "kg");
+  CH(s, "aufzug_technik", "Antriebstechnik", keys(D.LIFT_TECH)); N(s, "fahrtreppen", "Fahrtreppen", "Stk"); N(s, "fahrtreppen_h", "Betriebsstunden Fahrtreppen", "h/a");
+  s = section(t, "Kühlung / Klimatisierung");
+  CH(s, "kuehlung", "Kühlsystem", keys(D.COOL_OPTS)); N(s, "kuehl_anteil", "gekühlter Flächenanteil", "%"); N(s, "eer", "Jahresarbeitszahl Kälte (EER/SEER)");
+  s = section(t, "Photovoltaik");
+  N(s, "pv_kwp", "PV-Leistung", "kWp"); N(s, "pv_ertrag", "spezifischer Ertrag", "kWh/kWp"); N(s, "speicher_kwh", "Batteriespeicher", "kWh");
+  // Preise & Ist
+  t = panels.preise;
+  s = section(t, "Arbeitspreise (brutto)");
+  for (const k of keys(D.CARRIERS)) N(s, `preis_${k.toLowerCase()}`, k, "€/kWh");
+  N(s, "preis_wp", "Wärmepumpenstrom (WP-Tarif)", "€/kWh"); N(s, "preis_wasser", "Trink- + Abwasser", "€/m³");
+  N(s, "preis_einspeisung", "Einspeisevergütung", "€/kWh"); N(s, "grundpreise", "Grundpreise / Zählergebühren gesamt", "€/a");
+  s = section(t, "Emissionen", "Brennstoffe nach GEG Anlage 9. Strom: Ø = aktueller deutscher Strommix (ca. 380 g/kWh); GEG-Wert wäre 560 g/kWh.");
+  N(s, "co2_strom", "CO₂-Faktor Strom", "g/kWh"); N(s, "co2_preis", "CO₂-Preis (BEHG/ETS2)", "€/t");
+  s = section(t, "Gemessener Verbrauch (Soll-Ist-Vergleich)", "Optional: Werte aus Abrechnungen eintragen. Die Abweichung wird in der Übersicht gezeigt. Tipp: Witterung des Bezugsjahres und Rechenmodus passend wählen.");
+  N(s, "ist_strom", "Strom (gesamt)", "kWh/a", {avg: false}); N(s, "ist_waerme", "Wärme (Endenergie, z. B. Gas in kWh)", "kWh/a", {avg: false});
+  N(s, "ist_wasser", "Wasser", "m³/a", {avg: false});
+}
+
+/* -------------------------------------------------------------------------- Geräteliste */
+function buildDevices(parent) {
+  APP.sec = "Kleingeräte";
+  const tbody = h("tbody");
+  const name = h("input", {type: "text", placeholder: "Name", class: "txt sm"});
+  const kw = h("input", {type: "text", placeholder: "kW", class: "num sm"});
+  const n = h("input", {type: "text", placeholder: "Anz.", value: "1", class: "num xs"});
+  const hh = h("input", {type: "text", placeholder: "h/a", class: "num sm"});
+  const preset = h("select", {onchange: () => {
+    const p = D.DEVICE_PRESETS[preset.value];
+    if (p) { name.value = preset.value; kw.value = fplain(p[0]); hh.value = fplain(p[1]); }
+  }}, h("option", {value: ""}, "Vorlage …"), keys(D.DEVICE_PRESETS).map(k => h("option", {value: k}, k)));
+  const add = () => {
+    let d;
+    try { d = {name: name.value.trim() || "Gerät", kw: parseNum(kw.value), n: parseNum(n.value), h: parseNum(hh.value)}; }
+    catch (e) { toast("Bitte Leistung (kW), Anzahl und Stunden/Jahr als Zahl angeben."); return; }
+    if (d.kw > 3 && !confirm("Das Gerät hat mehr als 3 kW. Trotzdem als Kleingerät erfassen?\n(Alternativ: Sonderverbraucher)")) return;
+    APP.devices.push(d);
+    renderDevices(); schedule();
+  };
+  APP.devTbody = tbody;
+  parent.append(h("fieldset", {class: "card"}, h("legend", {}, "Kleingeräte bis 3 kW (Leistung × Anzahl × Volllaststunden)"),
+    h("table", {class: "devtab"}, h("thead", {}, h("tr", {}, ["Gerät", "kW", "Anzahl", "h/a", "kWh/a", ""].map(x => h("th", {}, x)))), tbody),
+    h("div", {class: "devadd"}, preset, name, kw, n, hh, h("button", {class: "btn", onclick: add}, "+ Hinzufügen"))));
+}
+function renderDevices() {
+  const tb = APP.devTbody;
+  tb.innerHTML = "";
+  if (!APP.devices.length) tb.append(h("tr", {}, h("td", {colspan: 6, class: "muted"}, "keine Einträge")));
+  APP.devices.forEach((d, i) => tb.append(h("tr", {}, h("td", {}, d.name), h("td", {class: "r"}, fnum(d.kw, 2)), h("td", {class: "r"}, fnum(d.n)),
+    h("td", {class: "r"}, fnum(d.h)), h("td", {class: "r"}, fnum(d.kw * d.n * d.h)),
+    h("td", {}, h("button", {class: "x", title: "entfernen", onclick: () => { APP.devices.splice(i, 1); renderDevices(); schedule(); }}, "✕")))));
+}
+
+/* -------------------------------------------------------------------------- Rechnen & Darstellen */
+function params() { const p = {}; for (const [k, f] of Object.entries(APP.fields)) p[k] = f.get(); return p; }
+function schedule() {
+  if (!APP.auto) return;
+  clearTimeout(APP.timer);
+  APP.timer = setTimeout(recalc, 300);
+}
+function recalc() {
+  const t0 = performance.now();
+  let R;
+  try { R = compute(params(), APP.devices); }
+  catch (e) { console.error(e); status("Fehler in der Berechnung: " + e.message); return; }
+  APP.R = R; APP.M = null;
+  for (const [k, f] of Object.entries(APP.fields)) f.showDefault(R.used[k]);
+  renderTiles(R);
+  APP.dirty = new Set(D.TABS.map(t => t[0]));
+  if (APP.tab !== "bericht") render(APP.tab);
+  $("#report").textContent = R.report;
+  const nAvg = Object.values(APP.fields).filter(f => f.isAvg()).length;
+  status(`Berechnet in ${Math.round(performance.now() - t0)} ms  ·  ${R.profil}, ${fnum(R.A)} m²  ·  ${nAvg} Eingaben auf Ø (Durchschnittswerte)  ·  ${R.warn.length} Hinweis(e)`);
+  saveLocal();
+}
+function ensureMeasures() {
+  if (!APP.M && APP.R) APP.M = measures(params(), APP.devices, APP.R);
+  return APP.M;
+}
+function renderTiles(R) {
+  const el = $("#tiles");
+  el.innerHTML = "";
+  for (const [t, v, s1, s2, col] of kpiValues(R))
+    el.append(h("div", {class: "tile", style: `--c:${col}`}, h("div", {class: "tt"}, t), h("div", {class: "tv"}, v), h("div", {class: "ts"}, s1), h("div", {class: "ts"}, s2)));
+}
+function tableHTML(spec, print = false) {
+  const tot = spec.cols.reduce((s, c) => s + c[1], 0);
+  const cg = spec.cols.map(c => `<col style="width:${(c[1] / tot * 100).toFixed(2)}%">`).join("");
+  const th = spec.cols.map(c => `<th class="${c[2] === "e" ? "r" : ""}">${esc(c[0])}</th>`).join("");
+  const rows = spec.rows.map(r => `<tr class="${r.style || ""} lv${r.level || 0}">` + r.cells.map((c, j) =>
+    `<td class="${spec.cols[j] && spec.cols[j][2] === "e" ? "r" : ""}">${j === 0 ? `<span class="ind"></span>` : ""}${esc(c)}</td>`).join("") + "</tr>").join("");
+  return `<div class="tblwrap"><div class="tbltitle">${esc(spec.title)}</div><div class="tblscroll"><table class="res${print ? " pr" : ""}"><colgroup>${cg}</colgroup><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table></div>${spec.note ? `<p class="tblnote">${esc(spec.note)}</p>` : ""}</div>`;
+}
+function render(key) {
+  const R = APP.R;
+  if (!R) return;
+  const pane = $(`#out-${key}`);
+  if (key === "massnahmen" && !APP.M) {
+    const fig = new Fig(1000, 420);
+    chartMassnahmen(fig, R, null);
+    pane.querySelector(".chart").innerHTML = fig.svg();
+    setTimeout(() => { ensureMeasures(); APP.dirty.add("massnahmen"); if (APP.tab === "massnahmen") render("massnahmen"); }, 30);
+    return;
+  }
+  APP.dirty.delete(key);
+  const fig = new Fig(1000, key === "flow" ? 520 : 420);
+  CHARTS[key](fig, R, APP.M);
+  pane.querySelector(".chart").innerHTML = fig.svg();
+  let html = "";
+  if (key === "overview" && R.warn.length) html += `<div class="warn">${R.warn.map(w => "⚠ " + esc(w)).join("<br>")}</div>`;
+  if (key === "massnahmen") html += `<p class="note">Jede Maßnahme wird als eigene Variante komplett durchgerechnet (Einsparung gegenüber dem aktuellen Ist-Zustand).</p>`;
+  for (const spec of buildTables(key, R, APP.M)) html += tableHTML(spec);
+  pane.querySelector(".tables").innerHTML = html;
+}
+function buildResults() {
+  const nav = $("#out-tabs"), wrap = $("#out-panels");
+  const all = [...D.TABS, ["bericht", "Bericht"]];
+  for (const [k, t] of all) {
+    nav.append(h("button", {class: "tab" + (k === "overview" ? " active" : ""), "data-tab": k, onclick: () => showTab(k)}, t));
+    if (k === "bericht") {
+      wrap.append(h("section", {class: "outpanel", id: "out-bericht", hidden: true},
+        h("div", {class: "toolbar"},
+          h("button", {class: "btn primary", onclick: openPdfDialog}, "📄 PDF-Bericht mit allen Grafiken …"),
+          h("button", {class: "btn", onclick: exportTxt}, "Text (.txt)"),
+          h("button", {class: "btn", onclick: exportCsv}, "Tabelle (.csv)"),
+          h("span", {class: "note"}, "PDF: Deckblatt, Eingaben, Übersicht bis Monatsverlauf, Maßnahmen, Methodik")),
+        h("pre", {id: "report"})));
+    } else wrap.append(h("section", {class: "outpanel", id: `out-${k}`, hidden: k !== "overview" ? true : null}, h("div", {class: "chart"}), h("div", {class: "tables"})));
+  }
+}
+function showTab(k) {
+  APP.tab = k;
+  $("#out-tabs").querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.tab === k));
+  $("#out-panels").querySelectorAll(".outpanel").forEach(p => p.hidden = p.id !== `out-${k}`);
+  if (k !== "bericht" && APP.dirty.has(k)) render(k);
+}
+
+/* -------------------------------------------------------------------------- Speichern / Laden / Exporte */
+function getState() {
+  const fields = {};
+  for (const [k, f] of Object.entries(APP.fields)) fields[k] = f.toJSON();
+  return {programm: "Gebäude-Energierechner – Strom · Wärme · Wasser", version: 2, fields, devices: APP.devices.map(d => Object.assign({}, d))};
+}
+function setState(st) {
+  APP.auto = false;
+  for (const [k, v] of Object.entries(st.fields || {})) if (APP.fields[k]) APP.fields[k].fromJSON(v);
+  APP.devices = (st.devices || []).filter(d => d && "kw" in d && "n" in d && "h" in d).map(d => ({name: d.name || "Gerät", kw: Number(d.kw), n: Number(d.n), h: Number(d.h)}));
+  renderDevices();
+  APP.auto = $("#auto").checked;
+  recalc();
+}
+function download(name, data, type) {
+  const blob = data instanceof Blob ? data : new Blob([data], {type});
+  const a = h("a", {href: URL.createObjectURL(blob), download: name});
+  document.body.append(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+const safeName = () => (APP.R && APP.R.projekt.projekt_name ? APP.R.projekt.projekt_name.replace(/[^\wäöüÄÖÜß\-]+/g, "_").replace(/^_+|_+$/g, "") : "") || "energiebericht";
+function saveParams() { download("gebaeude_parameter.json", JSON.stringify(getState(), null, 2), "application/json"); status("Parameter gespeichert (Download)."); }
+function loadParams() {
+  const inp = h("input", {type: "file", accept: ".json,application/json"});
+  inp.addEventListener("change", () => {
+    const f = inp.files[0];
+    if (!f) return;
+    f.text().then(t => { setState(JSON.parse(t)); status(`Parameter geladen: ${f.name}`); }).catch(e => alert("Datei konnte nicht geladen werden:\n" + e.message));
+  });
+  inp.click();
+}
+function exportTxt() { if (APP.R) download(`${safeName()}.txt`, APP.R.report, "text/plain;charset=utf-8"); }
+function exportCsv() {
+  if (!APP.R) return;
+  ensureMeasures();
+  const q = s => { s = String(s ?? ""); return /[;"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const lines = [["Auswertung", "Tabelle", "Ebene", ...range(14).map(i => `Spalte ${i + 1}`)].map(q).join(";")];
+  for (const [key, title] of D.TABS)
+    for (const spec of buildTables(key, APP.R, APP.M)) {
+      lines.push([title, spec.title, "Kopf", ...spec.cols.map(c => c[0])].map(q).join(";"));
+      for (const r of spec.rows) lines.push([title, spec.title, String(r.level || 0), ...r.cells].map(q).join(";"));
+    }
+  download(`${safeName()}.csv`, "﻿" + lines.join("\r\n"), "text/csv;charset=utf-8");
+}
+function exportPng() {
+  if (APP.tab === "bericht") { toast("Bitte zuerst einen Diagramm-Reiter auswählen."); return; }
+  const svg = $(`#out-${APP.tab} .chart svg`);
+  if (!svg) return;
+  const vb = svg.viewBox.baseVal, scale = 2;
+  const img = new Image();
+  img.onload = () => {
+    const cv = h("canvas", {width: vb.width * scale, height: vb.height * scale});
+    const ctx = cv.getContext("2d");
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(img, 0, 0, cv.width, cv.height);
+    cv.toBlob(b => download(`diagramm_${APP.tab}.png`, b));
+  };
+  img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg.outerHTML);
+}
+function saveLocal() { try { localStorage.setItem(STORE_KEY, JSON.stringify(getState())); } catch (e) { /* ignorieren */ } }
+function loadLocal() { try { const s = localStorage.getItem(STORE_KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
+function resetAll() {
+  if (!confirm("Alle Eingaben auf Standard (Ø) zurücksetzen?")) return;
+  setState(APP.snapshot);
+}
+
+/* -------------------------------------------------------------------------- PDF-Bericht (Druckansicht A4 quer) */
+function openPdfDialog() {
+  if (!APP.R) return;
+  $("#pdfdlg").showModal();
+}
+function inputList() {
+  const out = [], used = APP.R ? APP.R.used : {};
+  for (const [k, f] of Object.entries(APP.fields)) {
+    const [sec, lbl, unit] = APP.meta[k];
+    if (f.type === "text") { if (f.get()) out.push([sec, lbl, f.get(), unit, "Eingabe"]); continue; }
+    if (/^gen\d_/.test(k) && !k.endsWith("_typ")) {
+      const i = k[3], t = APP.fields[`gen${i}_typ`].get();
+      if (i !== "1" && (t === null || t === NO_GEN)) continue;
+    }
+    if (/^gen[2-4]_typ$/.test(k) && (f.get() === null || f.get() === NO_GEN)) continue;
+    if (k.startsWith("ist_") && f.get() === null) continue;
+    if (f.isAvg()) {
+      const v = used[k];
+      if (v === null || v === undefined || v === "") continue;
+      out.push([sec, lbl, typeof v === "number" ? fplain(v) : String(v), unit, "Ø-Annahme"]);
+    } else {
+      const v = f.get();
+      if (v === null) continue;
+      out.push([sec, lbl, typeof v === "number" ? fplain(v) : String(v), unit, "Eingabe"]);
+    }
+  }
+  for (const d of APP.devices) out.push(["Kleingeräte", d.name, `${fplain(d.n)} × ${fplain(d.kw)} kW × ${fplain(d.h)} h`, "", "Eingabe"]);
+  return out;
+}
+const METHODIK = [
+  ["Wärme", "Monatsbilanzverfahren nach DIN V 4108-6 / DIN EN ISO 13790: Transmission über Bauteile mit U-Werten und Temperatur-Korrekturfaktoren Fx, Wärmebrückenzuschlag ΔU_WB, Lüftung über wirksamen Luftwechsel; solare und innere Gewinne mit Ausnutzungsgrad η (Zeitkonstante τ). Klimadaten Referenzklima Potsdam (DIN V 18599-10) mit regionaler Korrektur."],
+  ["Realitätsnähe", "Im Modus „realitätsnaher Verbrauch“ wird der Prebound-/Rebound-Effekt berücksichtigt (IWU/TABULA, Sunikka-Blank & Galvin): Bestandsgebäude mit hohem rechnerischem Bedarf verbrauchen real deutlich weniger (Teilbeheizung, Nutzerverhalten)."],
+  ["Heizlast", "vereinfacht nach DIN EN 12831 mit Norm-Außentemperatur der Region; Erzeugeraufteilung über eine stündliche, geordnete Jahresdauerlinie (synthetisches Temperaturjahr)."],
+  ["Erzeuger", "Wirkungsgrade bzw. Jahresarbeitszahlen nach Vorlauftemperatur und Wärmequelle (VDI 4650-1, Feldtests Fraunhofer ISE), Verteil- und Speicherverluste nach DIN V 18599-5/-8."],
+  ["Warmwasser", "Zapfmengen je Nutzung (Duschen, Bäder, Händewaschen, Küche, Reinigung), Speicher- und Zirkulationsverluste (DIN EN 12897, DVGW W 551)."],
+  ["Strom", "Beleuchtung nach DIN V 18599-4 (vereinfacht: Wartungswert × spezifische Leistung × Betriebszeit, Tageslicht- und Präsenzfaktoren), Haushaltsstrom nach Stromspiegel, Arbeitshilfen nach VDI 3807, Aufzüge nach VDI 4707, Gebäudeautomation nach DIN EN ISO 52120-1."],
+  ["Wasser", "Personenbezogene Verbrauchsansätze je Nutzungsprofil, Armaturen und Spülmengen."],
+  ["Bewertung", "CO₂-Faktoren und Primärenergiefaktoren nach GEG Anlage 4/9 (Strom: aktueller Strommix), Kennwerte NWG nach VDI 3807 / Bekanntmachung Vergleichswerte, Effizienzklassen nach GEG."],
+  ["Grenzen", "Ergebnis ist eine Grobabschätzung für Planung, Budget und Plausibilisierung. Es ersetzt weder Energieausweis noch Heizlastberechnung oder Fachplanung. Alle Durchschnittswerte sind im Programm einsehbar und änderbar."],
+];
+function buildPrint(opts) {
+  const R = APP.R, M = opts.massnahmen ? ensureMeasures() : null, A = R.A;
+  const pj = R.projekt;
+  const right = [pj.projekt_name, pj.projekt_adresse].filter(Boolean).join(" · ") || `${R.profil}, ${fnum(A)} m²`;
+  const head = (title, sub) => `<div class="phead"><span>${esc(title)}</span><span class="pr">${esc(right)}</span></div>${sub ? `<p class="psub">${esc(sub)}</p>` : ""}`;
+  const today = new Date().toLocaleDateString("de-DE");
+  let html = "";
+  if (opts.deckblatt) {
+    const gens = R.gens.map(g => `${g.n}× ${g.typ} ${fnum(g.kw, 1)} kW (${fnum(g.share)} %)`).join("; ") || "–";
+    const facts = [
+      ["Nutzung", `${R.profil} · ${fnum(A)} m² Nutzfläche · ${R.floors} Geschosse · ${fnum(R.persons)} Personen` + (R.res ? ` · ${R.we} WE` : "")],
+      ["Baualter / Zustand", `${R.baujahr} · ${R.sanierung} · ${R.std_label}`],
+      ["Gebäudehülle", `H'T = ${fnum(R.ht, 2)} W/(m²K) · A/V = ${fnum(R.AV, 2)} 1/m · ${R.fenster} · ${R.vent}`],
+      ["Wärmeerzeugung", gens], ["Warmwasser", `${R.ww_label} · Zirkulation: ${R.circ}`],
+      ["Eigenerzeugung", (R.pv_gen ? `PV ${fnum(R.pv_kwp, 1)} kWp, ${fnum(R.pv_gen)} kWh/a` : "keine PV") + (R.bhkw_el ? ` · BHKW-Strom ${fnum(R.bhkw_el)} kWh/a` : "")],
+      ["Klima / Rechenmodus", `${R.region} · ${R.witterung} · ${R.modus}`],
+      ["Kennwert", `${fnum(R.ea_value, 1)} kWh/(m²a) Endenergie` + (R.res ? ` → Effizienzklasse ${R.ea_class}` : "")],
+    ];
+    html += `<section class="psec cover">
+      <div class="cband"><div><div class="ct">Energiebilanz Gebäude</div><div class="cs">Jahresverbrauch Strom · Wärme · Wasser – Grobabschätzung</div></div>
+      <div class="cr"><b>${esc(pj.projekt_name || R.profil)}</b><br>${esc(pj.projekt_adresse || "")}<br>${pj.projekt_bearbeiter ? "Bearbeitung: " + esc(pj.projekt_bearbeiter) + " · " : ""}Stand: ${today}</div></div>
+      <div class="ptiles">${kpiValues(R).map(([t, v, s1, s2, c]) => `<div class="ptile" style="--c:${c}"><div class="tt">${esc(t)}</div><div class="tv">${esc(v)}</div><div class="ts">${esc(s1)} · ${esc(s2)}</div></div>`).join("")}</div>
+      <h3>Eckdaten</h3><table class="facts">${facts.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join("")}</table>
+      ${R.warn.length ? `<div class="warn">${R.warn.map(w => "⚠ " + esc(w)).join("<br>")}</div>` : ""}
+      <div class="pchart">${(() => { const f = new Fig(1000, 330); chartOverview(f, R); return f.svg(); })()}</div>
+    </section>`;
+  }
+  if (opts.eingaben) {
+    let last = null, items = "";
+    for (const [sec, lbl, val, unit, src] of inputList()) {
+      if (sec !== last) { items += `<div class="ih">${esc(sec)}</div>`; last = sec; }
+      items += `<div class="ir${src.startsWith("Ø") ? " avg" : ""}"><span>${esc(lbl)}</span><span>${esc(val)} ${esc(unit)}</span><span class="src">${esc(src)}</span></div>`;
+    }
+    html += `<section class="psec">${head("Eingabeparameter", "Alle Eingaben der Berechnung – „Ø-Annahme“ = typischer Durchschnittswert bei unbekannter Angabe")}<div class="icols">${items}</div></section>`;
+  }
+  for (const [key] of D.TABS) {
+    if (key === "massnahmen" && !(opts.massnahmen && M && M.length)) continue;
+    const fig = new Fig(1000, key === "flow" ? 560 : 360);
+    CHARTS[key](fig, R, M);
+    html += `<section class="psec">${head(D.TAB_TITLES[key])}<div class="pchart${key === "flow" ? " tall" : ""}">${fig.svg()}</div>${buildTables(key, R, M).map(s => tableHTML(s, true)).join("")}</section>`;
+  }
+  if (opts.methodik) html += `<section class="psec">${head("Methodik und Annahmen")}<table class="meth">${METHODIK.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join("")}</table></section>`;
+  $("#print-root").innerHTML = html;
+}
+function doPrint() {
+  const opts = {};
+  for (const k of ["deckblatt", "eingaben", "massnahmen", "methodik"]) opts[k] = $(`#opt-${k}`).checked;
+  $("#pdfdlg").close();
+  status("PDF-Bericht wird vorbereitet …");
+  setTimeout(() => {
+    buildPrint(opts);
+    const old = document.title;
+    document.title = `${safeName()}_${new Date().toISOString().slice(0, 10)}`;
+    setTimeout(() => { window.print(); document.title = old; status("Druckdialog geöffnet – Ziel „Als PDF speichern“ wählen."); }, 60);
+  }, 20);
+}
+
+/* -------------------------------------------------------------------------- Hilfen */
+function status(t) { $("#status").textContent = t; }
+function toast(t) { const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(el._t); el._t = setTimeout(() => el.hidden = true, 3500); }
+
+function init() {
+  buildInputs();
+  buildResults();
+  renderDevices();
+  APP.snapshot = getState();
+  $("#auto").addEventListener("change", e => { APP.auto = e.target.checked; if (APP.auto) recalc(); });
+  $("#btn-calc").addEventListener("click", recalc);
+  $("#btn-pdf").addEventListener("click", openPdfDialog);
+  $("#pdf-go").addEventListener("click", doPrint);
+  $("#pdf-cancel").addEventListener("click", () => $("#pdfdlg").close());
+  const menu = $("#menu");
+  $("#btn-menu").addEventListener("click", e => { e.stopPropagation(); menu.hidden = !menu.hidden; });
+  document.addEventListener("click", () => menu.hidden = true);
+  const acts = {save: saveParams, load: loadParams, pdf: openPdfDialog, txt: exportTxt, csv: exportCsv, png: exportPng, reset: resetAll};
+  menu.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { menu.hidden = true; acts[b.dataset.act](); }));
+  // Tooltips (Klick/Touch-tauglich)
+  const tip = $("#tipbox");
+  document.addEventListener("mouseover", e => {
+    const t = e.target.closest(".tip");
+    if (!t) { tip.hidden = true; return; }
+    tip.textContent = t.dataset.tip; tip.hidden = false;
+    const r = t.getBoundingClientRect();
+    tip.style.left = Math.min(window.innerWidth - 420, r.left + 10) + "px";
+    tip.style.top = (r.bottom + 6 + window.scrollY) + "px";
+  });
+  window.addEventListener("afterprint", () => { $("#print-root").innerHTML = ""; });
+  const st = loadLocal();
+  if (st) { setState(st); status("Letzte Eingaben wiederhergestellt (lokal im Browser gespeichert)."); }
+  else recalc();
+}
+document.addEventListener("DOMContentLoaded", init);
+
+</script>
+</body>
+</html>
