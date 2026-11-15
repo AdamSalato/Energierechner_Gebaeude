@@ -38,6 +38,8 @@ fieldset.card{border:1px solid var(--line);border-radius:8px;margin:0 0 12px;pad
 legend{color:var(--accent);font-weight:700;padding:0 4px;font-size:13.5px}
 .note{color:var(--muted);font-size:12.5px;margin:2px 0 8px}
 .grid{display:grid;grid-template-columns:minmax(150px,1fr) minmax(0,auto) 62px;gap:5px 10px;align-items:start}
+.row{display:contents}
+.row[hidden],fieldset.card[hidden],.panel[hidden]{display:none}
 .lbl{padding-top:5px}
 .unit{color:var(--muted);font-size:12.5px;padding-top:6px}
 .tip{display:inline-block;margin-left:4px;color:var(--accent);cursor:help;font-size:12px}
@@ -67,11 +69,13 @@ input.sm{width:90px;min-width:0}
 input.xs{width:52px}
 button.x{border:0;background:none;color:#c62828;cursor:pointer}
 .muted{color:var(--muted)}
-#tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
-.tile{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:8px;padding:7px 12px}
+#tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.tile{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:8px;padding:7px 12px;text-align:left;cursor:pointer;min-width:0}
+.tile:hover{box-shadow:0 2px 8px rgba(31,42,55,.12)}
+.tile:focus-visible,.tab:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 .tile .tt{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
-.tile .tv{font-size:21px;font-weight:700;margin:1px 0}
-.tile .ts{font-size:12px;color:var(--muted)}
+.tile .tv{font-size:20px;font-weight:700;margin:1px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .ts{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .outpanel{padding:10px 12px}
 .chart svg{width:100%;height:auto;display:block}
 .tables{margin-top:4px}
@@ -98,7 +102,38 @@ dialog{border:1px solid var(--line);border-radius:10px;padding:18px 20px;max-wid
 dialog h2{margin:0 0 6px;font-size:17px;color:var(--accent)}
 dialog label{display:flex;gap:8px;align-items:center;margin:5px 0}
 dialog .dlgacts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.intools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.intools select{width:auto;max-width:230px}
+.intools input[type=search]{flex:1;min-width:130px;padding:4px 8px;border:1px solid var(--line);border-radius:5px;background:#fff}
+.chk2{display:inline-flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;white-space:nowrap}
+#in-count{font-size:12px}
+#in-tabs.dim .tab{opacity:.45}
+.panel.searching{margin-bottom:4px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:baseline}
+.konzept{max-width:1000px;margin:6px 0 20px;line-height:1.5}
+.konzept header h2{margin:8px 0 2px;font-size:20px}
+.konzept h3{font-size:15.5px;color:var(--accent);margin:20px 0 6px;padding-bottom:3px;border-bottom:1px solid var(--line)}
+.konzept h4{font-size:13.5px;margin:14px 0 4px}
+.konzept p{margin:6px 0}
+.konzept ul,.konzept ol{margin:6px 0;padding-left:22px}
+.konzept li{margin:4px 0}
+.kmuted{color:var(--muted);font-size:12.5px}
+table.ktab{border-collapse:collapse;width:100%;font-size:12.5px;margin:6px 0 8px}
+table.ktab th{background:#e6ebf1;text-align:left;padding:5px 7px;vertical-align:bottom}
+table.ktab td{padding:4px 7px;border-bottom:1px solid #edf0f4;vertical-align:top}
+table.ktab .r{text-align:right;white-space:nowrap}
+table.ktab tr.tot td{background:#eaf1fb;font-weight:700}
+table.ktab.facts2 td:first-child{color:var(--muted);white-space:nowrap;width:170px}
+table.ktab.mtab td:first-child{font-weight:600}
+ul.befunde{list-style:none;padding-left:0}
+ul.befunde li{padding:5px 8px 5px 10px;border-left:4px solid var(--line);background:#f7f9fb;border-radius:0 5px 5px 0}
+ul.befunde .tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-right:8px}
+ul.befunde .b-hoch{border-color:#d84315}ul.befunde .b-hoch .tag{color:#d84315}
+ul.befunde .b-mittel{border-color:#f9a825}ul.befunde .b-mittel .tag{color:#b26a00}
+ul.befunde .b-info{border-color:#3aa0d8}ul.befunde .b-info .tag{color:#1976d2}
+ul.befunde .b-gut{border-color:#2e7d32}ul.befunde .b-gut .tag{color:#2e7d32}
 #print-root{display:none}
+@media (max-width:1500px){#tiles{grid-template-columns:repeat(4,1fr)}.tile .tv{font-size:17px}}
 @media (max-width:1100px){
   main{grid-template-columns:minmax(0,1fr);height:auto;padding-bottom:44px}
   #in-panels{max-height:none}
@@ -109,6 +144,7 @@ dialog .dlgacts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
   main{padding:8px}
   #tiles{grid-template-columns:1fr 1fr}
   .tile .tv{font-size:17px}
+  table.ktab{font-size:12px}
   .chart{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .chart svg{min-width:780px}
   input.txt{min-width:0}
@@ -124,7 +160,7 @@ dialog .dlgacts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
 
 /* ------------------------------------------------------------------ Druck / PDF (A4 quer) */
 @page{size:A4 landscape;margin:9mm 11mm 12mm;
-  @bottom-left{content:"Gebäude-Energierechner · Grobabschätzung nach DIN V 4108-6 / DIN V 18599 (vereinfacht) – ersetzt keinen Energieausweis nach GEG";font:7pt "Segoe UI",Arial,sans-serif;color:#6b7785}
+  @bottom-left{content:"Gebäude-Energierechner · Grobabschätzung nach DIN V 4108-6 / DIN V 18599 (vereinfacht) – ersetzt keinen Energieausweis und keine Fachplanung";font:7pt "Segoe UI",Arial,sans-serif;color:#6b7785}
   @bottom-right{content:"Seite " counter(page) " von " counter(pages);font:7pt "Segoe UI",Arial,sans-serif;color:#6b7785}}
 @media print{
   html,body{background:#fff;font-size:9pt}
@@ -151,10 +187,10 @@ dialog .dlgacts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
   .cover .cs{color:#c9d3de;font-size:10.5pt;margin-top:4px}
   .cover .cr{text-align:right;color:#c9d3de;font-size:8.5pt;line-height:1.5}
   .cover .cr b{color:#fff;font-size:10.5pt}
-  .ptiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0 6px}
+  .ptiles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 6px}
   .ptile{border:1px solid #d5dbe3;border-left:5px solid var(--c);border-radius:5px;padding:5px 9px;background:#f7f9fb}
   .ptile .tt{font-size:6.8pt;font-weight:700;color:#6b7785;text-transform:uppercase;letter-spacing:.04em}
-  .ptile .tv{font-size:14pt;font-weight:700}
+  .ptile .tv{font-size:12.5pt;font-weight:700}
   .ptile .ts{font-size:7pt;color:#6b7785}
   .cover h3{color:#1f6feb;font-size:10pt;margin:6px 0 3px}
   table.facts{border-collapse:collapse;font-size:8pt;width:100%}
@@ -167,7 +203,22 @@ dialog .dlgacts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
   .icols .ir{display:grid;grid-template-columns:1.15fr 1fr 12mm;gap:3px;border-bottom:1px solid #edf0f4;padding:0.6px 0;break-inside:avoid}
   .icols .ir.avg{color:#6b7785}
   .icols .src{text-align:right}
-  table.meth{border-collapse:collapse;font-size:8.5pt;margin-top:8px}
+  .konzept{max-width:none;font-size:8.6pt;line-height:1.42;margin:0}
+  .konzept header h2{font-size:14pt;margin:8px 0 0}
+  .konzept h3{font-size:10.5pt;margin:10px 0 4px;break-after:avoid}
+  .konzept h4{font-size:9pt;margin:8px 0 3px;break-after:avoid}
+  .konzept p{margin:4px 0}
+  .konzept li{margin:2.5px 0;break-inside:avoid}
+  .kmuted{font-size:7.6pt}
+  table.ktab{font-size:7.8pt;margin:4px 0 6px}
+  table.ktab th,table.ktab td{padding:2.4px 5px}
+  table.ktab tr{break-inside:avoid}
+  table.ktab thead{display:table-header-group}
+  ul.befunde li{padding:3px 6px 3px 8px}
+  ul.befunde .tag{font-size:6.8pt}
+  .ksec{break-inside:auto}
+  #print-root .toolbar{display:none}
+  table.meth{border-collapse:collapse;font-size:8pt;margin-top:8px}
   table.meth th{text-align:left;color:#1f6feb;vertical-align:top;padding:4px 10px 4px 0;width:30mm}
   table.meth td{padding:4px 0;line-height:1.45}
 }
@@ -196,7 +247,15 @@ dialog .dlgacts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
   </div>
 </header>
 <main>
-  <section class="inputs"><nav class="tabs" id="in-tabs"></nav><div id="in-panels"></div></section>
+  <section class="inputs">
+    <div class="intools">
+      <select id="in-preset" aria-label="Beispielgebäude laden"><option value="">Beispielgebäude laden …</option></select>
+      <input type="search" id="in-search" placeholder="Eingabe suchen …" aria-label="Eingabe suchen">
+      <label class="chk2" title="Basis zeigt die wichtigsten Eingaben und alle, die Sie selbst geändert haben. Alles Übrige läuft mit Durchschnittswerten."><input type="checkbox" id="in-expert"> alle Eingaben</label>
+      <span id="in-count" class="muted"></span>
+    </div>
+    <nav class="tabs" id="in-tabs"></nav><div id="in-panels"></div>
+  </section>
   <section class="results"><div id="tiles"></div><nav class="tabs" id="out-tabs"></nav><div id="out-panels"></div></section>
 </main>
 <footer class="status" id="status">Bereit</footer>
@@ -204,8 +263,9 @@ dialog .dlgacts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
 <div id="toast" hidden></div>
 <dialog id="pdfdlg">
   <h2>PDF-Bericht</h2>
-  <p class="note">Immer enthalten: Übersicht, Energiefluss, Hülle, Strom, Wärme, Wasser, Kosten &amp; CO₂ und Monatsverlauf – jeweils mit Grafik und Tabelle.</p>
+  <p class="note">Immer enthalten: Übersicht, Kennzahlen, Energiefluss, Hülle, Strom, Lastgang &amp; PV, Wärme, Wasser, Kosten &amp; CO₂ und Monatsverlauf – jeweils mit Grafik und Tabelle.</p>
   <label><input type="checkbox" id="opt-deckblatt" checked> Deckblatt mit Kennzahlen und Eckdaten</label>
+  <label><input type="checkbox" id="opt-konzept" checked> Energiekonzept mit Stufenplan und Empfehlungen</label>
   <label><input type="checkbox" id="opt-eingaben" checked> Liste aller Eingabeparameter (Eingabe / Ø-Annahme)</label>
   <label><input type="checkbox" id="opt-massnahmen" checked> Maßnahmen und Einsparpotenziale</label>
   <label><input type="checkbox" id="opt-methodik" checked> Methodik und Annahmen</label>
@@ -215,6 +275,73 @@ dialog .dlgacts{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
 <div id="print-root"></div>
 <script>
 const D = {"AVG_LABEL":"Ø unbekannt / Durchschnitt","MONTHS":["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"],"DAYS_M":[31,28,31,30,31,30,31,31,30,31,30,31],"T_REF":[1.0,1.9,4.7,9.2,14.1,16.7,19.0,18.6,14.3,9.5,4.1,0.9],"SOLAR_M":[20,33,55,75,90,90,95,85,65,45,22,15],"LIGHT_W":[1.3,1.15,1.0,0.85,0.75,0.7,0.7,0.8,0.95,1.1,1.25,1.35],"COOL_SHARE":[0,0,0,0.02,0.08,0.2,0.3,0.27,0.11,0.02,0,0],"REGIONS":{"Norddeutschland / Küste":{"dT":0.4,"tdes":-10,"pv":880},"West (Rhein-Ruhr, Bergisches Land, Rheinland)":{"dT":0.6,"tdes":-10,"pv":900},"Mitte / Ø Deutschland (Referenzklima Potsdam)":{"dT":0.0,"tdes":-12,"pv":950},"Ost (kontinental: Brandenburg, Sachsen)":{"dT":-0.4,"tdes":-14,"pv":960},"Süddeutschland (Bayern, Baden-Württemberg)":{"dT":-0.6,"tdes":-14,"pv":1050},"Mittelgebirge / Höhenlage > 500 m":{"dT":-2.0,"tdes":-16,"pv":950},"Alpenvorland / Hochlage > 800 m":{"dT":-3.0,"tdes":-18,"pv":1100}},"DEFAULT_REGION":"Mitte / Ø Deutschland (Referenzklima Potsdam)","PROFILES":{"Einfamilienhaus":{"hh":[1000,650],"bath":0.35,"res":true,"days":365,"hours":24,"theta":20.0,"m2pp":45,"presence":14,"h":2.6,"floor_m2":70,"max_floors":3,"room":18,"we_m2":140,"lux":150,"light_h":1100,"dl":0.25,"zones":[80,8,7,5],"plug_pp":0,"base":0.0,"wc":4.5,"hand":6,"shower":0.75,"misc_l":30,"misc_ww":4,"clean":0.0,"win":0.2,"cool":["keine",0],"cool_q":8,"n_hyg":0.45,"air_pp":0,"absenk":"Nachtabsenkung","heated":100,"bench":null,"lift_cat":1,"meals":0,"kitchen":"keine","mech":false,"ww":"zentral","circ":"keine","wc_we":1.5,"sink_we":2.5,"shower_we":1.2,"sinks_ww":true},"Mehrfamilienhaus":{"hh":[600,600],"bath":0.25,"res":true,"days":365,"hours":24,"theta":20.0,"m2pp":42,"presence":14,"h":2.6,"floor_m2":300,"max_floors":8,"room":17,"we_m2":70,"lux":150,"light_h":1100,"dl":0.25,"zones":[82,10,6,2],"plug_pp":0,"base":0.0,"wc":4.5,"hand":6,"shower":0.75,"misc_l":30,"misc_ww":4,"clean":0.0,"win":0.18,"cool":["keine",0],"cool_q":8,"n_hyg":0.45,"air_pp":0,"absenk":"Nachtabsenkung","heated":100,"bench":null,"lift_cat":2,"meals":0,"kitchen":"keine","mech":false,"ww":"zentral","circ":"ja, 24 h","wc_we":1.1,"sink_we":1.8,"shower_we":1.0,"sinks_ww":true},"Büro / Verwaltung":{"res":false,"days":250,"hours":11,"theta":21.0,"m2pp":20,"presence":8.5,"h":2.9,"floor_m2":600,"max_floors":8,"room":22,"we_m2":1,"lux":400,"light_h":2750,"dl":0.55,"zones":[65,18,7,10],"plug_pp":450,"base":1.2,"wc":2.5,"hand":3.0,"shower":0.02,"misc_l":1.5,"misc_ww":0.5,"clean":0.12,"win":0.25,"cool":["keine",0],"cool_q":30,"n_hyg":0,"air_pp":36,"absenk":"Nacht- und Wochenendabsenkung","heated":95,"bench":[95,40],"lift_cat":3,"meals":0,"kitchen":"Teeküche (im Gerätestrom enthalten)","mech":false,"ww":"Kleinspeicher","circ":"keine","wc_per":15,"sink_per":12,"shower_per":100,"sinks_ww":true},"Schule":{"res":false,"days":200,"hours":8,"theta":20.0,"m2pp":7,"presence":6.5,"h":3.2,"floor_m2":1000,"max_floors":4,"room":60,"we_m2":1,"lux":350,"light_h":1600,"dl":0.6,"zones":[62,22,8,8],"plug_pp":70,"base":0.6,"wc":1.5,"hand":2.0,"shower":0.01,"misc_l":1.0,"misc_ww":0.2,"clean":0.15,"win":0.28,"cool":["keine",0],"cool_q":15,"n_hyg":0,"air_pp":25,"absenk":"Nacht- und Wochenendabsenkung","heated":95,"bench":[110,15],"lift_cat":1,"meals":0.3,"kitchen":"Aufwärm-/Verteilerküche","mech":false,"ww":"Kleinspeicher","circ":"keine","wc_per":20,"sink_per":15,"shower_per":300,"sinks_ww":false},"Kindertagesstätte":{"res":false,"days":235,"hours":10,"theta":21.0,"m2pp":9,"presence":8,"h":2.9,"floor_m2":500,"max_floors":2,"room":35,"we_m2":1,"lux":300,"light_h":2350,"dl":0.55,"zones":[65,15,12,8],"plug_pp":120,"base":0.8,"wc":3.0,"hand":6,"shower":0.02,"misc_l":5,"misc_ww":2,"clean":0.2,"win":0.25,"cool":["keine",0],"cool_q":10,"n_hyg":0,"air_pp":20,"absenk":"Nacht- und Wochenendabsenkung","heated":100,"bench":[120,20],"lift_cat":1,"meals":1.0,"kitchen":"Aufwärm-/Verteilerküche","mech":false,"ww":"zentral","circ":"ja, zeitgesteuert","wc_per":8,"sink_per":6,"shower_per":50,"sinks_ww":true},"Hotel / Beherbergung":{"bath":0.15,"res":false,"days":365,"hours":24,"theta":21.0,"m2pp":35,"presence":12,"h":2.7,"floor_m2":600,"max_floors":8,"room":25,"we_m2":1,"lux":200,"light_h":3000,"dl":0.3,"zones":[60,20,12,8],"plug_pp":700,"base":2.0,"wc":4,"hand":6,"shower":0.9,"misc_l":25,"misc_ww":10,"clean":0.15,"win":0.2,"cool":["Splitgeräte / Teilklimatisierung",40],"cool_q":25,"n_hyg":0,"air_pp":30,"absenk":"keine","heated":100,"bench":[150,75],"lift_cat":3,"meals":1.5,"kitchen":"Vollküche (elektrisch)","mech":true,"ww":"zentral","circ":"ja, 24 h","wc_per":1.6,"sink_per":1.4,"shower_per":1.7,"sinks_ww":true},"Krankenhaus / Pflegeheim":{"bath":0.5,"res":false,"days":365,"hours":24,"theta":22.0,"m2pp":45,"presence":20,"h":3.0,"floor_m2":1500,"max_floors":8,"room":25,"we_m2":1,"lux":300,"light_h":4500,"dl":0.35,"zones":[55,25,10,10],"plug_pp":1800,"base":3.0,"wc":5,"hand":15,"shower":0.7,"misc_l":120,"misc_ww":40,"clean":0.3,"win":0.2,"cool":["Zentrale Kälteanlage (Kaltwasser)",40],"cool_q":35,"n_hyg":0,"air_pp":50,"absenk":"keine","heated":100,"bench":[230,110],"lift_cat":4,"meals":3.0,"kitchen":"Vollküche (elektrisch)","mech":true,"ww":"zentral","circ":"ja, 24 h","wc_per":2,"sink_per":1.5,"shower_per":3,"sinks_ww":true},"Einzelhandel":{"res":false,"days":300,"hours":12,"theta":19.0,"m2pp":25,"presence":6,"h":3.8,"floor_m2":1500,"max_floors":2,"room":120,"we_m2":1,"lux":500,"light_h":3600,"dl":0.2,"zones":[80,6,4,10],"plug_pp":200,"base":4.0,"wc":0.6,"hand":1.0,"shower":0.0,"misc_l":1.0,"misc_ww":0.2,"clean":0.15,"win":0.1,"cool":["Zentrale Kälteanlage (Kaltwasser)",80],"cool_q":35,"n_hyg":0,"air_pp":20,"absenk":"Nachtabsenkung","heated":95,"bench":[80,100],"lift_cat":2,"meals":0,"kitchen":"keine","mech":true,"ww":"Kleinspeicher","circ":"keine","wc_per":40,"sink_per":40,"shower_per":0,"sinks_ww":true},"Gaststätte / Restaurant":{"res":false,"days":300,"hours":13,"theta":21.0,"m2pp":3,"presence":2.5,"h":3.0,"floor_m2":200,"max_floors":2,"room":40,"we_m2":1,"lux":300,"light_h":3900,"dl":0.3,"zones":[75,8,10,7],"plug_pp":150,"base":4.0,"wc":1.5,"hand":2.0,"shower":0.0,"misc_l":5,"misc_ww":2,"clean":0.25,"win":0.15,"cool":["Splitgeräte / Teilklimatisierung",50],"cool_q":30,"n_hyg":0,"air_pp":25,"absenk":"Nachtabsenkung","heated":100,"bench":[150,180],"lift_cat":1,"meals":1.5,"kitchen":"Vollküche (elektrisch)","mech":true,"ww":"zentral","circ":"ja, zeitgesteuert","wc_per":25,"sink_per":25,"shower_per":0,"sinks_ww":true},"Werkstatt / Bauhof / leichte Produktion":{"res":false,"days":250,"hours":9,"theta":17.0,"m2pp":40,"presence":8,"h":5.0,"floor_m2":1000,"max_floors":2,"room":150,"we_m2":1,"lux":300,"light_h":2250,"dl":0.4,"zones":[75,8,7,10],"plug_pp":1500,"base":1.0,"wc":2,"hand":4,"shower":0.3,"misc_l":5,"misc_ww":0.5,"clean":0.1,"win":0.12,"cool":["keine",0],"cool_q":10,"n_hyg":0,"air_pp":40,"absenk":"Nacht- und Wochenendabsenkung","heated":90,"bench":[130,45],"lift_cat":1,"meals":0,"kitchen":"Teeküche (im Gerätestrom enthalten)","mech":false,"ww":"zentral","circ":"ja, zeitgesteuert","wc_per":15,"sink_per":8,"shower_per":10,"sinks_ww":true},"Lager / Logistik":{"res":false,"days":250,"hours":10,"theta":15.0,"m2pp":150,"presence":8,"h":7.0,"floor_m2":3000,"max_floors":1,"room":400,"we_m2":1,"lux":150,"light_h":2500,"dl":0.25,"zones":[85,5,3,7],"plug_pp":600,"base":0.5,"wc":2,"hand":3,"shower":0.1,"misc_l":1,"misc_ww":0.2,"clean":0.05,"win":0.05,"cool":["keine",0],"cool_q":5,"n_hyg":0,"air_pp":30,"absenk":"Nacht- und Wochenendabsenkung","heated":80,"bench":[70,25],"lift_cat":1,"meals":0,"kitchen":"Teeküche (im Gerätestrom enthalten)","mech":false,"ww":"Kleinspeicher","circ":"keine","wc_per":15,"sink_per":15,"shower_per":20,"sinks_ww":true},"Sporthalle":{"res":false,"days":280,"hours":14,"theta":17.0,"m2pp":12,"presence":1.5,"h":7.0,"floor_m2":1200,"max_floors":1,"room":300,"we_m2":1,"lux":300,"light_h":3900,"dl":0.4,"zones":[70,10,12,8],"plug_pp":15,"base":0.5,"wc":1.0,"hand":1.0,"shower":0.5,"misc_l":1,"misc_ww":0.2,"clean":0.1,"win":0.12,"cool":["keine",0],"cool_q":5,"n_hyg":0,"air_pp":30,"absenk":"Nachtabsenkung","heated":95,"bench":[140,25],"lift_cat":1,"meals":0,"kitchen":"keine","mech":true,"ww":"zentral","circ":"ja, zeitgesteuert","wc_per":30,"sink_per":30,"shower_per":15,"sinks_ww":true}},"BAUJAHR":{"bis 1918":{"y":1900,"ht":1.45,"ninf":0.4,"g":0.75,"vl":70,"dist":2},"1919–1948":{"y":1930,"ht":1.4,"ninf":0.4,"g":0.75,"vl":70,"dist":2},"1949–1957":{"y":1953,"ht":1.35,"ninf":0.38,"g":0.75,"vl":70,"dist":2},"1958–1968":{"y":1963,"ht":1.2,"ninf":0.35,"g":0.75,"vl":70,"dist":2},"1969–1978":{"y":1974,"ht":1.0,"ninf":0.3,"g":0.75,"vl":70,"dist":2},"1979–1983 (1. WSchVO)":{"y":1981,"ht":0.85,"ninf":0.25,"g":0.75,"vl":55,"dist":1},"1984–1994 (2. WSchVO)":{"y":1990,"ht":0.72,"ninf":0.22,"g":0.75,"vl":55,"dist":1},"1995–2001 (3. WSchVO)":{"y":1998,"ht":0.55,"ninf":0.15,"g":0.6,"vl":55,"dist":1},"2002–2008 (EnEV 2002/07)":{"y":2005,"ht":0.45,"ninf":0.12,"g":0.6,"vl":45,"dist":0},"2009–2015 (EnEV 2009)":{"y":2012,"ht":0.38,"ninf":0.1,"g":0.6,"vl":35,"dist":0},"2016–2020 (EnEV 2016)":{"y":2018,"ht":0.32,"ninf":0.08,"g":0.5,"vl":35,"dist":0},"ab 2021 (GEG)":{"y":2023,"ht":0.3,"ninf":0.07,"g":0.5,"vl":35,"dist":0}},"DEFAULT_BAUJAHR":"1969–1978","SAN_OPTS":["unsaniert / Originalzustand","teilsaniert (z. B. Fenster, Dach)","umfassend saniert (Hülle gedämmt, neue Fenster)"],"STANDARDS":{"GEG-Neubau-Mindeststandard":{"ht":0.32,"ninf":0.08,"g":0.5,"wrg":false},"KfW-Effizienzhaus 115":{"ht":0.45,"ninf":0.12,"g":0.6,"wrg":false},"KfW-Effizienzhaus 100":{"ht":0.4,"ninf":0.1,"g":0.6,"wrg":false},"KfW-Effizienzhaus 85":{"ht":0.35,"ninf":0.09,"g":0.55,"wrg":false},"KfW-Effizienzhaus 70":{"ht":0.3,"ninf":0.08,"g":0.5,"wrg":false},"KfW-Effizienzhaus 55":{"ht":0.26,"ninf":0.07,"g":0.5,"wrg":false},"KfW-Effizienzhaus 40":{"ht":0.22,"ninf":0.05,"g":0.5,"wrg":true},"Passivhaus":{"ht":0.15,"ninf":0.03,"g":0.5,"wrg":true},"Nullemissionsgebäude (EPBD-ZEB)":{"ht":0.15,"ninf":0.03,"g":0.5,"wrg":true}},"FENSTER":{"Einfachverglasung":0.85,"Zweischeiben-Isolierglas (bis ca. 1995)":0.75,"Zweischeiben-Wärmeschutzglas":0.6,"Dreischeiben-Wärmeschutzglas":0.5},"FORMS":{"freistehend":1.0,"einseitig angebaut (DHH, Reihenendhaus)":0.75,"beidseitig angebaut (Reihenmitte, Blockrand)":0.5},"MASS":{"leicht (Holz-/Leichtbau)":12,"mittel (Mischbauweise)":15,"schwer (Massivbau)":18},"U_AGE":{"bis 1918":[1.7,1.4,1.2,0.1],"1919–1948":[1.6,1.4,1.2,0.1],"1949–1957":[1.4,1.4,1.15,0.1],"1958–1968":[1.2,1.0,1.0,0.1],"1969–1978":[1.0,0.7,0.95,0.1],"1979–1983 (1. WSchVO)":[0.8,0.5,0.8,0.1],"1984–1994 (2. WSchVO)":[0.6,0.4,0.6,0.1],"1995–2001 (3. WSchVO)":[0.45,0.3,0.45,0.05],"2002–2008 (EnEV 2002/07)":[0.35,0.25,0.4,0.05],"2009–2015 (EnEV 2009)":[0.28,0.2,0.3,0.05],"2016–2020 (EnEV 2016)":[0.24,0.18,0.28,0.05],"ab 2021 (GEG)":[0.22,0.16,0.26,0.03]},"FENSTER_U":{"Einfachverglasung":5.0,"Zweischeiben-Isolierglas (bis ca. 1995)":2.8,"Zweischeiben-Wärmeschutzglas":1.3,"Dreischeiben-Wärmeschutzglas":0.9},"DACH_OPTS":{"Steildach mit beheiztem Dachgeschoss":1.0,"Flachdach":1.0,"oberste Geschossdecke (unbeheizter Dachraum)":0.8},"UNTEN_OPTS":{"Kellerdecke zum unbeheizten Keller":0.6,"Bodenplatte auf Erdreich (kein Keller)":0.5,"beheizter Keller (Wände/Boden gegen Erdreich)":0.6},"VERSCHATTUNG":{"gering (freie Lage)":1.0,"normal (übliche Bebauung)":0.9,"stark (enge Bebauung, Bäume)":0.6},"AUSRICHTUNG":{"gleichmäßig verteilt / unbekannt":1.0,"überwiegend Süd":1.3,"überwiegend Ost/West":0.95,"überwiegend Nord":0.6},"MODI":["realitätsnaher Verbrauch (Nutzerverhalten, Prebound-Effekt)","Normbedarf (Standard-Randbedingungen)"],"WITTERUNG":{"Normjahr (langjähriges Mittel)":0.0,"mildes Jahr (z. B. 2020, 2022–2024)":1.2,"kaltes Jahr (z. B. 2010)":-1.3},"BACS":{"D – keine Automation":[[1.1,1.08],[1.2,1.1]],"C – Standard (Referenz)":[[1.0,1.0],[1.0,1.0]],"B – erweiterte Automation":[[0.88,0.93],[0.8,0.93]],"A – hocheffiziente Automation":[[0.81,0.92],[0.7,0.87]]},"PV_M":[0.025,0.045,0.08,0.11,0.13,0.135,0.135,0.12,0.09,0.06,0.03,0.02],"VENT_OPTS":["Fensterlüftung (freie Lüftung)","Abluftanlage (ohne WRG)","Zu-/Abluftanlage mit Wärmerückgewinnung"],"ABSENK_OPTS":["keine","Nachtabsenkung","Nacht- und Wochenendabsenkung"],"HEIZFL":{"Fußboden-/Flächenheizung (35 °C)":35,"Niedertemperatur-Heizkörper (45 °C)":45,"Heizkörper (55 °C)":55,"Heizkörper Altbau (70 °C)":70},"DIST_OPTS":["neu (gedämmt, hydraulisch abgeglichen)","Standard","alt (ungedämmte Leitungen, kein Abgleich)"],"DIST_F":[1.05,1.1,1.18],"PUMP_OPTS":{"Hocheffizienzpumpe":0.6,"geregelte Standardpumpe":1.2,"alte ungeregelte Pumpe":2.2},"GEN_TYPES":{"Gas-Brennwertkessel":{"kind":"cond","carrier":"Erdgas","eta":0.94},"Gas-Brennwerttherme (Etage/Wand)":{"kind":"cond","carrier":"Erdgas","eta":0.93},"Gas-Niedertemperaturkessel":{"kind":"boiler","carrier":"Erdgas","eta":0.86},"Gas-Konstanttemperaturkessel (vor 1985)":{"kind":"boiler","carrier":"Erdgas","eta":0.75},"Flüssiggas-Brennwertkessel":{"kind":"cond","carrier":"Flüssiggas","eta":0.93},"Öl-Brennwertkessel":{"kind":"cond","carrier":"Heizöl","eta":0.92},"Öl-Niedertemperaturkessel":{"kind":"boiler","carrier":"Heizöl","eta":0.85},"Öl-Standardkessel (vor 1985)":{"kind":"boiler","carrier":"Heizöl","eta":0.74},"Pelletkessel":{"kind":"boiler","carrier":"Holzpellets","eta":0.86},"Hackschnitzelkessel":{"kind":"boiler","carrier":"Hackschnitzel","eta":0.82},"Scheitholzkessel (Holzvergaser)":{"kind":"boiler","carrier":"Scheitholz","eta":0.78},"Kaminofen / Kachelofen (Scheitholz)":{"kind":"boiler","carrier":"Scheitholz","eta":0.7},"Fernwärme / Nahwärme (Übergabestation)":{"kind":"fw","carrier":"Fernwärme","eta":0.97},"Wärmepumpe Luft/Wasser":{"kind":"wp","src":"luft"},"Wärmepumpe Sole/Wasser (Erdsonde)":{"kind":"wp","src":"sole"},"Wärmepumpe Wasser/Wasser (Grundwasser)":{"kind":"wp","src":"wasser"},"BHKW (Erdgas, wärmegeführt)":{"kind":"bhkw","carrier":"Erdgas","eta":0.58,"eta_el":0.32},"Elektro-Direktheizung / Infrarot":{"kind":"el","carrier":"Strom","eta":0.99},"Nachtspeicherheizung":{"kind":"el","carrier":"Strom","eta":0.95},"Elektro-Heizstab (Spitzenlast)":{"kind":"el","carrier":"Strom","eta":0.99}},"NO_GEN":"— keiner —","JAZ":{"luft":{"35":3.6,"45":3.1,"55":2.7,"70":2.2},"sole":{"35":4.4,"45":3.8,"55":3.2,"70":2.6},"wasser":{"35":4.8,"45":4.1,"55":3.5,"70":2.8}},"WW_OPTS":{"zentral über Wärmeerzeuger (Speicher)":"zentral","dezentral elektrisch (Durchlauferhitzer)":"dle","dezentral elektrisch (Kleinspeicher/Boiler)":"Kleinspeicher","Warmwasser-Wärmepumpe (Brauchwasser-WP)":"wwwp"},"CIRC_OPTS":["keine","ja, 24 h","ja, zeitgesteuert"],"WC_OPTS":{"Spartaste 6/3 L (Ø 4,5 L)":4.5,"Standard 6 L":6.0,"Altbestand 9 L":9.0},"ARM_OPTS":{"wassersparend (Spar-Duschkopf, Perlatoren)":[6.5,1.0],"Standardarmaturen":[9.0,1.5],"Komfort / Regendusche":[12.0,2.0]},"KITCHEN":{"keine":[0.0,0.0,0.0],"Teeküche (im Gerätestrom enthalten)":[0.0,0.0,0.0],"Aufwärm-/Verteilerküche":[0.45,6.0,3.0],"Vollküche (elektrisch)":[1.1,15.0,6.0]},"LEUCHTMITTEL":{"LED (neu, effizient)":1.6,"LED-Retrofit / ältere LED":2.2,"Mischbestand LED / Leuchtstoff":2.6,"Leuchtstoff T5 (EVG)":2.8,"Leuchtstoff T8 (KVG/VVG)":4.0,"Halogen / Glühlampe":12.0},"STEUERUNG":{"manuell (Schalter)":[0.5,1.0],"Zeitschaltung / Gebäudeleittechnik":[0.55,0.95],"Präsenz-/Bewegungsmelder":[0.5,0.85],"Präsenzmelder + tageslichtabhängige Regelung":[0.85,0.85]},"LIFT_CAT":{"1 – sehr gering (0,2 h/d)":0.2,"2 – gering (0,5 h/d)":0.5,"3 – mittel (1,5 h/d)":1.5,"4 – hoch (3 h/d)":3.0,"5 – sehr hoch (6 h/d)":6.0},"LIFT_TECH":{"modern (getriebelos, Standby-Abschaltung)":[50,0.75],"Seilaufzug mit Getriebe (älter)":[150,0.55],"Hydraulikaufzug":[200,0.4]},"COOL_OPTS":{"keine":null,"Splitgeräte / Teilklimatisierung":3.2,"Zentrale Kälteanlage (Kaltwasser)":3.0},"GERAETE_MODI":["pauschal + Geräteliste","nur pauschal","nur Geräteliste"],"CARRIERS":{"Erdgas":{"unit":"m³","per":10.0,"price":0.11,"co2":240,"fp":1.1,"color":"#f4a259"},"Flüssiggas":{"unit":"Liter","per":6.6,"price":0.13,"co2":270,"fp":1.1,"color":"#f7c873"},"Heizöl":{"unit":"Liter","per":10.0,"price":0.105,"co2":310,"fp":1.1,"color":"#8d6e63"},"Holzpellets":{"unit":"kg","per":4.9,"price":0.075,"co2":20,"fp":0.2,"color":"#8bc34a"},"Hackschnitzel":{"unit":"Srm","per":750.0,"price":0.05,"co2":20,"fp":0.2,"color":"#aed581"},"Scheitholz":{"unit":"rm","per":1800.0,"price":0.07,"co2":20,"fp":0.2,"color":"#689f38"},"Fernwärme":{"unit":"kWh","per":1.0,"price":0.14,"co2":180,"fp":0.7,"color":"#e57373"},"Strom":{"unit":"kWh","per":1.0,"price":0.33,"co2":380,"fp":1.8,"color":"#26a69a"}},"ENERGY_CLASSES":[["A+",30,"#00a650"],["A",50,"#4cb848"],["B",75,"#bed62f"],["C",100,"#fff200"],["D",130,"#fdb913"],["E",160,"#f7941d"],["F",200,"#f15a29"],["G",250,"#ed1c24"],["H",300,"#be1e2d"]],"EL_COLORS":{"Beleuchtung":"#f2c14e","Geräte & Arbeitshilfen":"#5b8def","Kleingeräte (Liste)":"#9db8ff","Küche / Kantine":"#c48df2","IT / Serverraum":"#7a6ff0","Sonderverbraucher":"#9aa5b1","Wärmepumpe":"#26a69a","Elektroheizung / el. Warmwasser":"#ef6f6c","Lüftung":"#7cc6fe","Kühlung / Klima":"#3aa0d8","Aufzüge & Fahrtreppen":"#a1887f","Hilfsenergie Heizung/WW":"#b0bec5","E-Mobilität (Laden)":"#ff8a65"},"EL_GROUP":{"Beleuchtung":"Beleuchtung","Geräte & Arbeitshilfen":"Nutzung","Kleingeräte (Liste)":"Nutzung","Küche / Kantine":"Nutzung","IT / Serverraum":"Nutzung","Sonderverbraucher":"Nutzung","Wärmepumpe":"Wärmepumpe","Elektroheizung / el. Warmwasser":"Heizung & Technik","Lüftung":"Heizung & Technik","Kühlung / Klima":"Heizung & Technik","Aufzüge & Fahrtreppen":"Heizung & Technik","Hilfsenergie Heizung/WW":"Heizung & Technik","E-Mobilität (Laden)":"E-Mobilität"},"DEVICE_PRESETS":{"Kühlschrank":[0.1,1800],"Gefrierschrank":[0.12,2000],"Kühl-/Getränkeautomat":[0.4,5000],"Wasserspender (gekühlt)":[0.1,3000],"Kaffeevollautomat":[1.3,250],"Wasserkocher":[2.0,100],"Mikrowelle":[0.9,100],"Spülmaschine":[2.0,150],"Waschmaschine":[2.0,90],"Wäschetrockner":[2.5,120],"Kochfeld (je Zone)":[2.0,150],"Backofen":[3.0,100],"Drucker / Kopierer":[0.4,1000],"Arbeitsplatz-PC + Monitor":[0.08,2000],"Notebook":[0.04,2000],"Server / NAS":[0.15,8760],"Netzwerk-Switch / WLAN":[0.05,8760],"Beamer / Display":[0.3,800],"Heizlüfter":[2.0,150],"Ventilator":[0.05,300],"Akku-Ladestation (Werkzeug/E-Bike)":[0.3,500]},"WATER_COLORS":["#3aa0d8","#7cc6fe","#9fd8cb","#5b8def","#c48df2","#f2c14e","#8bc34a","#b0bec5","#80cbc4"],"GROUP_COLORS":{"Beleuchtung":"#f2c14e","Nutzung":"#5b8def","Wärmepumpe":"#26a69a","Heizung & Technik":"#9aa5b1","E-Mobilität":"#ff8a65"},"GROUP_ORDER":["Beleuchtung","Nutzung","Wärmepumpe","Heizung & Technik","E-Mobilität"],"COMP_COLORS":["#ef6f6c","#5b8def","#f2c14e","#a1887f","#8d6e63","#b0bec5","#7cc6fe"],"NODE_COLORS":{"Netzstrom":"#26a69a","PV-Eigenverbrauch":"#f9a825","BHKW-Strom":"#7e57c2","Umweltwärme":"#80cbc4","Solarthermie":"#ffd54f","Stromverteilung":"#26a69a","Wärmeerzeugung":"#ef6f6c","Raumwärme":"#f4a259","Warmwasser":"#f7c873","Verluste":"#b0bec5","Beleuchtung":"#f2c14e","Geräte & Nutzung":"#5b8def","Gebäudetechnik":"#9aa5b1","E-Mobilität":"#ff8a65"},"TABS":[["overview","Übersicht"],["flow","Energiefluss"],["huelle","Hülle"],["strom","Strom"],["waerme","Wärme"],["wasser","Wasser"],["kosten","Kosten & CO₂"],["monat","Monate"],["massnahmen","Maßnahmen"]],"TAB_TITLES":{"overview":"Übersicht und Kennwerte","flow":"Energiefluss","huelle":"Gebäudehülle und Wärmebilanz","strom":"Strom","waerme":"Wärme","wasser":"Wasser","kosten":"Kosten, CO₂ und Primärenergie","monat":"Monatsverlauf","massnahmen":"Maßnahmen und Einsparpotenziale"},"COST_COLORS":{"Strom":"#26a69a","Strom Wärmepumpe (WP-Tarif)":"#80cbc4","Wasser/Abwasser":"#3aa0d8","Grundpreise / Zähler":"#b0bec5"},"GAUSS":[-2.7304826746150104,-4.683098283651432,2.9216418439635556,-6.446506464725051,2.0902307611386974,1.7459266540903737,-1.0593594630287322,-1.217255513607459,2.039393870006353,-2.3782689124505167,-1.0353828059509829,0.42542374812703043,-1.4883024017883981,-2.334575595374877,-0.9488695502877359,-0.678148027983738,4.601380709860033,0.5065530763414937,3.1673819915957195,3.3563707605615725,-3.0015766725810273,-1.8041059517073015,2.0696617252381175,-1.5287118688974526,0.7493292610335336,0.3736614905384476,0.594646211071082,1.595266071807583,0.4848121895376495,5.794934329441063,-0.7858541233614378,0.3310066468274607,-0.532042198442613,-2.246482216621603,4.577126919161038,3.4030959201846556,7.524515741708244,-0.8117089036815984,0.7749795401949552,-6.070349077788654,-0.249904857076865,-3.2245791183228807,-0.6805098244570911,-0.4551198207016851,0.20210073446316343,-5.763934938234064,-2.813350769409369,1.4295277013677525,1.4829201210660619,-2.5986516518226894,-2.355605568859406,4.658870510120573,-0.19757902140631936,-4.907754471385962,-2.869120853189253,1.4163216157254341,1.998074660213899,3.091038018923646,-0.33458093096564934,-2.7078961717282524,-2.359077905874626,-1.7166781834597693,-2.192093020111086,-3.6269552557744658,2.820212002071224,-3.61802704330389,2.2373649409433543,-2.3426988313896246,-0.9975153250715143,-2.8591615100207974,3.885394017943806,1.7875797180639479,-1.5557717901726809,-2.2785851972638382,-1.081192227978435,1.6753910326494492,-0.3467557092825702,-0.1802394662654532,-4.051234446916881,-0.34760720746050106,1.6456758750767362,-4.622175003679149,-6.390920855892142,-8.318005150537738,1.701057815376047,1.1297149444589971,-0.8021760196023432,-3.394617869370592,3.5219095714098168,-0.10551250173216341,-1.1987572197807908,-0.18464191969374555,-2.1624035986923156,-2.479985364784944,0.5862145908615412,-3.771025126258431,-2.119448021827266,0.9382826490559014,-0.14457819347602063,-1.3774975317909408,-0.006180306600427753,-0.21902705479147594,0.5156624394733204,-1.3370714172776716,2.525438473036251,0.034997308546830246,0.5940805399560607,-0.9655255943263334,-3.879976051246203,3.330227237477461,0.27220988277719627,-0.23627173678838428,-0.9853344892562041,-1.1572150522118507,-2.2239649016471397,-2.7341157599514143,1.6015333115825654,4.658809863615047,-1.1168957778995594,-2.162519035254532,-3.3885532307503414,-3.077122392240937,-3.6108599495347944,-0.27069223200529785,-2.6807679752984965,-2.624293466684908,-3.1000767681481114,-4.295388967576735,2.2931209198889433,3.7667002939938046,2.1664761071749687,-6.3396160929959136,-0.38605609782724487,-2.030736070344813,0.4532657114079464,-0.5781229165847586,3.669601125817946,0.8680344363789522,2.6770297560050795,4.129077615292415,-2.3430683943279353,1.2644064967238393,2.517658788805698,-1.0445128190895498,2.5435641907262947,-1.3537310420054378,-1.7772152713280507,1.0563162479384014,-3.0209233948854544,1.2213501521237558,-4.042100600758737,-1.3567839947120708,3.438430690705227,-2.5967450464624857,-1.0836576868989107,2.34072743733454,-5.0233989931671355,-0.3350706917711135,-0.8409384849992841,3.377381926347711,-0.5689634768878192,3.4774849851770937,1.5064934579928295,-6.01688490445801,-0.7690489402054723,4.84464325460363,-3.0243287517857453,0.9599073031610726,-0.9525690610154691,-0.5877975948205109,2.834674132351221,-2.904936134693687,0.9670769381893612,1.8868563998159869,-1.147610012911079,1.2523578706922285,1.679116271649232,-3.8479455988802593,2.3115732592045113,-4.316578399541812,2.0462616323848364,-0.6662747836830603,1.7036757231815667,-2.9003813509131695,0.22857203643032387,0.6716903465094257,-2.028043044545027,3.748213847595441,-0.2226540100749549,1.5358848552763418,1.2044954404234782,1.632181802760692,0.017208818572407407,-5.014964441070629,-0.24854481583882926,0.6637989100386013,0.7984440837307569,0.1432407571814768,2.7159509007978637,1.5075393591493973,3.837948831750934,1.8479049277478314,-1.0791992877907433,4.7208304684171525,0.43929227828431827,-1.519616439187978,-1.6389903848855931,-1.5359181111624052,2.787865585481115,4.404728630172124,0.08724481275945725,3.22715770751421,-0.5323836420423641,-2.3567958733548515,-2.3717898825118904,4.0856481538832545,-0.0824570885062667,2.322096560878415,2.6367774461516054,-0.2363273350821591,-1.2815141464289803,1.7901975110659225,1.4246985573949047,-4.11790863393555,-0.20588174593086442,1.0035173769267423,3.232400269656883,0.8507084145643508,2.9778418556845976,-1.7328745902469096,-0.5908164715568184,-4.75316598062517,3.888778910761292,-0.1184826740582944,-3.1460068437904116,-2.4510920320513296,-3.2400573513812247,0.05170970955012396,0.2891557711945564,-0.9888270816207202,0.24872459031468283,-0.5447018233609243,0.05230941466829694,-3.6656730676520812,-0.7893706559534706,0.40441156306737974,1.167950139498829,3.698472511646562,-2.175384702398544,-5.020825399773824,-0.4141925444887656,7.676799768026333,-4.496369158789953,3.730410532766175,-3.8442417933414426,1.804612652856234,0.6511981582233464,0.27952835711606777,-2.0780175265887753,-1.5516691477347873,4.913944459257169,0.343014885458907,3.664750750653283,1.7575662584869367,0.5458393797147814,-0.5882797164290066,4.014257908612108,-4.2390810851092535,-2.6549953610196977,-4.222660067547074,2.215325278373006,1.5243464232899673,-2.543655368264569,1.6106703928560395,-0.7897736658011802,-1.3485538165991344,0.3969457628665034,-3.4766415706892726,3.8815573855481422,-1.4954716854881906,-0.383363116169993,0.45067739492702347,-3.9437446911125447,-0.06594536536326054,-1.20573449638489,1.121383161431027,-3.420786863313571,-1.359303019596007,1.2102460829902029,0.04540820668114126,-3.9400072877011616,4.73018602700345,0.5178958093043251,3.961963455045603,-1.6027563386436594,1.1639941532405904,2.0276369679417763,1.388122869448479,-1.4245601735237332,-0.715441351307138,-2.947752005442298,-6.659640731399854,-0.8204005929281206,2.07024576275301,-2.6463382330885614,-3.9390249704400824,1.399458859253184,0.5731028610474862,-1.8001515968104815,-1.5209129639636723,-0.3413823284688317,-4.6090885926936815,1.1012626896297437,1.539402400223294,4.295887228503764,1.1217443850187996,-0.13211385812332416,0.7089449032329391,-0.9473669554737496,0.7154101725747094,2.0899073249080264,3.054645413981614,-0.6868782244405226,1.7675192013420724,-4.346742840811883,1.2722156570282315,-1.9672996818211164,-1.8731040694827137,-0.29083478389369405,-1.3849272522386498,1.4272257194953206,-0.5332809609973611,-3.1617938846018276,-2.250587611271779,2.1620500485462224,0.9252054630831549,-0.3004736090461769,0.4966308590306772,2.4331925808786417,-0.5591586800470939,-1.4826876977971968,-2.362969222180736,-0.40509121288309724,3.7137490531888684,0.09789429762199363,-1.9592646961854716,3.5796091209094447,-1.4121020691904704,-4.6197863318887995,1.3650904328710822,2.3291113568406523,-3.9613046364271347,2.1469615566390696,0.37078455461036836,-5.3833472309709505,0.8941928562402827,-0.8594362789496547,-3.777986312810584,5.168260679068354,1.6681944969304099,1.982495660333907,0.8399573896968944,-1.2102900516639858,3.780870747440151,2.6318263471704433]};
+
+/* Erweiterungen der Stammdaten (Version 3: Kennzahlen, Lastgang & PV, Energiekonzept) */
+(function () {
+  const reKey = (obj, oldKey, pairs) => {
+    const out = {};
+    for (const [k, v] of Object.entries(obj)) {
+      if (k === oldKey) for (const [nk, nv] of pairs) out[nk] = nv;
+      else out[k] = v;
+    }
+    return out;
+  };
+  const OLD = "Elektroheizung / el. Warmwasser";
+  D.EL_COLORS = reKey(D.EL_COLORS, OLD, [["Elektro-Direktheizung", "#ef6f6c"], ["Warmwasser elektrisch", "#f4a259"]]);
+  D.EL_GROUP = reKey(D.EL_GROUP, OLD, [["Elektro-Direktheizung", "Heizung & Technik"], ["Warmwasser elektrisch", "Heizung & Technik"]]);
+
+  D.TABS = [["overview", "Übersicht"], ["kennzahlen", "Kennzahlen"], ["flow", "Energiefluss"], ["huelle", "Hülle"], ["strom", "Strom"],
+    ["lastgang", "Lastgang & PV"], ["waerme", "Wärme"], ["wasser", "Wasser"], ["kosten", "Kosten & CO₂"], ["monat", "Monate"],
+    ["massnahmen", "Maßnahmen"], ["konzept", "Energiekonzept"]];
+  Object.assign(D.TAB_TITLES, {kennzahlen: "Kennzahlen im Überblick", lastgang: "Elektrischer Lastgang, PV und Netzanschluss",
+    konzept: "Energiekonzept – Stufenplan"});
+
+  // PV: Ausrichtung -> Ertragsfaktor als Funktion der Neigung t (Grad), bezogen auf Süd / ca. 30–35°
+  D.PV_ORIENT = {
+    "Süd": t => 1 - 0.00012 * (t - 33) * (t - 33),
+    "Südost / Südwest": t => 0.87 + 0.006 * t - 0.0001 * t * t,
+    "Ost / West (auch Ost-West-Aufständerung)": t => 0.87 - 0.0012 * t - 0.000026 * t * t,
+    "Nord": t => 0.87 - 0.0085 * t + 0.000024 * t * t,
+  };
+
+  // Leistungsbedarf Wohngebäude in kW je Anzahl Wohneinheiten – Näherung der Kennlinien nach DIN 18015-1 (Bild 1)
+  D.DIN18015 = {
+    ohne: [[1, 14.5], [2, 24], [3, 32], [4, 37], [5, 41], [6, 44], [8, 50], [10, 55], [15, 65], [20, 72], [24, 76], [30, 84], [40, 95], [50, 104], [100, 137]],
+    mit: [[1, 34], [2, 52], [3, 65], [4, 75], [5, 83], [6, 90], [8, 101], [10, 109], [15, 124], [20, 135], [24, 142], [30, 151], [40, 164], [50, 175], [100, 215]],
+  };
+  D.FUSES = [35, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250];
+
+  // Typische Tagesgänge (relativ)
+  D.SHAPE_H0 = [0.40, 0.30, 0.28, 0.27, 0.28, 0.35, 0.60, 0.90, 1.00, 0.95, 0.90, 0.95, 1.10, 1.05, 0.90, 0.85, 0.90, 1.15, 1.45, 1.60, 1.45, 1.15, 0.85, 0.60];
+  D.SHAPE_LIGHT = [0.15, 0.10, 0.10, 0.10, 0.10, 0.20, 0.60, 0.80, 0.50, 0.30, 0.25, 0.25, 0.25, 0.25, 0.30, 0.40, 0.70, 1.20, 1.60, 1.80, 1.70, 1.40, 0.80, 0.30];
+
+  D.STAGES = {1: "Stufe 1 – Kurzfristige Maßnahmen und Betriebsoptimierung", 2: "Stufe 2 – Gebäudehülle und Lüftung",
+    3: "Stufe 3 – Wärmeerzeugung und Anlagentechnik", 4: "Stufe 4 – Eigenstromerzeugung"};
+  D.STAGE_SHORT = {1: "Stufe 1 (kurzfristig)", 2: "Stufe 2 (Gebäudehülle)", 3: "Stufe 3 (Anlagentechnik)", 4: "Stufe 4 (Eigenstrom)"};
+
+  const n = v => ({avg: false, v: String(v)});
+  D.PRESETS = {
+    "Einfamilienhaus 1965, unsaniert, Ölheizung": {profil: "Einfamilienhaus", flaeche: n(150), baujahr: "1958–1968",
+      sanierung: "unsaniert / Originalzustand", gen1_typ: "Öl-Niedertemperaturkessel", personen: n(3)},
+    "Einfamilienhaus Neubau, Wärmepumpe + PV": {profil: "Einfamilienhaus", flaeche: n(160), baujahr: "ab 2021 (GEG)",
+      gen1_typ: "Wärmepumpe Luft/Wasser", pv_kwp: n(10), speicher_kwh: n(10), emob_n: n(1), personen: n(4)},
+    "Mehrfamilienhaus 1970er, 12 WE, Gas": {profil: "Mehrfamilienhaus", flaeche: n(900), wohneinheiten: n(12), baujahr: "1969–1978",
+      sanierung: "teilsaniert (z. B. Fenster, Dach)", gen1_typ: "Gas-Niedertemperaturkessel"},
+    "Verwaltungsgebäude 1980er, Gas": {profil: "Büro / Verwaltung", flaeche: n(2500), baujahr: "1984–1994 (2. WSchVO)",
+      gen1_typ: "Gas-Niedertemperaturkessel", leuchtmittel: "Leuchtstoff T8 (KVG/VVG)"},
+    "Schule 1970er, Gas": {profil: "Schule", flaeche: n(4000), baujahr: "1969–1978", sanierung: "teilsaniert (z. B. Fenster, Dach)",
+      gen1_typ: "Gas-Niedertemperaturkessel"},
+    "Kindertagesstätte Neubau, Effizienzhaus 40": {profil: "Kindertagesstätte", flaeche: n(600), baujahr: "ab 2021 (GEG)",
+      standard: "KfW-Effizienzhaus 40", gen1_typ: "Wärmepumpe Sole/Wasser (Erdsonde)", pv_kwp: n(30)},
+  };
+
+  // Eingaben, die im Modus „Basis“ sichtbar bleiben
+  D.BASIC = new Set(["projekt_name", "projekt_adresse", "projekt_bearbeiter", "profil", "flaeche", "geschosse", "raumhoehe", "personen",
+    "wohneinheiten", "region", "raumtemp", "baujahr", "sanierung", "standard", "fenster", "gebaeudeform", "lueftung", "heizflaechen",
+    "heizung_alter", "ww_system", "zirkulation", "solarthermie", "anz_duschen", "armaturen", "leuchtmittel", "lichtsteuerung",
+    "emob_n", "aufzuege", "kuehlung", "pv_kwp", "pv_ausrichtung", "speicher_kwh", "preis_erdgas", "preis_strom", "preis_wasser",
+    "ist_strom", "ist_waerme", "ist_wasser"]);
+})();
 
 </script>
 <script>
@@ -329,8 +456,9 @@ function heatDurationCurve(months, H_tot, theta_set, Q_heat, Q_ww) {
       loads.push(x + ww_kw);
     }
   });
+  const hourly = loads.slice();
   loads.sort((a, b) => b - a);
-  return [loads, hours_heat];
+  return [loads, hours_heat, hourly];
 }
 
 /* Energieflüsse für das Sankey-Diagramm: [Quelle, Ziel, kWh] */
@@ -383,6 +511,99 @@ class Ctx {
 }
 const has = (o, k) => k !== null && k !== undefined && Object.prototype.hasOwnProperty.call(o, k);
 const P = (p, k) => (p[k] === undefined ? null : p[k]);
+
+/* Leistungsbedarf Wohngebäude nach DIN 18015-1 (Näherung der Kennlinie, logarithmisch interpoliert) */
+function din18015(we, mitWW) {
+  const t = D.DIN18015[mitWW ? "mit" : "ohne"];
+  we = Math.max(1, we);
+  if (we >= t[t.length - 1][0]) return t[t.length - 1][1] * Math.pow(we / t[t.length - 1][0], 0.45);
+  for (let i = 0; i < t.length - 1; i++) {
+    const [n0, p0] = t[i], [n1, p1] = t[i + 1];
+    if (we >= n0 && we <= n1) return p0 + (p1 - p0) * Math.log(we / n0) / Math.log(n1 / n0);
+  }
+  return t[0][1];
+}
+
+/* Stündliche Strombilanz eines Jahres: Last (Tagesgänge je Nutzung, Wärmepumpe nach Heizlast), PV (Sonnenstand 51° N,
+   wechselnde Tagesbewölkung), BHKW (wärmegeführt), Batteriespeicher (η 0,95 je Richtung, 0,5 C). Energiemengen je Monat
+   entsprechen exakt der Jahresbilanz; die Simulation liefert Eigenverbrauch, Netzbezug, Einspeisung und Leistungsspitzen. */
+function simulateElectricity(o) {
+  const N = 8760, load = new Float64Array(N), base = new Float64Array(N), pv = new Float64Array(N), bh = new Float64Array(N);
+  const nAct = Math.max(1, Math.min(7, Math.round(o.days / 365 * 7)));
+  const w0 = Math.max(0, 12.5 - o.hours / 2), w1 = Math.min(24, w0 + o.hours);
+  const lat = 51 * Math.PI / 180;
+  let h0 = 0, day = 0, wx = 0;
+  for (let m = 0; m < 12; m++) {
+    const nd = D.DAYS_M[m], nh = nd * 24;
+    const wg = new Float64Array(nh), wl = new Float64Array(nh), we = new Float64Array(nh), wp = new Float64Array(nh);
+    let sg = 0, sl = 0, se = 0, sp = 0, sth = 0;
+    for (let d = 0; d < nd; d++, day++) {
+      const active = o.res || (day % 7) < nAct;
+      const decl = 23.45 * Math.PI / 180 * Math.sin(2 * Math.PI * (284 + day + 1) / 365);
+      const half = Math.acos(-Math.tan(lat) * Math.tan(decl)) * 12 / Math.PI;
+      wx = 0.72 * wx + D.GAUSS[day] / 2.6;                       // Wetterlagen halten mehrere Tage an (AR(1))
+      const clear = Math.max(0.06, Math.min(1.9, 1 + 0.55 * wx));
+      for (let hh = 0; hh < 24; hh++) {
+        const i = d * 24 + hh;
+        if (o.res) {
+          // Haushalte: Standardlastprofil-Form mit stündlicher Streuung (einzelne Gebäude sind „zackiger“ als das SLP)
+          const nz = Math.max(0.25, Math.min(3.0, 1 + o.noise * D.GAUSS[(day * 24 + hh) * 7 % 365] / 2.6));
+          wg[i] = D.SHAPE_H0[hh] * nz; wl[i] = D.SHAPE_LIGHT[hh]; we[i] = (hh >= 17 || hh < 1) ? 1 : (hh < 6 ? 0.5 : 0.1);
+        } else {
+          const inW = active && hh + 0.5 >= w0 && hh + 0.5 < w1;
+          const dn = o.hours >= 20 ? 0.75 + 0.35 * Math.exp(-Math.pow((hh - 13) / 5, 2)) : 1;
+          wg[i] = (inW ? 1 : 0.22) * dn; wl[i] = inW ? 1 : 0.08; we[i] = inW ? 1 : 0.05;
+        }
+        const x = (hh + 0.5 - 12.5) / half;
+        wp[i] = Math.abs(x) < 1 ? clear * Math.pow(Math.cos(x * Math.PI / 2), 1.25) : 0;
+        sg += wg[i]; sl += wl[i]; se += we[i]; sp += wp[i]; sth += o.heat[h0 + i];
+      }
+    }
+    for (let i = 0; i < nh; i++) {
+      const b = o.gen_m[m] * wg[i] / sg + o.light_m[m] * wl[i] / sl + o.flat / N;
+      base[h0 + i] = b;
+      load[h0 + i] = b + o.emob_m[m] * we[i] / se + o.therm_m[m] * (sth > 0 ? o.heat[h0 + i] / sth : 1 / nh);
+      pv[h0 + i] = sp > 0 ? o.pv_m[m] * wp[i] / sp : 0;
+    }
+    h0 += nh;
+  }
+  let sumHeat = 0;
+  for (let i = 0; i < N; i++) sumHeat += o.heat[i];
+  if (o.bhkw > 0) for (let i = 0; i < N; i++) bh[i] = sumHeat > 0 ? o.bhkw * o.heat[i] / sumHeat : o.bhkw / N;
+  const cap = o.bat * 0.9, pmax = o.bat * 0.5, eta = 0.94, kap = o.res ? 0.86 : 0.95;
+  let soc = 0, grid = 0, feed = 0, pvDir = 0, bhDir = 0, chTot = 0, chPv = 0, disTot = 0;
+  let loadPeak = 0, gridPeak = 0, feedPeak = 0, basePeak = 0, loadMin = Infinity;
+  const self_m = new Array(12).fill(0), feed_m = new Array(12).fill(0), grid_m = new Array(12).fill(0), load_m = new Array(12).fill(0);
+  const dayP = {0: [new Array(24).fill(0), new Array(24).fill(0)], 6: [new Array(24).fill(0), new Array(24).fill(0)]};
+  let i = 0;
+  for (let m = 0; m < 12; m++) for (let d = 0; d < D.DAYS_M[m]; d++) for (let hh = 0; hh < 24; hh++, i++) {
+    // kap: Anteil der Stundenmengen, der zeitgleich nutzbar ist (Leistungsspitzen innerhalb der Stunde)
+    soc *= 0.9996;                                             // Stand-by-Verluste des Speichers
+    const L = load[i], G = pv[i] + bh[i], miss = Math.min(L, G) * (1 - kap), net = L - G;
+    let g = miss, f = miss, self;
+    if (miss > 0) { const ch = Math.min(miss, pmax, (cap - soc) / eta); soc += ch * eta; f -= ch; chTot += ch; chPv += ch * pv[i] / G;
+      const dis = Math.min(g, pmax, soc * eta); soc -= dis / eta; g -= dis; disTot += dis; }
+    if (net <= 0) {
+      const sur = -net, ch = Math.min(sur, pmax, (cap - soc) / eta);
+      soc += ch * eta; f += sur - ch; chTot += ch; if (G > 0) chPv += ch * pv[i] / G;
+      self = L - g; if (G > 0) { pvDir += L * kap * pv[i] / G; bhDir += L * kap * bh[i] / G; }
+    } else {
+      const dis = Math.min(net, pmax, soc * eta);
+      soc -= dis / eta; g += net - dis; disTot += dis;
+      self = L - g; pvDir += pv[i] * kap; bhDir += bh[i] * kap;
+    }
+    grid += g; feed += f;
+    self_m[m] += self; feed_m[m] += f; grid_m[m] += g; load_m[m] += L;
+    if (L > loadPeak) loadPeak = L; if (L < loadMin) loadMin = L; if (g > gridPeak) gridPeak = g; if (f > feedPeak) feedPeak = f;
+    if (base[i] > basePeak) basePeak = base[i];
+    if (dayP[m]) { dayP[m][0][hh] += L / D.DAYS_M[m]; dayP[m][1][hh] += pv[i] / D.DAYS_M[m]; }
+  }
+  const fp = chTot > 0 ? chPv / chTot : 1;
+  const sorted = Array.from(load).sort((a, b) => b - a);
+  return {pv_ev: pvDir + disTot * fp, bhkw_ev: bhDir + disTot * (1 - fp), grid, feed_in: feed, loadPeak, loadMin, gridPeak, feedPeak, basePeak,
+    self_m, feed_m, grid_m, load_m, dayJan: dayP[0], dayJul: dayP[6], dl: sorted.filter((_, k) => k % 24 === 0),
+    cycles: cap > 0 ? disTot / cap : 0, bat_loss: chTot * eta - disTot >= 0 ? chTot - disTot : 0};
+}
 
 /* ============================================================================= Berechnungsmodell */
 function compute(p, devices) {
@@ -830,7 +1051,7 @@ function compute(p, devices) {
   const Q_total = Q_heat_net + Q_ww_net;
 
   // Jahresdauerlinie
-  const [dl_curve, heat_hours] = heatDurationCurve(months, H_T + H_V, theta_i - d_abs, Q_heat_net, Q_ww_net);
+  const [dl_curve, heat_hours, heat_hourly] = heatDurationCurve(months, H_T + H_V, theta_i - d_abs, Q_heat_net, Q_ww_net);
   const dl_peak = dl_curve.length ? dl_curve[0] : 0.0;
 
   // ------------------------------------------------------------------ Wärmeerzeuger
@@ -905,7 +1126,7 @@ function compute(p, devices) {
   let jaz_user = P(p, "jaz_wp");
   if (jaz_user !== null) jaz_user = isFinite(Number(jaz_user)) ? Math.max(1.2, Math.min(7.0, Number(jaz_user))) : null;
   const heat_end = {};
-  let E_wp = 0.0, E_elheat = 0.0, amb = 0.0, E_bhkw_el = 0.0;
+  let E_wp = 0.0, E_elheat = 0.0, amb = 0.0, E_bhkw_el = 0.0, E_wp_h = 0.0, E_wp_ww = 0.0, Q_bio = 0.0;
   const fh = Q_total > 0 ? Q_heat_net / Q_total : 1.0;
   for (const g of gens) {
     const Q = g.Q;
@@ -919,7 +1140,7 @@ function compute(p, devices) {
       g.eff = e > 0 ? Q / e : 0;
       g.eff_lbl = `JAZ ${fnum(g.eff, 2)}`;
       g.E = e; g.carrier = "Strom";
-      E_wp += e; amb += Q - e;
+      E_wp += e; amb += Q - e; E_wp_h += Q * fh / jh; E_wp_ww += Q * (1 - fh) / jw;
       if (vl >= 60) warn.push(`${g.typ}: Vorlauf ${vl} °C – Wärmepumpe arbeitet ineffizient, Heizflächen prüfen.`);
     } else if (g.kind === "bhkw") {
       const fuel = Q / g.eta;
@@ -934,6 +1155,7 @@ function compute(p, devices) {
       g.E = e; g.eff = eta; g.eff_lbl = `η ${fnum(eta * 100)} %`;
       if (g.carrier === "Strom") E_elheat += e;
       else heat_end[g.carrier] = (heat_end[g.carrier] || 0) + e;
+      if (["Holzpellets", "Hackschnitzel", "Scheitholz"].includes(g.carrier)) Q_bio += Q;
     }
     g.vbh = g.kw_tot > 0 ? Q / g.kw_tot : 0;
     if (g.kind === "wp" && !has(c.used, "jaz_wp")) c.used.jaz_wp = pyRound(g.eff, 2);
@@ -951,7 +1173,7 @@ function compute(p, devices) {
   const el = {
     "Beleuchtung": E_light, "Geräte & Arbeitshilfen": E_plug, "Kleingeräte (Liste)": E_devices,
     "Küche / Kantine": E_kitchen, "IT / Serverraum": E_it, "Sonderverbraucher": E_special, "Wärmepumpe": E_wp,
-    "Elektroheizung / el. Warmwasser": E_elheat_total, "Lüftung": E_vent, "Kühlung / Klima": E_cool,
+    "Elektro-Direktheizung": E_elheat, "Warmwasser elektrisch": E_ww_el, "Lüftung": E_vent, "Kühlung / Klima": E_cool,
     "Aufzüge & Fahrtreppen": E_lifts, "Hilfsenergie Heizung/WW": E_aux, "E-Mobilität (Laden)": E_emob,
   };
   const el_basis = {
@@ -963,8 +1185,9 @@ function compute(p, devices) {
     "Küche / Kantine": `${fnum(meals)} Essen/Tag × ${fnum(kw_meal, 2)} kWh × ${kitchen_days.toFixed(0)} d (${kitchen})`,
     "IT / Serverraum": `${fnum(it_kw, 1)} kW IT-Last × 8.760 h × PUE ${fnum(pue, 2)}`,
     "Sonderverbraucher": `${fnum(sp_kw, 1)} kW × ${fnum(sp_h)} h`,
-    "Wärmepumpe": "aus Wärmebedarf ÷ Jahresarbeitszahl",
-    "Elektroheizung / el. Warmwasser": `Direktheizung ${fnum(E_elheat)} kWh + el. WW ${fnum(E_ww_el)} kWh (${ww_label})`,
+    "Wärmepumpe": `Heizung ${fnum(E_wp_h)} kWh + Warmwasser ${fnum(E_wp_ww)} kWh (Wärmebedarf ÷ Jahresarbeitszahl)`,
+    "Elektro-Direktheizung": "Wärme der elektrischen Erzeuger ÷ Wirkungsgrad",
+    "Warmwasser elektrisch": `${ww_label}`,
     "Lüftung": E_vent ? `${fnum(V_air)} m³/h × ${fnum(sfp, 2)} W/(m³/h) × ${fnum(vent_h)} h` : "keine Ventilatoren",
     "Kühlung / Klima": `${fnum(Q_cool)} kWh Nutzkälte ÷ EER ${fnum(eer, 1)} (${cool_mode}, ${fnum(cool_share * 100)} % der Fläche)`,
     "Aufzüge & Fahrtreppen": `${n_lift} Aufzug/Aufzüge à ${fnum(E_lift_each)} kWh (VDI 4707), ${n_esc} Fahrtreppe(n)`,
@@ -973,21 +1196,63 @@ function compute(p, devices) {
   };
   const E_el = sum(Object.values(el));
 
-  // PV / Eigenverbrauch
+  // PV / Eigenverbrauch: stündliche Bilanz (synthetischer Lastgang, PV-Tagesgang, Batterie)
   const pv_kwp = c.num("pv_kwp", 0, 0);
   const pv_y = c.num("pv_ertrag", rg.pv, 300, 1500);
+  const pv_or = c.choice("pv_ausrichtung", "Süd", D.PV_ORIENT);
+  const pv_tilt = c.num("pv_neigung", dach === "Flachdach" ? 12 : 30, 0, 90);
+  const pv_f = Math.max(0.2, Math.min(1.0, D.PV_ORIENT[pv_or](pv_tilt)));
   const bat = c.num("speicher_kwh", 0, 0);
-  const pv_gen = pv_kwp * pv_y;
-  let pv_ev = 0.0;
-  if (pv_gen > 0) {
-    const s_base = res ? 0.30 : 0.45;
-    const bonus = Math.min(0.30, 0.30 * bat / Math.max(pv_kwp, 0.1));
-    const s = Math.min(0.9, s_base * Math.pow(E_el / pv_gen, 0.35) + bonus);
-    pv_ev = Math.min(pv_gen * s, E_el * 0.8);
-  }
-  const bhkw_ev = Math.min(E_bhkw_el * 0.7, Math.max(0.0, E_el - pv_ev) * 0.9);
+  const pv_gen = pv_kwp * pv_y * pv_f;
+  const pv_sum_m = sum(D.PV_M);
+  const pv_m = D.PV_M.map(x => pv_gen * x / pv_sum_m);
+  const sh0 = months.map(m => Q_h > 0 ? m.Q_h / Q_h : 0);
+  const EMOB_W = range(12).map(i => md[i] * ([0, 1, 10, 11].includes(i) ? 1.15 : 0.9));
+  const emob_sum = sum(EMOB_W);
+  const emob_m = EMOB_W.map(w => E_emob * w / emob_sum);
+  const sim = simulateElectricity({
+    res, hours, days, heat: heat_hourly, bat, bhkw: E_bhkw_el, pv_m, emob_m, flat: E_it, noise: Math.min(0.9, 1.1 / Math.sqrt(Math.max(1, we))),
+    therm_m: range(12).map(i => E_wp * (Q_total > 0 ? (Q_heat_net * sh0[i] + Q_ww_net * md[i]) / Q_total : md[i]) + E_elheat * sh0[i]),
+    light_m: range(12).map(i => E_light * ml[i]),
+    gen_m: range(12).map(i => (E_plug + E_devices + E_kitchen + E_special + E_vent + E_lifts + E_ww_el) * md[i]
+      + E_cool * D.COOL_SHARE[i] + E_aux * (0.7 * sh0[i] + 0.3 * md[i])),
+  });
+  const pv_ev = sim.pv_ev, bhkw_ev = sim.bhkw_ev, feed_in = sim.feed_in;
   const grid = Math.max(0.0, E_el - pv_ev - bhkw_ev);
-  const feed_in = (pv_gen - pv_ev) + (E_bhkw_el - bhkw_ev);
+
+  // Elektrischer Anschluss: Leistungsbedarf (Wohnen: DIN 18015-1; Nichtwohnen: Lastgang + Zuschlag) und Absicherung
+  const wp_el_kw = sum(gens.filter(g => g.kind === "wp").map(g => g.kw_tot / 2.5));
+  const eldir_kw = sum(gens.filter(g => g.kind === "el").map(g => g.kw_tot));
+  const wb_g = ev_n <= 1 ? 1.0 : Math.max(0.3, 0.3 + 0.7 / ev_n);
+  const wb_kw = ev_n * 11 * wb_g;
+  const an_rows = [];
+  if (res) {
+    const elww = ["dle", "Kleinspeicher"].includes(ww_mode);
+    an_rows.push([`Wohnungen (${we} WE${elww ? ", mit elektrischer Warmwasserbereitung" : ""})`, din18015(we, elww), "Kennlinie nach DIN 18015-1 (Näherung)"]);
+  } else {
+    an_rows.push(["Allgemeine Verbraucher (Beleuchtung, Geräte, Technik)", sim.basePeak * 1.3, "Spitze des simulierten Lastgangs × 1,3 (Stundenmittel → Kurzzeitspitze)"]);
+  }
+  if (n_lift > 0) an_rows.push([`Aufzüge (${n_lift})`, n_lift * P_drive * (n_lift > 1 ? 0.7 : 1.0), "Antriebsleistung, Gleichzeitigkeit bei mehreren Anlagen 0,7"]);
+  if (wp_el_kw > 0) an_rows.push(["Wärmepumpe(n), elektrische Aufnahme", wp_el_kw, "Heizleistung ÷ 2,5 im Auslegungspunkt, Gleichzeitigkeit 1"]);
+  if (eldir_kw > 0) an_rows.push(["Elektrische Direktheizung / Heizstab", eldir_kw, "Nennleistung"]);
+  if (wp_el_kw > 0 && dl_peak > kw_inst * 1.02) an_rows.push(["Heizstab für Spitzenlast (Wärmepumpe unterdimensioniert)", dl_peak - kw_inst, "Spitzenlast der Dauerlinie − installierte Leistung"]);
+  if (wb_kw > 0) an_rows.push([`Ladepunkte (${fnum(ev_n)} × 11 kW)`, wb_kw, `Gleichzeitigkeit ${fnum(wb_g, 2)}` + (ev_n > 1 ? " mit Lastmanagement" : "")]);
+  if (res && sp_kw > 0) an_rows.push(["Sonderverbraucher", sp_kw, "Nennleistung"]);
+  if (res && it_kw > 0) an_rows.push(["IT / Server", it_kw * pue, "Dauerlast"]);
+  const an_P = sum(an_rows.map(r => r[1]));
+  const an_S = an_P / 0.95;
+  const an_I = an_S * 1000 / (Math.sqrt(3) * 400);
+  const an_fuse = D.FUSES.find(f => f >= an_I) || null;
+  const steuerbar = [];
+  if (wp_el_kw > 4.2) steuerbar.push("Wärmepumpe");
+  if (ev_n > 0) steuerbar.push("Ladeeinrichtung(en)");
+  if (bat > 0 && bat * 0.5 > 4.2) steuerbar.push("Batteriespeicher");
+  const anschluss = {rows: an_rows, P: an_P, S: an_S, I: an_I, fuse: an_fuse, steuerbar, wp_el_kw, wb_kw};
+
+  // Wirtschaftliche Randbedingungen (für Maßnahmen und Energiekonzept)
+  const eco = {i: c.num("zins", 3.0, 0, 15) / 100, s: c.num("preissteigerung", 3.0, -5, 15) / 100,
+    n: pyRound(c.num("zeitraum", 20, 5, 40)), f: c.num("foerderquote", 0, 0, 80) / 100};
+  const heiz_alter = c.num("heizung_alter", Math.max(1, Math.min(22, 2026 - by.y)), 0, 80);
 
   // ------------------------------------------------------------------ Preise / CO2 / Primärenergie
   const prices = {};
@@ -1040,11 +1305,8 @@ function compute(p, devices) {
     "Nutzung": range(12).map(i => (E_plug + E_devices + E_kitchen + E_it + E_special) * md[i]),
     "Wärmepumpe": wp_m,
     "Heizung & Technik": range(12).map(i => elh_m[i] + (E_vent + E_lifts) * md[i] + E_cool * D.COOL_SHARE[i] + E_aux * (0.7 * sh_heat[i] + 0.3 * md[i])),
-    "E-Mobilität": range(12).map(i => E_emob * md[i] * ([0, 1, 10, 11].includes(i) ? 1.15 : 0.9) / 1.0333),
+    "E-Mobilität": emob_m,
   };
-  const pv_sum_m = sum(D.PV_M);
-  const pv_m = D.PV_M.map(x => pv_gen * x / pv_sum_m);
-
   const gen_rows = gens.map(g => ({idx: g.idx, typ: g.typ, kw: g.kw, n: g.n, kw_tot: g.kw_tot, Q: g.Q,
     share: Q_total > 0 ? g.Q / Q_total * 100 : 0, E: g.E || 0, carrier: g.carrier || "Strom", eff: g.eff_lbl || "", vbh: g.vbh || 0}));
   const carriers_out = Object.entries(heat_end).map((e, i) => [e, i]).sort((a, b) => (b[0][1] - a[0][1]) || (a[1] - b[1]))
@@ -1076,6 +1338,11 @@ function compute(p, devices) {
     co2_levy, co2_price, E_wp, E_elheat, E_ww_el, amb, amb_ww: E_wwwp_amb, sol_ww, sol_h, gen_loss: Math.max(0.0, gen_loss),
     heat_end, E_light, E_aux, E_cool, E_lifts, Q_ww_net, Q_heat_net, ww_central: ww_mode === "zentral", n_meter, A_kw,
     p_wp, wp_grid, modus, f_nutzer, Q_h_norm,
+    sim, anschluss, eco, heiz_alter, E_wp_h, E_wp_ww, pv_f, pv_or, pv_tilt, pv_y, bat, Q_bio, ninf, d_abs,
+    autarkie: E_el > 0 ? 1 - grid / E_el : 0, evq: pv_gen > 0 ? pv_ev / pv_gen : 0,
+    ee_waerme: (() => { const den = Q_total + Q_sol + (ww_mode === "zentral" ? 0 : Q_ww_use + (ww_mode === "wwwp" ? Q_sto : 0));
+      return den > 0 ? Math.min(1, (amb + E_wwwp_amb + Q_sol + Q_bio) / den) : 0; })(),
+    pv_pot_kwp: Math.max(0, pyRound(bgf_f * 0.45 / 5.5, 1)), E_plug, E_devices, E_kitchen, E_it, E_special, plug_basis,
     projekt: Object.fromEntries(["projekt_name", "projekt_adresse", "projekt_bearbeiter"].map(k => [k, String(p[k] || "").trim()])),
     ist: Object.fromEntries(["ist_strom", "ist_waerme", "ist_wasser"].map(k => [k, P(p, k)])),
   });
@@ -1089,6 +1356,20 @@ const investWp = kw => 9000 + 2300 * Math.pow(Math.max(kw, 4), 0.85);
 const investPv = kwp => kwp * (1000 + 6000 / (kwp + 5));
 const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 
+/* Kapitalwert, dynamische Amortisation und Annuität einer Maßnahme (in Anlehnung an VDI 2067 / VDI 6025) */
+function econ(invest, saving, d_co2, eco) {
+  const inv = invest * (1 - eco.f), q = (1 + eco.s) / (1 + eco.i);
+  let pv = 0, cum = 0, dyn = null;
+  for (let t = 1; t <= 60; t++) {
+    const x = saving * Math.pow(q, t);
+    if (t <= eco.n) pv += x;
+    if (dyn === null && saving > 0) { cum += x; if (cum >= inv) dyn = t - (cum - inv) / x; }
+  }
+  const a = eco.i > 0 ? eco.i * Math.pow(1 + eco.i, eco.n) / (Math.pow(1 + eco.i, eco.n) - 1) : 1 / eco.n;
+  return {inv, npv: pv - inv, dyn, annuity: inv * a, co2cost: d_co2 > 0.01 ? (inv - pv) * a / d_co2 : null};
+}
+
+/* Rechnet typische Effizienzmaßnahmen als Varianten durch (jede einzeln gegenüber dem Ist-Zustand). */
 function measures(p, devices, R) {
   const base = Object.assign({}, p);
   const A = R.A, u = R.used;
@@ -1100,93 +1381,144 @@ function measures(p, devices, R) {
   const gens = R.gens;
   const has_wp_only = gens.length && gens.every(g => g.typ.includes("Wärmepumpe"));
   const cand = [];
-  const add = (name, desc, changes, invest, env_change = false) => {
+  const add = (name, stage, desc, changes, invest, env_change = false, extra = {}) => {
     const q = Object.assign({}, base);
     if (env_change) Object.assign(q, env);
     Object.assign(q, changes);
-    cand.push([name, desc, q, invest]);
+    cand.push(Object.assign({name, stage, desc, q, invest, changes, env: env_change ? env : null}, extra));
   };
-  if (env.u_wand && env.u_wand > 0.30)
-    add("Fassade dämmen", `Außenwand auf U = 0,20 W/(m²K) (WDVS ca. 16 cm), ${fnum(A_wall_op)} m²`,
-        {u_wand: 0.20, du_wb: Math.min(env.du_wb, 0.05)}, A_wall_op * 190, true);
-  if (env.u_dach && env.u_dach > 0.25) {
-    const oben = roof.Fx < 1 ? "oberste Geschossdecke" : "Dach";
-    add(`${capitalize(oben)} dämmen`, `${oben} auf U = 0,14 W/(m²K), ${fnum(roof.A)} m²`, {u_dach: 0.14},
-        roof.A * (roof.Fx < 1 ? 55 : 210), true);
-  }
-  if (env.u_boden && env.u_boden > 0.40 && floor.Fx >= 0.55)
-    add("Kellerdecke / Boden dämmen", `auf U = 0,30 W/(m²K), ${fnum(floor.A)} m²`, {u_boden: 0.30}, floor.A * 60, true);
-  if (env.u_fenster && env.u_fenster > 1.6)
-    add("Fenster tauschen", `Dreifachverglasung U_w = 0,9 W/(m²K), ${fnum(A_win)} m²`,
-        {u_fenster: 0.9, fenster: "Dreischeiben-Wärmeschutzglas"}, A_win * 750, true);
-  if (u.verteilung !== D.DIST_OPTS[0] || u.pumpe !== "Hocheffizienzpumpe")
-    add("Hydraulischer Abgleich + HE-Pumpe", "Optimierung Heizungsverteilung (GEG § 60c), Hocheffizienzpumpe",
-        {verteilung: D.DIST_OPTS[0], pumpe: "Hocheffizienzpumpe"}, 1200 + 4 * A);
+  // Stufe 1 – Sofortmaßnahmen
   if ((u.raumtemp ?? 20) > 19.5)
-    add("Raumtemperatur −1 K", "Absenkung Sollwert, Thermostate einstellen (je K ca. 6 % Heizwärme)",
-        {raumtemp: u.raumtemp - 1.0}, !R.res ? 15 * R.rooms : 30 * Math.max(1, R.we));
+    add("Raumtemperatur −1 K", 1, "Absenkung Sollwert, Thermostate einstellen (je K ca. 6 % Heizwärme)",
+        {raumtemp: u.raumtemp - 1.0}, !R.res ? 15 * R.rooms : 30 * Math.max(1, R.we), false, {verhalten: true});
+  if (u.verteilung !== D.DIST_OPTS[0] || u.pumpe !== "Hocheffizienzpumpe")
+    add("Hydraulischer Abgleich + HE-Pumpe", 1, "Heizungsoptimierung: hydraulischer Abgleich, Leitungsdämmung, Hocheffizienzpumpe",
+        {verteilung: D.DIST_OPTS[0], pumpe: "Hocheffizienzpumpe"}, 1200 + 4 * A);
+  if (R.ww_central && R.circ === "ja, 24 h")
+    add("Zirkulation zeitsteuern", 1, "Zirkulationspumpe mit Zeit-/Temperatursteuerung; Hygiene nach DVGW W 551 beachten (max. 8 h Unterbrechung)",
+        {zirkulation: "ja, zeitgesteuert"}, 350 + 0.3 * A);
+  if (u.armaturen !== keys(D.ARM_OPTS)[0] || u.wc_typ !== keys(D.WC_OPTS)[0])
+    add("Wassersparende Armaturen", 1, "Spar-Duschköpfe, Perlatoren, WC-Spartaste",
+        {armaturen: keys(D.ARM_OPTS)[0], wc_typ: keys(D.WC_OPTS)[0]}, R.n_shower * 60 + R.n_sink * 25 + R.n_wc * 120);
   const led_ok = u.leuchtmittel === "LED (neu, effizient)";
   const ctrl_ok = R.res || u.lichtsteuerung === "Präsenzmelder + tageslichtabhängige Regelung";
   if (!(led_ok && ctrl_ok)) {
     const ch = {leuchtmittel: "LED (neu, effizient)"};
     if (!R.res) ch.lichtsteuerung = "Präsenzmelder + tageslichtabhängige Regelung";
-    add("LED-Beleuchtung" + (R.res ? "" : " + Präsenz-/Tageslichtregelung"), "Umrüstung der Innenbeleuchtung", ch, A * (R.res ? 6 : 32));
+    add("LED-Beleuchtung" + (R.res ? "" : " + Präsenz-/Tageslichtregelung"), 1, "Umrüstung der Innenbeleuchtung (DIN EN 12464-1 einhalten)", ch, A * (R.res ? 6 : 32));
   }
+  // Stufe 2 – Gebäudehülle und Lüftung
+  if (env.u_dach && env.u_dach > 0.25) {
+    const oben = roof.Fx < 1 ? "oberste Geschossdecke" : "Dach";
+    add(`${capitalize(oben)} dämmen`, 2, `${oben} auf U = 0,14 W/(m²K), ${fnum(roof.A)} m²`, {u_dach: 0.14}, roof.A * (roof.Fx < 1 ? 55 : 210), true);
+  }
+  if (env.u_wand && env.u_wand > 0.30)
+    add("Fassade dämmen", 2, `Außenwand auf U = 0,20 W/(m²K) (WDVS ca. 16 cm), ${fnum(A_wall_op)} m²`,
+        {u_wand: 0.20, du_wb: Math.min(env.du_wb, 0.05)}, A_wall_op * 190, true);
+  if (env.u_boden && env.u_boden > 0.40 && floor.Fx >= 0.55)
+    add("Kellerdecke / Boden dämmen", 2, `auf U = 0,30 W/(m²K), ${fnum(floor.A)} m²`, {u_boden: 0.30}, floor.A * 60, true);
+  if (env.u_fenster && env.u_fenster > 1.6)
+    add("Fenster tauschen", 2, `Dreifachverglasung U_w = 0,9 W/(m²K), ${fnum(A_win)} m²`,
+        {u_fenster: 0.9, fenster: "Dreischeiben-Wärmeschutzglas"}, A_win * 750, true);
   if (R.vent !== D.VENT_OPTS[2])
-    add("Lüftung mit Wärmerückgewinnung", "Zu-/Abluftanlage, WRG 80 %", {lueftung: D.VENT_OPTS[2], wrg: 80}, A * (R.res ? 65 : 110));
+    add("Lüftung mit Wärmerückgewinnung", 2, "Zu-/Abluftanlage, WRG 80 % (Lüftungskonzept nach DIN 1946-6 bzw. DIN EN 16798)", {lueftung: D.VENT_OPTS[2], wrg: 80}, A * (R.res ? 65 : 110));
+  // Stufe 3 – Anlagentechnik
   if (gens.length && !has_wp_only) {
     const kw = Math.max(R.phi_rec, 3.0);
-    const ch = {gen1_typ: "Wärmepumpe Luft/Wasser", gen1_kw: pyRound(kw, 1), gen1_n: 1, gen1_anteil: null, gen1_h: null};
+    const ch = {gen1_typ: "Wärmepumpe Luft/Wasser", gen1_kw: pyRound(kw, 1), gen1_n: 1, gen1_anteil: null, gen1_h: null, jaz_wp: null};
     for (let i = 2; i <= 4; i++) ch[`gen${i}_typ`] = NO_GEN;
-    const hint = R.vl >= 60 ? " – Vorlauf ≥ 60 °C: Heizflächen prüfen!" : "";
-    add("Wärmepumpe statt Kessel", `Luft/Wasser-WP ${fnum(kw, 1)} kW monovalent${hint}`, ch, investWp(kw));
-  }
-  if (R.pv_kwp <= 0) {
-    const kwp = Math.max(3.0, Math.min(750.0, pyRound(R.bgf_f * 0.45 / 5.5, 1)));
-    const ch = {pv_kwp: kwp};
-    if (R.res) ch.speicher_kwh = pyRound(Math.min(kwp, 20 * Math.max(1, R.we)), 0);
-    add("Photovoltaik", `${fnum(kwp, 1)} kWp auf ca. 45 % der Dachfläche` + (R.res ? ` + ${fnum(ch.speicher_kwh || 0)} kWh Speicher` : ""),
-        ch, investPv(kwp) + (ch.speicher_kwh || 0) * 650);
+    let inv = investWp(kw), extra = "";
+    if (R.vl > 55) { ch.heizflaechen = "Heizkörper (55 °C)"; inv += 28 * A; extra = `, Vorlauf von ${R.vl} auf 55 °C (einzelne Heizkörper vergrößern)`; }
+    add("Wärmepumpe statt Kessel", 3, `Luft/Wasser-Wärmepumpe ${fnum(kw, 1)} kW monovalent${extra}`, ch, inv, false, {wp: true, heizfl: R.vl > 55});
   }
   if (R.ww_central && R.Q_sol <= 0 && (R.res || R.Q_ww_use / A > 5)) {
     const area = pyRound(Math.max(4.0, Math.min(R.persons * 1.2, A * 0.04)), 0);
-    add("Solarthermie Warmwasser", `${fnum(area)} m² Kollektorfläche`, {solarthermie: area}, 3000 + 850 * area);
+    add("Solarthermie Warmwasser", 3, `${fnum(area)} m² Kollektorfläche`, {solarthermie: area}, 3000 + 850 * area, false, {solar: true});
   }
-  if (u.armaturen !== keys(D.ARM_OPTS)[0] || u.wc_typ !== keys(D.WC_OPTS)[0])
-    add("Wassersparende Armaturen", "Spar-Duschköpfe, Perlatoren, WC-Spartaste",
-        {armaturen: keys(D.ARM_OPTS)[0], wc_typ: keys(D.WC_OPTS)[0]}, R.n_shower * 60 + R.n_sink * 25 + R.n_wc * 120);
+  if (!R.res && (R.bacs.startsWith("C") || R.bacs.startsWith("D")))
+    add("Gebäudeautomation Klasse B", 3, "Einzelraumregelung, Zeitprogramme, Energiemonitoring (DIN EN ISO 52120-1)",
+        {gebaeudeautomation: "B – erweiterte Automation"}, A * 28);
+  // Stufe 4 – Eigenstrom
+  if (R.pv_kwp <= 0) {
+    const kwp = Math.max(3.0, Math.min(750.0, R.pv_pot_kwp));
+    const ch = {pv_kwp: kwp};
+    if (R.res) ch.speicher_kwh = pyRound(Math.min(kwp, 20 * Math.max(1, R.we)), 0);
+    add("Photovoltaik", 4, `${fnum(kwp, 1)} kWp auf ca. 45 % der Dachfläche` + (R.res ? ` + ${fnum(ch.speicher_kwh || 0)} kWh Speicher` : ""),
+        ch, investPv(kwp) + (ch.speicher_kwh || 0) * 650);
+  }
 
   const out = [];
   const base_end = R.heat_endenergy + R.E_el - R.heat_el;
   const diff = (V, extra) => {
     const v_end = V.heat_endenergy + V.E_el - V.heat_el;
-    return Object.assign({R: V, d_end: base_end - v_end, d_heat: R.heat_fuel_total - V.heat_fuel_total, d_el: R.grid - V.grid,
+    const d = Object.assign({R: V, d_end: base_end - v_end, d_heat: R.heat_fuel_total - V.heat_fuel_total, d_el: R.grid - V.grid,
       d_cost: R.cost_total - V.cost_total, d_co2: R.co2_total - V.co2_total, d_water: R.water_m3 - V.water_m3}, extra);
+    d.amort = d.d_cost > 1 ? d.invest / d.d_cost : null;
+    d.eco = econ(d.invest, d.d_cost, d.d_co2, R.eco);
+    return d;
   };
-  for (const [name, desc, q, invest] of cand) {
+  for (const c of cand) {
     let V;
-    try { V = compute(q, devices); } catch (e) { continue; }
-    const d = diff(V, {name, desc, invest});
-    d.amort = d.d_cost > 1 ? invest / d.d_cost : null;
-    out.push(d);
+    try { V = compute(c.q, devices); } catch (e) { continue; }
+    out.push(diff(V, c));
   }
+  // Einstufung für das Energiekonzept
+  const wpIn = out.some(m => m.wp) || has_wp_only;
+  for (const m of out) {
+    const dyn = m.eco.dyn;
+    if (m.verhalten) { m.klasse = "Nutzerverhalten"; m.inPath = false; }
+    else if (m.solar && wpIn) { m.klasse = "Alternative (Dachfläche vorrangig für PV)"; m.inPath = false; }
+    else if (m.d_cost > 0 && dyn !== null && dyn <= 15) { m.klasse = "empfohlen – wirtschaftlich"; m.inPath = true; }
+    else if (m.wp && m.d_co2 > 0) { m.klasse = "empfohlen – Dekarbonisierung"; m.inPath = true; }
+    else if (m.stage === 2 && m.name !== "Lüftung mit Wärmerückgewinnung" && m.d_co2 > 0) { m.klasse = "empfohlen bei ohnehin fälliger Instandsetzung"; m.inPath = true; }
+    else if (m.d_cost > 0 && dyn !== null && dyn <= R.eco.n) { m.klasse = "empfohlen – langfristig wirtschaftlich"; m.inPath = true; }
+    else { m.klasse = "optional"; m.inPath = false; }
+  }
+  // Gesamtpaket (alle Maßnahmen außer Nutzerverhalten)
   const pk = Object.assign({}, base);
   const names = [];
   let inv = 0.0;
-  for (const [name, , q, invest] of cand) {
-    if (name === "Raumtemperatur −1 K") continue;
-    for (const [k, v] of Object.entries(q)) if (!(k in base) || base[k] !== v) pk[k] = v;
-    names.push(name);
-    inv += invest;
+  for (const c of cand) {
+    if (c.verhalten) continue;
+    if (c.env) for (const [k, v] of Object.entries(c.env)) if (!(k in pk) || pk[k] === base[k]) pk[k] = v;
+    Object.assign(pk, c.changes);
+    names.push(c.name);
+    inv += c.invest;
   }
   if (names.length >= 2) {
-    const V = compute(pk, devices);
-    const d = diff(V, {name: "Gesamtpaket (alle Maßnahmen)", desc: names.join(", "), invest: inv, paket: true});
-    d.amort = d.d_cost > 1 ? inv / d.d_cost : null;
-    out.push(d);
+    if (cand.some(c => c.wp)) pk.gen1_kw = null;
+    out.push(diff(compute(pk, devices), {name: "Gesamtpaket (alle Maßnahmen)", desc: names.join(", "), invest: inv, paket: true, stage: 9, klasse: "", inPath: false}));
   }
   out.sort((a, b) => ((a.paket ? 1 : 0) - (b.paket ? 1 : 0)) || (b.d_co2 - a.d_co2));
   return out;
+}
+
+/* Stufenplan des Energiekonzepts: empfohlene Maßnahmen werden stufenweise kumuliert durchgerechnet. */
+function konzeptPfad(p, devices, R, M) {
+  const key = V => ({end: V.heat_fuel_total + V.grid, co2: V.co2_total, cost: V.cost_total, pe: V.pe, hl: V.phi_rec,
+    klasse: V.ea_class, ea: V.ea_value, heat: V.heat_endenergy, el: V.E_el, grid: V.grid, autarkie: V.autarkie, pv: V.pv_gen, ee: V.ee_waerme});
+  const steps = [{name: "Ist-Zustand", stage: 0, R, k: key(R), invest: 0, names: []}];
+  const pk = Object.assign({}, p);
+  let inv = 0, wp = false, wpInvest = 0;
+  for (const s of [1, 2, 3, 4]) {
+    const ms = M.filter(m => m.stage === s && m.inPath);
+    if (!ms.length) continue;
+    let invS = 0;
+    for (const m of ms) {
+      if (m.env) for (const [k, v] of Object.entries(m.env)) if (!(k in pk) || pk[k] === p[k]) pk[k] = v;   // Ist-Hülle einfrieren, ohne bereits verbesserte Bauteile zu überschreiben
+      Object.assign(pk, m.changes);
+      if (m.wp) wp = m;
+      else invS += m.invest;
+    }
+    if (wp) pk.gen1_kw = null;
+    const V = compute(pk, devices);
+    if (wp && s === 3) { wpInvest = investWp(Math.max(V.phi_rec, 3)) + (wp.heizfl ? 28 * R.A : 0); invS += wpInvest; }
+    inv += invS;
+    steps.push({name: D.STAGE_SHORT[s], stage: s, R: V, k: key(V), invest: inv, investStage: invS, names: ms.map(m => m.name)});
+  }
+  const last = steps[steps.length - 1];
+  const d_cost = R.cost_total - last.R.cost_total, d_co2 = R.co2_total - last.R.co2_total;
+  return {steps, invest: inv, d_cost, d_co2, eco: econ(inv, d_cost, d_co2, R.eco), ziel: last.R, wpInvest};
 }
 
 /* ============================================================================= Textbericht */
@@ -1285,10 +1617,15 @@ function buildReport(R) {
   }
   if (R.pv_gen || R.bhkw_el) {
     add("");
-    add(`  PV-Erzeugung ${fnum(R.pv_gen)} kWh, davon Eigenverbrauch ${fnum(R.pv_ev)} kWh`);
+    add(`  PV: ${fnum(R.pv_kwp, 1)} kWp, ${R.pv_or}, ${fnum(R.pv_tilt)}° (Ertragsfaktor ${fnum(R.pv_f, 2)})`);
+    add(`  PV-Erzeugung ${fnum(R.pv_gen)} kWh, davon Eigenverbrauch ${fnum(R.pv_ev)} kWh (Eigenverbrauchsquote ${fnum(R.evq * 100)} %, Autarkiegrad ${fnum(R.autarkie * 100)} %)`);
     if (R.bhkw_el) add(`  BHKW-Strom ${fnum(R.bhkw_el)} kWh, davon Eigenverbrauch ${fnum(R.bhkw_ev)} kWh`);
     add(`  Netzbezug ${fnum(R.grid)} kWh | Einspeisung ${fnum(R.feed_in)} kWh`);
   }
+  add("");
+  add(`  Lastgang (Stundenmittel, simuliert): Spitze ${fnum(R.sim.loadPeak, 1)} kW, Grundlast ${fnum(R.sim.loadMin, 1)} kW, max. Netzbezug ${fnum(R.sim.gridPeak, 1)} kW`);
+  add(`  Elektrischer Anschluss (Abschätzung): ${fnum(R.anschluss.P, 1)} kW ≙ ${fnum(R.anschluss.I)} A` + (R.anschluss.fuse ? ` → Absicherung ${R.anschluss.fuse} A` : " → Sonderanschluss / Mittelspannung prüfen"));
+  for (const r of R.anschluss.rows) add(`      ${padR(r[0], 52)} ${padL(fnum(r[1], 1), 8)} kW   (${r[2]})`);
   add("");
   add("5  WASSER"); add(line);
   for (const [name, m3, , basis] of R.w_rows) add(`  ${padR(name, 34)} ${padL(fnum(m3, 1), 9)} m³/a   (${basis})`);
@@ -1319,7 +1656,7 @@ function buildReport(R) {
   return L.join("\n");
 }
 
-if (typeof module !== "undefined") module.exports = {compute, measures, fnum, parseNum, fplain, pyRound};
+if (typeof module !== "undefined") module.exports = {compute, measures, konzeptPfad, fnum, parseNum, fplain, pyRound};
 
 </script>
 <script>
@@ -1807,8 +2144,11 @@ const CHARTS = {overview: chartOverview, flow: chartFlow, huelle: chartHuelle, s
 /* ============================================================================= Tabellen */
 const row = (level, cells, style = null) => ({level, cells, style});
 
-function buildTables(key, R, M) {
+function buildTables(key, R, M, K) {
   const A = R.A, T = [];
+  if (key === "kennzahlen") return [tblKennzahlen(R)];
+  if (key === "lastgang") return tblLastgang(R);
+  if (key === "konzept") return tblKonzept(R, M || [], K);
   if (key === "overview") {
     const cols = [["Bereich", 250, "w"], ["Jahreswert", 110, "e"], ["Einheit", 70, "w"], ["je m²", 90, "e"], ["Herleitung / Hinweis", 430, "w"]];
     const rows = [row(0, ["Strom gesamt", fnum(R.E_el), "kWh/a", fnum(R.E_el / A, 1), "Summe aller Stromverbraucher"], "total")];
@@ -1819,7 +2159,9 @@ function buildTables(key, R, M) {
       "E-Mobilität": `${fnum(R.ev_n)} Fahrzeuge`};
     for (const name of D.GROUP_ORDER) if ((grp[name] || 0) > 0) rows.push(row(1, [name, fnum(grp[name]), "kWh/a", fnum(grp[name] / A, 1), hints[name]]));
     if (R.pv_gen || R.bhkw_el) rows.push(row(1, ["Netzbezug (nach Eigenerzeugung)", fnum(R.grid), "kWh/a", fnum(R.grid / A, 1),
-      `PV ${fnum(R.pv_gen)} kWh, Eigenverbrauch ${fnum(R.pv_ev + R.bhkw_ev)} kWh`], "muted"));
+      `Eigenverbrauch ${fnum(R.pv_ev + R.bhkw_ev)} kWh, Autarkiegrad ${fnum(R.autarkie * 100)} %`], "muted"));
+    if (R.pv_gen) rows.push(row(0, ["PV-Ertrag", fnum(R.pv_gen), "kWh/a", fnum(R.pv_gen / A, 1),
+      `${fnum(R.pv_kwp, 1)} kWp · Eigenverbrauchsquote ${fnum(R.evq * 100)} % · Einspeisung ${fnum(R.feed_in)} kWh`], "total"));
     rows.push(row(0, ["Wärme – Endenergie", fnum(R.heat_endenergy), "kWh/a", fnum(R.heat_endenergy / A, 1),
       `Heizwärme ${fnum(R.Q_h / A, 1)} + WW ${fnum(R.Q_ww_use / A, 1)} kWh/(m²a) Nutzenergie`], "total"));
     for (const cr of R.carriers) rows.push(row(1, [cr.name, fnum(cr.kwh), "kWh/a", fnum(cr.kwh / A, 1), cr.unit === "kWh" ? "" : `≈ ${fnum(cr.amount)} ${cr.unit}`]));
@@ -1831,6 +2173,7 @@ function buildTables(key, R, M) {
       `CO₂ ${fnum(R.co2_total, 1)} t/a · Primärenergie ${fnum(R.pe / A)} kWh/(m²a)`], "group"));
     const cls = R.res ? `Klasse ${R.ea_class} (Energieausweis-Skala)` : (R.bench ? `Vergleichswert NWG: Wärme ${R.bench[0]}, Strom ${R.bench[1]} kWh/(m²a)` : "");
     rows.push(row(0, ["Endenergiekennwert", "", "", fnum(R.ea_value, 1), cls], "group"));
+    rows.push(row(0, ["Heizlast", fnum(R.phi_rec, 1), "kW", fnum(R.phi_hl * 1000 / A), `W/m² Raumheizlast · Netzanschluss Strom ca. ${fnum(R.anschluss.P)} kW`], "group"));
     for (const [n, v, m, u] of istRows(R)) rows.push(row(0, [`Soll-Ist ${n}`, fnum(m, u === "m³" ? 1 : 0), u, "",
       `gemessen; berechnet ${fnum(v)} ${u} → Abweichung ${fnum((v - m) / m * 100, 1)} %`], "muted"));
     T.push({title: "Jahresbilanz", cols, rows});
@@ -1927,12 +2270,13 @@ function buildTables(key, R, M) {
     T.push({title: "Monatswerte", cols, rows});
   } else if (key === "massnahmen") {
     const cols = [["Maßnahme", 240, "w"], ["Δ Endenergie kWh/a", 115, "e"], ["Δ Netzstrom kWh/a", 110, "e"], ["Δ Kosten €/a", 90, "e"], ["Δ CO₂ t/a", 70, "e"],
-      ["Invest € *", 95, "e"], ["Amort. J.", 70, "e"], ["Beschreibung", 380, "w"]];
+      ["Invest € *", 95, "e"], ["Amort. J.", 70, "e"], ["dyn. Amort. J.", 80, "e"], ["Einstufung", 230, "w"], ["Beschreibung", 380, "w"]];
     const rows = (M || []).map(m => row(0, [m.name, fnum(m.d_end), fnum(m.d_el), fnum(m.d_cost), fnum(m.d_co2, 1), fnum(pyRound(m.invest, -2)),
-      m.amort ? fnum(m.amort, 1) : "–", m.desc], m.paket ? "total" : null));
+      m.amort ? fnum(m.amort, 1) : "–", m.eco && m.eco.dyn !== null ? fnum(m.eco.dyn, 1) : "–", m.klasse || "", m.desc], m.paket ? "total" : null));
     T.push({title: "Maßnahmen (Einsparung gegenüber Ist-Zustand)", cols, rows,
       note: "* Investitionen: Richtwerte brutto (Preisstand 2025/26) ohne Förderung (BEG/KfW). Bei ohnehin fälligen Arbeiten nur die energiebedingten " +
-            "Mehrkosten ansetzen (ca. 30–50 %). Amortisation statisch ohne Preissteigerung. Jede Maßnahme einzeln gegenüber dem Ist-Zustand gerechnet."});
+            "Mehrkosten ansetzen (ca. 30–50 %). Amortisation statisch ohne Preissteigerung, dynamisch mit Zins und Energiepreissteigerung (siehe „Preise & Ist“). " +
+            "Jede Maßnahme einzeln gegenüber dem Ist-Zustand gerechnet; den abgestimmten Stufenplan zeigt der Reiter „Energiekonzept“."});
   }
   return T;
 }
@@ -1940,14 +2284,448 @@ function buildTables(key, R, M) {
 function kpiValues(R) {
   const A = R.A, g = {};
   for (const [k, v] of Object.entries(R.el)) g[D.EL_GROUP[k]] = (g[D.EL_GROUP[k]] || 0) + v;
+  const b = R.bench;
   return [
     ["Strom", `${fnum(R.E_el)} kWh`, `${fnum(R.E_el / A, 1)} kWh/(m²a)`, `Licht ${fnum((g["Beleuchtung"] || 0) / A, 1)} · Nutzung ${fnum((g["Nutzung"] || 0) / A, 1)} · WP ${fnum((g["Wärmepumpe"] || 0) / A, 1)}`, "#26a69a"],
     ["Wärme · Endenergie", `${fnum(R.heat_endenergy)} kWh`, `${fnum(R.heat_endenergy / A, 1)} kWh/(m²a)`, `Nutzwärme ${fnum((R.Q_h + R.Q_ww_use) / A, 1)} kWh/(m²a)`, "#ef6f6c"],
     ["Wasser", `${fnum(R.water_m3)} m³`, `${fnum(R.l_pd)} L/(Person·Tag)`, `davon warm ${fnum(R.hot_m3)} m³`, "#3aa0d8"],
     ["Heizlast", `${fnum(R.phi_rec, 1)} kW`, `${fnum(R.phi_hl * 1000 / A)} W/m² (Raum)`, `installiert ${fnum(R.kw_inst, 1)} kW`, "#f4a259"],
+    R.pv_gen > 0 ? ["PV-Ertrag", `${fnum(R.pv_gen)} kWh`, `Autarkie ${fnum(R.autarkie * 100)} % · Eigenverbrauch ${fnum(R.evq * 100)} %`, `${fnum(R.pv_kwp, 1)} kWp · Einspeisung ${fnum(R.feed_in)} kWh`, "#f9a825"]
+      : ["PV-Ertrag", "keine PV", `Dachpotenzial ca. ${fnum(R.pv_pot_kwp, 1)} kWp`, `≈ ${fnum(R.pv_pot_kwp * R.pv_y)} kWh/a möglich`, "#f9a825"],
     ["Kosten", `${fnum(R.cost_total)} €`, `${fnum(R.cost_total / A, 2)} €/(m²a)`, "inkl. Wasser & Grundpreise", "#7a6ff0"],
     ["CO₂", `${fnum(R.co2_total, 1)} t`, `${fnum(R.co2_total * 1000 / A, 1)} kg/(m²a)`, `Primärenergie ${fnum(R.pe / A)} kWh/(m²a)`, "#6b7785"],
+    R.res ? ["Effizienz", `Klasse ${R.ea_class}`, `${fnum(R.ea_value)} kWh/(m²a) Endenergie`, `erneuerbare Wärme ${fnum(R.ee_waerme * 100)} %`, "#2e7d32"]
+      : ["Effizienz", `${fnum(R.ea_value)} kWh/(m²a)`, b ? `Wärme ${fnum(R.heat_endenergy / A / b[0] * 100)} % · Strom ${fnum((R.E_el - R.E_wp - R.E_elheat - R.E_ww_el - R.E_emob) / A / b[1] * 100)} % vom Vergleich` : "Endenergiekennwert", `erneuerbare Wärme ${fnum(R.ee_waerme * 100)} %`, "#2e7d32"],
   ];
+}
+
+/* =============================================================================
+   Kennzahlen, Lastgang & PV, Energiekonzept (Diagramme, Tabellen, Konzepttext)
+   ============================================================================= */
+"use strict";
+
+const RATE = {g: ["#2e7d32", "günstig"], m: ["#f9a825", "mittel"], b: ["#d84315", "hoch"]};
+/* Einordnung: lowerBetter -> günstig/mittel/hoch, sonst gut/mittel/gering */
+function rate(v, good, mid, lowerBetter = true) {
+  let k, txt;
+  if (lowerBetter) { k = v <= good ? "g" : v <= mid ? "m" : "b"; txt = RATE[k][1]; }
+  else { k = v >= good ? "g" : v >= mid ? "m" : "b"; txt = {g: "gut", m: "mittel", b: "gering"}[k]; }
+  return {html: `<span class="dot" style="background:${RATE[k][0]}"></span>${txt}`, text: txt, k};
+}
+const pct = (x, d = 0) => `${fnum(x * 100, d)} %`;
+const eur = x => `${fnum(pyRound(x, Math.abs(x) >= 10000 ? -2 : (Math.abs(x) >= 1000 ? -1 : 0)))} €`;
+const userEl = R => R.E_el - R.E_wp - R.E_elheat - R.E_ww_el - R.E_emob;
+
+/* Orientierungswerte für die Einordnung (Wohnen: Energieausweis-Skala / Stromspiegel; Nichtwohnen: Vergleichswerte VDI 3807) */
+function kpiBands(R) {
+  const A = R.A, b = R.bench || [100, 40], out = [];
+  const heat = R.heat_endenergy / A, el = userEl(R) / A;
+  if (R.res) out.push(["Wärme (Endenergie)", heat, "kWh/(m²a)", 75, 160, 300, true]);
+  else out.push(["Wärme (Endenergie)", heat, "kWh/(m²a)", 0.8 * b[0], 1.2 * b[0], 2.2 * b[0], true]);
+  if (R.res) out.push(["Nutzerstrom (ohne Wärme, E-Mobilität)", el, "kWh/(m²a)", 25, 40, 80, true]);
+  else out.push(["Nutzerstrom (ohne Wärme, E-Mobilität)", el, "kWh/(m²a)", 0.8 * b[1], 1.2 * b[1], 2.2 * b[1], true]);
+  out.push(["Spezifische Heizlast", R.phi_hl * 1000 / A, "W/m²", 40, 80, 150, true]);
+  out.push(["CO₂-Emissionen", R.co2_total * 1000 / A, "kg/(m²a)", 12, 30, 70, true]);
+  out.push(["Energie- und Wasserkosten", R.cost_total / A, "€/(m²a)", R.res ? 15 : 20, R.res ? 25 : 35, 60, true]);
+  if (R.res) out.push(["Wasserverbrauch", R.l_pd, "L/(Person·Tag)", 110, 140, 220, true]);
+  out.push(["Anteil erneuerbarer Wärme", R.ee_waerme * 100, "%", 65, 25, 100, false]);
+  if (R.pv_gen > 0) out.push(["Autarkiegrad Strom", R.autarkie * 100, "%", 50, 20, 100, false]);
+  return out;
+}
+
+function chartKennzahlen(fig, R) {
+  const bands = kpiBands(R);
+  fig.text(fig.X(0.01), fig.Y(0.975), "Kennzahlen im Vergleich zu Orientierungswerten", {size: FS.title - 1, bold: true, base: "top"});
+  const n = bands.length, top = 0.86, rowH = (top - 0.07) / n;
+  const colG = "#cfe8cf", colM = "#fbeab5", colB = "#f6c9bb";
+  bands.forEach(([name, v, unit, good, mid, max, lower], i) => {
+    const y0 = top - (i + 1) * rowH + rowH * 0.30;
+    const ax = new Ax(fig, [0.30, y0, 0.50, rowH * 0.42]);
+    const xmax = Math.max(max, v * 1.08);
+    ax.xlim(0, xmax);
+    const seg = lower ? [[0, good, colG], [good, mid, colM], [mid, xmax, colB]] : [[0, mid, colB], [mid, good, colM], [good, xmax, colG]];
+    for (const [a, b, c] of seg) fig.rect(ax.px(a), ax.y0, ax.px(b) - ax.px(a), ax.h, c);
+    const r = rate(v, good, mid, lower);
+    fig.rect(ax.px(0), ax.y0 + ax.h * 0.28, ax.px(Math.min(v, xmax)) - ax.px(0), ax.h * 0.44, C.DARK, {title: `${name}: ${fnum(v, 1)} ${unit}`});
+    fig.text(ax.x0 - 10, (ax.y0 + ax.y1) / 2, name, {size: FS.small, anchor: "end"});
+    fig.text(ax.x1 + 10, (ax.y0 + ax.y1) / 2, `${fnum(v, v < 100 ? 1 : 0)} ${unit}`, {size: FS.small, bold: true});
+    fig.circle(ax.x1 + 150, (ax.y0 + ax.y1) / 2, 5, RATE[r.k][0]);
+    fig.text(ax.x1 + 160, (ax.y0 + ax.y1) / 2, r.text, {size: FS.small});
+    for (const t of lower ? [good, mid] : [mid, good]) fig.text(ax.px(t), ax.y1 + 3, fnum(t), {size: FS.tiny - 1, color: C.MUTED, anchor: "middle", base: "top"});
+  });
+}
+
+function chartLastgang(fig, R) {
+  const s = R.sim, hasGen = R.pv_gen + R.bhkw_el > 0;
+  const ymax = Math.max(...s.dayJan[0], ...s.dayJul[0], ...s.dayJan[1], ...s.dayJul[1], 0.1) * 1.3;
+  const ax = new Ax(fig, [0.06, 0.15, 0.39, 0.68]).xlim(0, 23).ylim(0, ymax);
+  yAxis(ax, "kW", 5, true);
+  const area = (arr, col, lab) => {
+    if (Math.max(...arr) <= 0) return;
+    fig.path(`M${ax.px(0)},${ax.py(0)} L` + arr.map((v, i) => `${ax.px(i).toFixed(1)},${ax.py(v).toFixed(1)}`).join(" L") + ` L${ax.px(23)},${ax.py(0)} Z`, col, {opacity: 0.55, title: lab});
+  };
+  const line = (arr, col, lab) => {
+    fig.path("M" + arr.map((v, i) => `${ax.px(i).toFixed(1)},${ax.py(v).toFixed(1)}`).join(" L"), "none", {stroke: col, sw: 2.2});
+    arr.forEach((v, i) => fig.circle(ax.px(i), ax.py(v), 2.2, col, `${lab}, ${i}–${i + 1} Uhr: ${fnum(v, 1)} kW`));
+  };
+  area(s.dayJul[1], "#ffd54f", "PV-Erzeugung Juli (mittlerer Tag)");
+  area(s.dayJan[1], "#ffb74d", "PV-Erzeugung Januar (mittlerer Tag)");
+  line(s.dayJan[0], "#1f6feb", "Last Januar");
+  line(s.dayJul[0], "#26a69a", "Last Juli");
+  fig.line(ax.x0, ax.y1, ax.x1, ax.y1, C.BORDER, 1);
+  for (let hh = 0; hh <= 23; hh += 3) fig.text(ax.px(hh), ax.y1 + 8, `${hh}`, {size: FS.tiny, color: C.MUTED, anchor: "middle", base: "top"});
+  fig.text((ax.x0 + ax.x1) / 2, ax.y1 + 28, "Uhrzeit", {size: FS.small, color: C.MUTED, anchor: "middle", base: "top"});
+  const leg = [{label: "Last Januar", color: "#1f6feb", type: "line"}, {label: "Last Juli", color: "#26a69a", type: "line"}];
+  if (R.pv_gen > 0) leg.push({label: "PV Juli", color: "#ffd54f"}, {label: "PV Januar", color: "#ffb74d"});
+  legend(fig, leg, (ax.x0 + ax.x1) / 2, ax.y0 + 12, {ncol: 4, center: true, colW: 95, size: FS.tiny});
+  ax.title("Mittlerer Tagesgang (Stundenmittel) [kW]");
+
+  const [sc, un] = scaleOf(s.load_m);
+  const up = Math.max(...s.load_m) / sc, dn = Math.max(...s.feed_m) / sc;
+  const ax2 = new Ax(fig, [0.56, 0.15, 0.42, 0.68]).xlim(-0.6, 11.6).ylim(-dn * 1.1, up * 1.32);
+  yAxis(ax2, "", 6, true);
+  const bw = ax2.w / 12 * 0.7;
+  range(12).forEach(i => {
+    const x = ax2.px(i) - bw / 2, se = s.self_m[i] / sc, g = s.grid_m[i] / sc, f = s.feed_m[i] / sc;
+    if (se > 0) fig.rect(x, ax2.py(se), bw, ax2.py(0) - ax2.py(se), "#66bb6a", {title: `${D.MONTHS[i]}: Eigenverbrauch ${fnum(s.self_m[i])} kWh`});
+    fig.rect(x, ax2.py(se + g), bw, ax2.py(se) - ax2.py(se + g), "#90a4ae", {title: `${D.MONTHS[i]}: Netzbezug ${fnum(s.grid_m[i])} kWh`});
+    if (f > 0) fig.rect(x, ax2.py(0), bw, ax2.py(-f) - ax2.py(0), "#ffd54f", {title: `${D.MONTHS[i]}: Einspeisung ${fnum(s.feed_m[i])} kWh`});
+  });
+  fig.line(ax2.x0, ax2.py(0), ax2.x1, ax2.py(0), C.MUTED, 1);
+  D.MONTHS.forEach((m, i) => fig.text(ax2.px(i), ax2.y1 + 8, m, {size: FS.tiny, color: C.MUTED, anchor: "middle", base: "top"}));
+  const leg2 = [{label: "Netzbezug", color: "#90a4ae"}];
+  if (hasGen) leg2.unshift({label: "Eigenverbrauch", color: "#66bb6a"}), leg2.push({label: "Einspeisung", color: "#ffd54f"});
+  legend(fig, leg2, (ax2.x0 + ax2.x1) / 2, ax2.y0 + 12, {ncol: 3, center: true, colW: 120, size: FS.tiny});
+  ax2.title(`Strombilanz [${un}]` + (hasGen ? ` – Autarkie ${pct(R.autarkie)}, Eigenverbrauch ${pct(R.evq)}` : ""));
+}
+
+function chartKonzept(fig, R, M, K) {
+  if (!K) { fig.text(fig.W / 2, fig.H / 2, "Energiekonzept wird berechnet …", {anchor: "middle", color: C.MUTED, size: FS.label + 1}); return; }
+  const st = K.steps, n = st.length;
+  fig.text(fig.X(0.01), fig.Y(0.975), "Stufenplan – Entwicklung gegenüber dem Ist-Zustand (= 100 %)", {size: FS.title - 1, bold: true, base: "top"});
+  const series = [["Endenergiebezug", "end", "#f4a259", v => `${fnum(v / 1000, v < 20000 ? 1 : 0)} MWh`], ["CO₂-Emissionen", "co2", "#6b7785", v => `${fnum(v, 1)} t`],
+    ["Energiekosten", "cost", "#7a6ff0", v => eur(v)]];
+  const ax = new Ax(fig, [0.07, 0.20, 0.90, 0.58]).xlim(-0.5, n - 0.5).ylim(0, 122);
+  yAxis(ax, "%", 6, true);
+  const gw = ax.w / n * 0.78, bw = gw / 3;
+  st.forEach((s, i) => {
+    series.forEach(([lab, k, col, f], j) => {
+      const p = Math.max(0, st[0].k[k] ? s.k[k] / st[0].k[k] * 100 : 0);
+      const x = ax.px(i) - gw / 2 + j * bw;
+      fig.rect(x + 2, ax.py(p), bw - 4, ax.py(0) - ax.py(p), col, {title: `${s.name} – ${lab}: ${f(s.k[k])} (${fnum(p)} %)`});
+      fig.text(x + bw / 2, ax.py(p) - 5, f(s.k[k]), {size: FS.tiny, anchor: "middle", base: "bottom"});
+    });
+    fig.text(ax.px(i), ax.y1 + 9, i === 0 ? s.name : `nach ${D.STAGE_SHORT[s.stage]}`, {size: FS.small, bold: true, anchor: "middle", base: "top"});
+    fig.text(ax.px(i), ax.y1 + 26, i === 0 ? "" : `Investition kumuliert ${eur(s.invest)}`, {size: FS.tiny, color: C.MUTED, anchor: "middle", base: "top"});
+  });
+  fig.line(ax.x0, ax.y1, ax.x1, ax.y1, C.BORDER, 1);
+  legend(fig, series.map(s => ({label: s[0], color: s[2]})), (ax.x0 + ax.x1) / 2, ax.y0 - 16, {ncol: 3, center: true, colW: 160});
+}
+Object.assign(CHARTS, {kennzahlen: chartKennzahlen, lastgang: chartLastgang, konzept: chartKonzept});
+
+/* ============================================================================= Tabellen der neuen Auswertungen */
+function tblKennzahlen(R) {
+  const A = R.A, P = Math.max(R.persons, 1), rows = [];
+  const G = name => rows.push(row(0, [name, "", "", "", ""], "group"));
+  const K = (name, v, unit, r, note) => rows.push(row(1, [name, v, unit, r || "", note || ""]));
+  const b = R.bench;
+  G("Gebäude und Hülle");
+  K("Nutzfläche (beheizt)", fnum(A), "m²", "", `${R.floors} Geschosse, ${fnum(R.Ve)} m³ Bruttovolumen, A/V = ${fnum(R.AV, 2)} 1/m`);
+  K("Spez. Transmissionswärmeverlust H'T", fnum(R.ht, 2), "W/(m²K)", rate(R.ht, 0.40, 0.80), "Mittlerer U-Wert der Hülle inkl. Wärmebrücken");
+  K("Wirksamer Luftwechsel", fnum(R.n_eff, 2), "1/h", "", R.vent);
+  K("Wärmeverlustkoeffizient H = H_T + H_V", fnum(R.H_T + R.H_V), "W/K", "", `${fnum((R.H_T + R.H_V) / A, 2)} W/(m²K) je m² Nutzfläche`);
+  G("Wärme");
+  K("Heizwärmebedarf (Nutzenergie)", fnum(R.Q_h / A, 1), "kWh/(m²a)", rate(R.Q_h / A, 50, 120), `${fnum(R.Q_h)} kWh/a` + (R.f_nutzer !== 1 ? `, Nutzerfaktor ${fnum(R.f_nutzer, 2)}` : ""));
+  K("Warmwasser (Nutzenergie)", fnum(R.Q_ww_use / A, 1), "kWh/(m²a)", "", `${fnum(R.Q_ww_use)} kWh/a = ${pct(R.Q_ww_use / Math.max(R.Q_h + R.Q_ww_use, 1))} der Nutzwärme`);
+  K("Endenergie Wärme", fnum(R.heat_endenergy / A, 1), "kWh/(m²a)", R.res ? rate(R.heat_endenergy / A, 75, 160) : (b ? rate(R.heat_endenergy / A, 0.8 * b[0], 1.2 * b[0]) : ""),
+    `${fnum(R.heat_endenergy)} kWh/a` + (b ? `, Vergleichswert ${b[0]} kWh/(m²a)` : ""));
+  K("Anlagenaufwandszahl (Endenergie / Nutzwärme)", fnum(R.heat_endenergy / Math.max(R.Q_h + R.Q_ww_use, 1), 2), "–", rate(R.heat_endenergy / Math.max(R.Q_h + R.Q_ww_use, 1), 0.6, 1.15),
+    "< 1: Umweltwärme/Solar überwiegt die Verluste; > 1: Erzeuger- und Verteilverluste");
+  K("Heizlast (inkl. Warmwasser-Zuschlag)", fnum(R.phi_rec, 1), "kW", "", `installiert ${fnum(R.kw_inst, 1)} kW, Dauerlinienspitze ${fnum(R.dl_peak, 1)} kW`);
+  K("Spezifische Heizlast (Raumheizung)", fnum(R.phi_hl * 1000 / A), "W/m²", rate(R.phi_hl * 1000 / A, 40, 80), "DIN EN 12831 (vereinfacht), Norm-Außentemperatur der Region");
+  if (R.gens.length) K("Vollbenutzungsstunden Haupterzeuger", fnum(R.gens[0].vbh), "h/a", "", `${R.gens[0].typ}, ${R.gens[0].eff}`);
+  K("Anteil erneuerbarer Wärme", fnum(R.ee_waerme * 100), "%", rate(R.ee_waerme * 100, 65, 25, false), "Umweltwärme, Solarthermie, Biomasse bezogen auf die erzeugte Wärme");
+  G("Strom");
+  K("Strom gesamt", fnum(R.E_el / A, 1), "kWh/(m²a)", "", `${fnum(R.E_el)} kWh/a = ${fnum(R.E_el / P)} kWh je Person`);
+  K("Nutzerstrom (ohne Wärme und E-Mobilität)", fnum(userEl(R) / A, 1), "kWh/(m²a)", R.res ? rate(userEl(R) / A, 25, 40) : (b ? rate(userEl(R) / A, 0.8 * b[1], 1.2 * b[1]) : ""),
+    b ? `Vergleichswert ${b[1]} kWh/(m²a)` : `${fnum(userEl(R) / Math.max(R.we, 1))} kWh je Wohneinheit`);
+  K("Beleuchtung", fnum(R.E_light / A, 1), "kWh/(m²a)", "", `${fnum(R.P_light / A, 1)} W/m² installiert, ${R.lm}`);
+  if (R.E_wp > 0) K("Wärmepumpenstrom", fnum(R.E_wp), "kWh/a", "", `Heizung ${fnum(R.E_wp_h)} kWh, Warmwasser ${fnum(R.E_wp_ww)} kWh`);
+  if (R.E_ww_el > 0) K("Warmwasser elektrisch", fnum(R.E_ww_el), "kWh/a", "", R.ww_label);
+  if (R.E_elheat > 0) K("Elektro-Direktheizung", fnum(R.E_elheat), "kWh/a", "", "");
+  K("Sonstige Anlagentechnik", fnum(R.E_vent + R.E_cool + R.E_lifts + R.E_aux), "kWh/a", "", "Lüftung, Kühlung, Aufzüge, Hilfsenergie");
+  if (R.E_emob > 0) K("E-Mobilität", fnum(R.E_emob), "kWh/a", "", `${fnum(R.ev_n)} Fahrzeuge`);
+  K("Lastspitze / Grundlast (Stundenmittel)", `${fnum(R.sim.loadPeak, 1)} / ${fnum(R.sim.loadMin, 1)}`, "kW", "", `Benutzungsdauer ${fnum(R.E_el / Math.max(R.sim.loadPeak, 0.01))} h/a`);
+  K("Leistungsbedarf Netzanschluss", fnum(R.anschluss.P, 1), "kW", "", R.anschluss.fuse ? `≙ ${fnum(R.anschluss.I)} A → Absicherung ${R.anschluss.fuse} A` : "Sonderanschluss prüfen");
+  G("Photovoltaik und Eigenversorgung");
+  if (R.pv_gen > 0) {
+    K("PV-Ertrag", fnum(R.pv_gen), "kWh/a", "", `${fnum(R.pv_kwp, 1)} kWp, ${fnum(R.pv_gen / R.pv_kwp)} kWh/kWp (${R.pv_or}, ${fnum(R.pv_tilt)}°)`);
+    K("Eigenverbrauchsquote", fnum(R.evq * 100), "%", "", `${fnum(R.pv_ev)} kWh selbst genutzt, ${fnum(R.feed_in)} kWh eingespeist`);
+    K("Autarkiegrad", fnum(R.autarkie * 100), "%", rate(R.autarkie * 100, 50, 20, false), `Netzbezug ${fnum(R.grid)} kWh/a` + (R.bat > 0 ? `, Speicher ${fnum(R.bat)} kWh, ${fnum(R.sim.cycles)} Vollzyklen/a` : ""));
+  } else K("PV-Potenzial Dach (Abschätzung)", fnum(R.pv_pot_kwp, 1), "kWp", "", `ca. ${fnum(R.pv_pot_kwp * R.pv_y)} kWh/a bei 45 % nutzbarer Dachfläche`);
+  G("Wasser");
+  K("Trinkwasser", fnum(R.water_m3), "m³/a", "", `${fnum(R.water_m3 * 1000 / A)} L/(m²a), davon ${fnum(R.hot_m3)} m³ erwärmt`);
+  K("Verbrauch je Person und Nutzungstag", fnum(R.l_pd), "L", R.res ? rate(R.l_pd, 110, 140) : "", R.res ? "Durchschnitt Deutschland ca. 125 L" : "");
+  G("Klima und Kosten");
+  K("CO₂-Emissionen", fnum(R.co2_total, 1), "t/a", rate(R.co2_total * 1000 / A, 12, 30), `${fnum(R.co2_total * 1000 / A, 1)} kg/(m²a), ${fnum(R.co2_total * 1000 / P)} kg je Person`);
+  K("Primärenergie (nicht erneuerbar)", fnum(R.pe / A), "kWh/(m²a)", "", `${fnum(R.pe)} kWh/a`);
+  K("Endenergiekennwert", fnum(R.ea_value, 1), "kWh/(m²a)", "", R.res ? `Effizienzklasse ${R.ea_class}` : "Wärme, Hilfsenergie, Lüftung, Kühlung");
+  K("Energie- und Wasserkosten", fnum(R.cost_total), "€/a", rate(R.cost_total / A, R.res ? 15 : 20, R.res ? 25 : 35), `${fnum(R.cost_total / A, 2)} €/(m²a) = ${fnum(R.cost_total / A / 12, 2)} €/m² je Monat`);
+  const heatCost = sum(Object.entries(R.cost).filter(([k]) => k in R.heat_end || k.startsWith("Strom Wärmepumpe")).map(([, v]) => v)) + (R.E_elheat + R.E_ww_el) / Math.max(R.E_el, 1) * (R.cost["Strom"] || 0);
+  K("Wärmegestehungskosten (Arbeit)", fnum(heatCost / Math.max(R.Q_h + R.Q_ww_use, 1) * 100, 1), "ct/kWh", "", "Energiekosten der Wärmeerzeugung je kWh Nutzwärme");
+  if (R.co2_levy > 1) K("CO₂-Abgabe in den Brennstoffkosten", fnum(R.co2_levy), "€/a", "", `${fnum(R.co2_price)} €/t`);
+  return {title: "Kennzahlen", cols: [["Kennzahl", 290, "w"], ["Wert", 100, "e"], ["Einheit", 85, "w"], ["Einordnung", 95, "w"], ["Erläuterung", 420, "w"]], rows,
+    note: "Einordnung anhand von Orientierungswerten (Wohngebäude: Energieausweis-Skala, Stromspiegel; Nichtwohngebäude: Vergleichswerte nach VDI 3807). Sie ersetzt keine Bewertung im Einzelfall."};
+}
+
+function tblLastgang(R) {
+  const s = R.sim, a = R.anschluss, T = [];
+  const mrow = (name, vals, style = null) => row(0, [name, ...vals.map(v => fnum(v)), fnum(sum(vals))], style);
+  const rows = [mrow("Stromverbrauch", s.load_m, "total")];
+  if (R.pv_gen > 0) rows.push(mrow("PV-Erzeugung", R.pv_m));
+  if (R.pv_gen + R.bhkw_el > 0) rows.push(mrow("Eigenverbrauch (PV, BHKW, Speicher)", s.self_m), mrow("Einspeisung", s.feed_m));
+  rows.push(mrow("Netzbezug", s.grid_m));
+  if (R.pv_gen + R.bhkw_el > 0) rows.push(row(0, ["Autarkiegrad %", ...range(12).map(i => fnum(s.load_m[i] > 0 ? (1 - s.grid_m[i] / s.load_m[i]) * 100 : 0)), fnum(R.autarkie * 100)], "muted"));
+  T.push({title: "Monatliche Strombilanz (kWh)", cols: [["kWh", 230, "w"], ...D.MONTHS.map(m => [m, 56, "e"]), ["Jahr", 76, "e"]], rows});
+  const r2 = a.rows.map(r => row(0, [r[0], fnum(r[1], 1), r[2]]));
+  r2.push(row(0, ["Leistungsbedarf gesamt", fnum(a.P, 1), `≙ ${fnum(a.S, 1)} kVA (cos φ 0,95) bzw. ${fnum(a.I)} A je Außenleiter bei 400 V`], "total"));
+  r2.push(row(0, ["Empfohlene Absicherung Hausanschluss", a.fuse ? `${a.fuse} A` : "> 1.250 A", a.fuse && a.fuse <= 250 ? "Niederspannungsanschluss; Auslegung mit dem Netzbetreiber abstimmen (VDE-AR-N 4100)"
+    : "hohe Anschlussleistung: Wandlermessung bzw. Mittelspannungsanschluss mit dem Netzbetreiber klären"], "group"));
+  r2.push(row(0, ["Simulierte Lastspitze (Stundenmittel)", fnum(s.loadPeak, 1), `max. Netzbezug ${fnum(s.gridPeak, 1)} kW` + (s.feedPeak > 0 ? `, max. Einspeisung ${fnum(s.feedPeak, 1)} kW` : "")], "muted"));
+  if (a.steuerbar.length) r2.push(row(0, ["Steuerbare Verbrauchseinrichtungen", String(a.steuerbar.length), `${a.steuerbar.join(", ")} – Anmeldung und netzorientierte Steuerung nach § 14a EnWG (> 4,2 kW)`], "muted"));
+  T.push({title: "Elektrischer Netzanschluss – Leistungsbedarf", cols: [["Position", 330, "w"], ["kW", 90, "e"], ["Grundlage / Hinweis", 560, "w"]], rows: r2,
+    note: "Abschätzung für die Vorplanung: Wohngebäude nach den Kennlinien der DIN 18015-1 (Näherung), sonstige Gebäude aus dem simulierten Lastgang. Maßgeblich sind die Planung nach DIN VDE 0100, die TAB des Netzbetreibers und VDE-AR-N 4100/4105."});
+  return T;
+}
+
+function tblKonzept(R, M, K) {
+  const T = [];
+  if (!K) return T;
+  const st = K.steps;
+  T.push({title: "Stufenplan – Kennwerte nach jeder Stufe", cols: [["Zustand", 220, "w"], ["Endenergiebezug kWh/a", 130, "e"], ["CO₂ t/a", 80, "e"], ["Kosten €/a", 95, "e"],
+    ["Heizlast kW", 85, "e"], ["Kennwert kWh/(m²a)", 125, "e"], ["EE-Wärme", 75, "e"], ["Investition kum. €", 120, "e"], ["Maßnahmen der Stufe", 380, "w"]],
+    rows: st.map((s, i) => row(0, [i === 0 ? s.name : `nach ${D.STAGE_SHORT[s.stage]}`, fnum(s.k.end), fnum(s.k.co2, 1), fnum(s.k.cost), fnum(s.k.hl, 1),
+      fnum(s.k.ea, 1) + (R.res ? ` (${s.k.klasse})` : ""), pct(s.k.ee), i === 0 ? "–" : fnum(pyRound(s.invest, -2)), s.names.join(", ")], i === st.length - 1 && i > 0 ? "total" : null))});
+  const rows = [];
+  for (const sn of [1, 2, 3, 4]) {
+    const ms = M.filter(m => m.stage === sn);
+    if (!ms.length) continue;
+    rows.push(row(0, [D.STAGES[sn], "", "", "", "", "", ""], "group"));
+    for (const m of ms) rows.push(row(1, [m.name, fnum(pyRound(m.invest, -2)), fnum(m.d_cost), fnum(m.d_co2, 1), m.eco.dyn !== null ? fnum(m.eco.dyn, 1) : "> 60",
+      fnum(pyRound(m.eco.npv, -2)), m.klasse], m.inPath ? null : "muted"));
+  }
+  T.push({title: "Maßnahmenkatalog mit Wirtschaftlichkeit", cols: [["Maßnahme", 280, "w"], ["Investition €", 105, "e"], ["Einsparung €/a", 110, "e"], ["CO₂ t/a", 75, "e"],
+    ["dyn. Amortisation a", 125, "e"], ["Kapitalwert €", 110, "e"], ["Einstufung", 300, "w"]], rows,
+    note: `Jede Maßnahme einzeln gegenüber dem Ist-Zustand; Investitionen als Richtwerte brutto (Preisstand 2025/26)${R.eco.f > 0 ? `, Förderquote ${pct(R.eco.f)} berücksichtigt` : ", ohne Förderung"}. ` +
+      `Kapitalwert über ${R.eco.n} Jahre bei ${pct(R.eco.i, 1)} Kalkulationszins und ${pct(R.eco.s, 1)} Energiepreissteigerung pro Jahr.`});
+  return T;
+}
+
+/* ============================================================================= Befunde (Stärken / Schwachstellen) */
+function befunde(R) {
+  const A = R.A, out = [], add = (sev, t) => out.push([sev, t]);
+  const Ht = R.H_T + R.H_V;
+  const parts = [...R.comp.map(c => [c.name, c.H, c.U]), ["Lüftung / Infiltration", R.H_V, null]].sort((a, b) => b[1] - a[1]);
+  const [n1, h1, u1] = parts[0];
+  if (h1 / Ht > 0.28) add("hoch", `Größte Einzelposition der Wärmeverluste: ${n1} mit ${pct(h1 / Ht)}` + (u1 ? ` (U ≈ ${fnum(u1, 2)} W/(m²K)).` : ` (Luftwechsel ${fnum(R.n_eff, 2)} 1/h).`));
+  if (R.ht > 0.8) add("hoch", `Der mittlere Wärmeschutz der Hülle ist schwach (H'T = ${fnum(R.ht, 2)} W/(m²K)); heutige Neubauten liegen bei etwa 0,3–0,4 W/(m²K).`);
+  else if (R.ht <= 0.4) add("gut", `Die Gebäudehülle ist gut gedämmt (H'T = ${fnum(R.ht, 2)} W/(m²K)).`);
+  const hl = R.phi_hl * 1000 / A;
+  if (hl > 80) add("mittel", `Die spezifische Heizlast von ${fnum(hl)} W/m² ist hoch; für niedrige Vorlauftemperaturen sind größere Heizflächen oder eine bessere Hülle nötig.`);
+  const fossil = R.gens.filter(g => ["Erdgas", "Heizöl", "Flüssiggas"].includes(g.carrier)), fShare = sum(fossil.map(g => g.share));
+  if (fShare > 50) add("hoch", `Die Wärme wird zu ${fnum(fShare)} % fossil erzeugt (${[...new Set(fossil.map(g => g.carrier))].join(", ")}). Das bedeutet ein steigendes Kostenrisiko durch die CO₂-Bepreisung (derzeit angesetzt: ${fnum(R.co2_price)} €/t, entspricht ${eur(R.co2_levy)} pro Jahr).`);
+  for (const g of R.gens) {
+    if (/Konstanttemperatur|Standardkessel/.test(g.typ)) add("hoch", `${g.typ}: veraltete Kesseltechnik mit einem Nutzungsgrad von nur ${g.eff.replace("η ", "")}.`);
+    if (g.typ.includes("Wärmepumpe") && R.vl >= 60) add("hoch", `Die Wärmepumpe arbeitet mit ${R.vl} °C Vorlauftemperatur (${g.eff}); bei 45–55 °C wären Arbeitszahlen über 3 erreichbar.`);
+    else if (g.typ.includes("Wärmepumpe")) add("gut", `Die Wärmepumpe erreicht eine Jahresarbeitszahl von ${g.eff.replace("JAZ ", "")} und nutzt überwiegend Umweltwärme.`);
+  }
+  if (R.heiz_alter >= 20 && !R.gens.every(g => g.typ.includes("Fernwärme"))) add("mittel", `Der Wärmeerzeuger ist rund ${fnum(R.heiz_alter)} Jahre alt (Annahme, falls nicht angegeben). Die rechnerische Nutzungsdauer nach VDI 2067 (etwa 18–20 Jahre) ist erreicht; ein Ersatz sollte geplant werden, bevor ein Ausfall zu einer Notlösung zwingt.`);
+  if (R.gens.length && R.kw_inst > 2 * R.phi_rec && R.phi_rec > 3) add("mittel", `Die installierte Heizleistung (${fnum(R.kw_inst, 1)} kW) ist mehr als doppelt so hoch wie die berechnete Heizlast (${fnum(R.phi_rec, 1)} kW). Überdimensionierung führt zu Takten und Bereitschaftsverlusten.`);
+  if (R.e_dist >= 1.15) add("mittel", `Die Wärmeverteilung verliert etwa ${pct(R.e_dist - 1)} der Heizwärme (ungedämmte Leitungen, fehlender hydraulischer Abgleich).`);
+  if (R.ww_central && R.Q_circ > 0.3 * R.Q_ww_use) add("mittel", `Die Warmwasserzirkulation verliert ${fnum(R.Q_circ)} kWh/a – das sind ${pct(R.Q_circ / R.Q_ww_use)} der eigentlichen Warmwasser-Nutzenergie.`);
+  const pl = R.P_light / A;
+  if (!R.lm.startsWith("LED (neu")) add(R.E_light / R.E_el > 0.15 ? "mittel" : "info", `Die Beleuchtung (${R.lm}, ${fnum(pl, 1)} W/m²) benötigt ${fnum(R.E_light)} kWh/a = ${pct(R.E_light / R.E_el)} des Stroms; moderne LED-Technik mit Regelung kommt mit deutlich weniger aus.`);
+  if (R.bench) {
+    const qs = userEl(R) / A / R.bench[1], qw = R.heat_endenergy / A / R.bench[0];
+    if (qs > 1.25) add("mittel", `Der Nutzerstrom liegt ${fnum((qs - 1) * 100)} % über dem Vergleichswert für ${R.profil} (${R.bench[1]} kWh/(m²a)).`);
+    if (qw > 1.25) add("hoch", `Der Wärmeverbrauch liegt ${fnum((qw - 1) * 100)} % über dem Vergleichswert für ${R.profil} (${R.bench[0]} kWh/(m²a)).`);
+    if (qw < 0.8) add("gut", `Der Wärmeverbrauch liegt ${fnum((1 - qw) * 100)} % unter dem Vergleichswert für ${R.profil}.`);
+  } else {
+    if (["F", "G", "H"].includes(R.ea_class)) add("hoch", `Mit ${fnum(R.ea_value)} kWh/(m²a) Endenergie liegt das Gebäude in Effizienzklasse ${R.ea_class} – im unteren Bereich des Wohngebäudebestands.`);
+    else if (["A+", "A", "B"].includes(R.ea_class)) add("gut", `Mit ${fnum(R.ea_value)} kWh/(m²a) Endenergie erreicht das Gebäude Effizienzklasse ${R.ea_class}.`);
+  }
+  if (R.pv_gen <= 0 && R.pv_pot_kwp >= 3) add("mittel", `Das Dach wird nicht zur Stromerzeugung genutzt. Das Potenzial liegt bei etwa ${fnum(R.pv_pot_kwp, 1)} kWp bzw. ${fnum(R.pv_pot_kwp * R.pv_y)} kWh pro Jahr.`);
+  if (R.pv_gen > 0) add("gut", `Die PV-Anlage (${fnum(R.pv_kwp, 1)} kWp) deckt ${pct(R.autarkie)} des Strombedarfs; ${pct(R.evq)} des Solarstroms werden selbst genutzt.`);
+  if (R.pv_gen > 0 && R.evq < 0.3 && R.bat <= 0) add("info", `Nur ${pct(R.evq)} des Solarstroms werden selbst verbraucht. Ein Speicher, die Verlagerung von Lasten in die Mittagsstunden oder eine Wärmepumpe erhöhen die Eigennutzung.`);
+  if (R.res && R.l_pd > 140) add("info", `Der Wasserverbrauch von ${fnum(R.l_pd)} L je Person und Tag liegt über dem Bundesdurchschnitt von etwa 125 L.`);
+  if (R.ee_waerme >= 0.65) add("gut", `${pct(R.ee_waerme)} der Wärme stammen aus erneuerbaren Quellen.`);
+  if (!R.res && (R.bacs.startsWith("C") || R.bacs.startsWith("D"))) add("info", `Die Gebäudeautomation entspricht Klasse ${R.bacs[0]} nach DIN EN ISO 52120-1; ein Energiemonitoring mit Zeitprogrammen und Einzelraumregelung senkt den Verbrauch typischerweise um 10–20 %.`);
+  for (const [n, v, m, u] of istRows(R)) {
+    const d = (v - m) / m;
+    if (Math.abs(d) > 0.15) add("info", `Die Berechnung weicht bei ${n} um ${fnum(d * 100)} % vom gemessenen Verbrauch ab (${fnum(v)} statt ${fnum(m)} ${u}). Eingaben prüfen – vor allem Nutzungszeiten, Raumtemperatur, Anlagentechnik und Witterung des Bezugsjahres.`);
+    else add("gut", `Die Berechnung trifft den gemessenen Verbrauch bei ${n} auf ${fnum(Math.abs(d) * 100)} % genau; das Modell bildet das Gebäude plausibel ab.`);
+  }
+  return out;
+}
+
+/* ============================================================================= Energiekonzept (Textdokument) */
+function buildKonzept(R, M, K, meta = {}) {
+  const A = R.A, e = esc, st = K.steps, ziel = st[st.length - 1], k0 = st[0].k, k1 = ziel.k;
+  const pj = R.projekt, obj = pj.projekt_name || R.profil;
+  const tbl = (head, rows, cls = "") => `<div class="tblscroll"><table class="ktab ${cls}"><thead><tr>${head.map(h => `<th class="${h[1] || ""}">${e(h[0])}</th>`).join("")}</tr></thead><tbody>` +
+    rows.map(r => `<tr class="${r.cls || ""}">${r.c.map((c, j) => `<td class="${head[j][1] || ""}">${e(c)}</td>`).join("")}</tr>`).join("") + `</tbody></table></div>`;
+  const red = (a, b) => a > 0 ? pct(1 - b / a) : "–";
+  const path = M.filter(m => m.inPath), notIn = M.filter(m => !m.inPath && !m.paket);
+  const top = path.slice().sort((a, b) => b.d_co2 - a.d_co2).slice(0, 3);
+  const bef = befunde(R);
+  const dynTxt = K.eco.dyn !== null ? (K.eco.dyn <= R.eco.n ? `amortisiert sich dynamisch nach rund ${fnum(K.eco.dyn)} Jahren` : `amortisiert sich erst nach rund ${fnum(K.eco.dyn)} Jahren und damit außerhalb des Betrachtungszeitraums von ${R.eco.n} Jahren`)
+    : "amortisiert sich allein über die Energiekosteneinsparung nicht";
+  let H = "";
+  const sec = (nr, title, body) => { H += `<section class="ksec"><h3>${nr} ${e(title)}</h3>${body}</section>`; };
+
+  // 1 Zusammenfassung
+  let s = `<p>${e(obj)}${pj.projekt_adresse ? ` (${e(pj.projekt_adresse)})` : ""} ist ein ${e(R.profil)} mit ${fnum(A)} m² beheizter Nutzfläche (Baualter ${e(R.baujahr)}, ${e(R.sanierung)}). ` +
+    `Nach der Berechnung benötigt das Gebäude pro Jahr rund <b>${fnum(pyRound(R.heat_endenergy, -2))} kWh Endenergie für Wärme</b>, <b>${fnum(pyRound(R.E_el, -2))} kWh Strom</b> und <b>${fnum(R.water_m3)} m³ Wasser</b>. ` +
+    `Daraus ergeben sich Kosten von etwa <b>${eur(R.cost_total)} pro Jahr</b> und Emissionen von <b>${fnum(R.co2_total, 1)} t CO₂</b>. ` +
+    (R.res ? `Der Endenergiekennwert von ${fnum(R.ea_value)} kWh/(m²a) entspricht der Effizienzklasse ${R.ea_class}.`
+      : (R.bench ? `Der Wärmeverbrauch liegt bei ${fnum(R.heat_endenergy / A / R.bench[0] * 100)} %, der Nutzerstrom bei ${fnum(userEl(R) / A / R.bench[1] * 100)} % des Vergleichswerts für diese Gebäudeart.` : "")) + `</p>`;
+  if (st.length > 1) {
+    s += `<p>Das Konzept empfiehlt einen Stufenplan mit ${path.length} Maßnahmen. ` + (top.length ? `Die größten Hebel sind ${top.map(m => `${e(m.name)} (−${fnum(m.d_co2, 1)} t CO₂/a)`).join(", ")}. ` : "") +
+      `Nach Umsetzung aller Stufen sinkt der Energiebezug um <b>${red(k0.end, k1.end)}</b>, der CO₂-Ausstoß um <b>${red(k0.co2, k1.co2)}</b> und die jährlichen Kosten ${K.d_cost >= 0 ? "sinken" : "steigen"} um <b>${eur(Math.abs(K.d_cost))}</b>. ` +
+      `Dem steht eine Investition von rund <b>${eur(K.invest)}</b> gegenüber${R.eco.f > 0 ? ` (nach ${pct(R.eco.f)} Förderung ${eur(K.eco.inv)})` : " (vor Förderung)"}; das Gesamtpaket ${dynTxt}.</p>`;
+    s += tbl([["Kennwert"], ["Ist-Zustand", "r"], ["Zielzustand", "r"], ["Veränderung", "r"]], [
+      {c: ["Energiebezug (Brennstoffe, Fernwärme, Netzstrom)", `${fnum(k0.end)} kWh/a`, `${fnum(k1.end)} kWh/a`, "−" + red(k0.end, k1.end)]},
+      {c: ["CO₂-Emissionen", `${fnum(k0.co2, 1)} t/a`, `${fnum(k1.co2, 1)} t/a`, "−" + red(k0.co2, k1.co2)]},
+      {c: ["Energie- und Wasserkosten", `${fnum(k0.cost)} €/a`, `${fnum(k1.cost)} €/a`, (K.d_cost >= 0 ? "−" : "+") + eur(Math.abs(K.d_cost))]},
+      {c: ["Heizlast", `${fnum(k0.hl, 1)} kW`, `${fnum(k1.hl, 1)} kW`, "−" + red(k0.hl, k1.hl)]},
+      {c: ["Endenergiekennwert" + (R.res ? " / Effizienzklasse" : ""), `${fnum(k0.ea)} kWh/(m²a)` + (R.res ? ` / ${k0.klasse}` : ""), `${fnum(k1.ea)} kWh/(m²a)` + (R.res ? ` / ${k1.klasse}` : ""), ""]},
+      {c: ["Anteil erneuerbarer Wärme", pct(k0.ee), pct(k1.ee), ""]},
+      {c: ["Autarkiegrad Strom", pct(k0.autarkie), pct(k1.autarkie), ""]},
+    ]);
+  } else s += `<p>Das Gebäude ist energetisch bereits auf einem guten Stand; aus dem Maßnahmenkatalog ergibt sich kein wirtschaftlich oder klimatisch begründeter Stufenplan. Empfohlen werden ein laufendes Verbrauchsmonitoring und die Optimierung des Anlagenbetriebs.</p>`;
+  sec("1", "Zusammenfassung", s);
+
+  // 2 Ausgangslage
+  const gens = R.gens.map(g => `${g.n} × ${g.typ}, ${fnum(g.kw, 1)} kW (${fnum(g.share)} % der Wärme, ${g.eff})`).join("; ") || "–";
+  s = tbl([["Bereich"], ["Bestand"]], [
+    {c: ["Nutzung", `${R.profil}, ${fnum(A)} m² Nutzfläche, ${R.floors} Geschosse, ${fnum(R.persons)} Personen` + (R.res ? `, ${R.we} Wohneinheiten` : "") + `; Nutzung an ${fnum(R.days)} Tagen/Jahr, ${fnum(R.hours, 1)} h/Tag; Raumtemperatur ${fnum(R.theta_i, 1)} °C`]},
+    {c: ["Standort und Klima", `${R.region}; ${R.witterung}`]},
+    {c: ["Gebäudehülle", `Baualter ${R.baujahr}, ${R.sanierung}; H'T = ${fnum(R.ht, 2)} W/(m²K); ` + R.comp.slice(0, 4).map(c => `${c.name} U = ${fnum(c.U, 2)}`).join(", ") + ` W/(m²K)`]},
+    {c: ["Lüftung", `${R.vent}` + (R.vent.startsWith("Zu-") ? `, Wärmerückgewinnung ${pct(R.wrg)}` : "") + `; wirksamer Luftwechsel ${fnum(R.n_eff, 2)} 1/h`]},
+    {c: ["Wärmeerzeugung", `${gens}; Vorlauftemperatur ${R.vl} °C; Heizlast ${fnum(R.phi_rec, 1)} kW`]},
+    {c: ["Warmwasser", `${R.ww_label}, ${fnum(R.T_ww)} °C; Zirkulation: ${R.circ}` + (R.Q_sol > 0 ? `; Solarthermie ${fnum(R.Q_sol)} kWh/a` : "")]},
+    {c: ["Beleuchtung", `${R.lm}, ${R.ctrl}; ${fnum(R.P_light / A, 1)} W/m² installiert`]},
+    {c: ["Strom und Eigenerzeugung", (R.pv_gen > 0 ? `PV ${fnum(R.pv_kwp, 1)} kWp (${R.pv_or}, ${fnum(R.pv_tilt)}°)` + (R.bat > 0 ? `, Speicher ${fnum(R.bat)} kWh` : "") : "keine PV-Anlage") + (R.ev_n > 0 ? `; ${fnum(R.ev_n)} Ladepunkte` : "") + `; Leistungsbedarf Netzanschluss ca. ${fnum(R.anschluss.P)} kW`]},
+  ], "facts2");
+  if (meta.nTotal) s += `<p class="kmuted">Datengrundlage: Von ${meta.nTotal} Eingabegrößen wurden ${meta.nAvg} als typische Durchschnittswerte angenommen und ${meta.nTotal - meta.nAvg} objektspezifisch eingegeben. Je mehr eigene Angaben vorliegen (vor allem Verbrauchsabrechnungen, U-Werte und Anlagendaten), desto belastbarer sind die Ergebnisse.</p>`;
+  sec("2", "Ausgangslage", s);
+
+  // 3 Bewertung
+  const elTop = Object.entries(R.el).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k2, v]) => `${k2} ${pct(v / R.E_el)}`).join(", ");
+  const costTop = Object.entries(R.cost).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k2, v]) => `${k2} ${pct(v / R.cost_total)}`).join(", ");
+  const Ht = R.H_T + R.H_V;
+  const lossTop = [...R.comp.map(c => [c.name, c.H]), ["Lüftung", R.H_V]].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([n, h]) => `${n} ${pct(h / Ht)}`).join(", ");
+  s = `<p>Die Wärmeverluste verteilen sich vor allem auf ${e(lossTop)}. Beim Strom entfallen die größten Anteile auf ${e(elTop)}. Die Kosten werden bestimmt durch ${e(costTop)}.</p>`;
+  const lab = {hoch: "Handlungsbedarf", mittel: "Potenzial", info: "Hinweis", gut: "Stärke"};
+  const ord = ["hoch", "mittel", "info", "gut"];
+  s += `<ul class="befunde">` + bef.slice().sort((a, b) => ord.indexOf(a[0]) - ord.indexOf(b[0])).map(([sev, t]) => `<li class="b-${sev}"><span class="tag">${lab[sev]}</span>${e(t)}</li>`).join("") + `</ul>`;
+  if (R.warn.length) s += `<p class="kmuted">Plausibilitätshinweise der Berechnung: ${R.warn.map(e).join(" · ")}</p>`;
+  sec("3", "Energetische Bewertung des Ist-Zustands", s);
+
+  // 4 Maßnahmen
+  const stageTxt = {
+    1: "Diese Maßnahmen lassen sich kurzfristig und ohne größere Planung umsetzen. Sie sollten unabhängig von allen weiteren Schritten erfolgen und schaffen die Grundlage für einen effizienten Anlagenbetrieb.",
+    2: "Maßnahmen an der Hülle rechnen sich allein über die Energieeinsparung meist nur langfristig. Sie sollten deshalb mit ohnehin anstehenden Instandsetzungen verbunden werden (Kopplungsprinzip); dann sind nur die energiebedingten Mehrkosten von etwa 30–50 % anzusetzen. Eine bessere Hülle senkt Heizlast und Vorlauftemperatur und ist damit die Voraussetzung für einen effizienten Wärmepumpenbetrieb. Nach dem Abdichten der Hülle ist ein Lüftungskonzept nach DIN 1946-6 zu erstellen (Feuchteschutz).",
+    3: "Vor dem Tausch des Wärmeerzeugers ist eine raumweise Heizlastberechnung nach DIN EN 12831-1 erforderlich; die hier ermittelte Heizlast ist eine Abschätzung. Die Anlage sollte auf den Zustand nach den Hüllmaßnahmen ausgelegt werden, sonst wird sie zu groß.",
+    4: "Die Anlage ist beim Netzbetreiber anzumelden (VDE-AR-N 4105). Vorab sind Dachzustand, Statik und Brandschutz zu prüfen; eine Dachsanierung sollte vor der Belegung erfolgen.",
+  };
+  s = `<p>Alle Maßnahmen wurden einzeln als Variante des Gebäudes durchgerechnet. Die Einstufung berücksichtigt Wirtschaftlichkeit, Klimawirkung und die sinnvolle Reihenfolge der Umsetzung.</p>`;
+  for (const sn of [1, 2, 3, 4]) {
+    const ms = M.filter(m => m.stage === sn && m.inPath);
+    if (!ms.length) continue;
+    s += `<h4>${e(D.STAGES[sn])}</h4>` + tbl([["Maßnahme"], ["Beschreibung"], ["Investition", "r"], ["Einsparung", "r"], ["CO₂", "r"], ["Amortisation", "r"], ["Einstufung"]],
+      ms.map(m => ({c: [m.name, m.wp ? `Luft/Wasser-Wärmepumpe, im Stufenplan rund ${fnum(ziel.R.phi_rec, 1)} kW (als Einzelmaßnahme ohne Hüllsanierung ${fnum(R.phi_rec, 1)} kW)` + (m.heizfl ? `, Vorlauf auf 55 °C` : "") : m.desc, eur(m.wp && K.wpInvest ? K.wpInvest : m.invest), `${fnum(m.d_cost)} €/a`, `${fnum(m.d_co2, 1)} t/a`, m.eco.dyn !== null ? `${fnum(m.eco.dyn)} a` : "–", m.klasse.replace("empfohlen – ", "").replace("empfohlen ", "")]})), "mtab");
+    let t = stageTxt[sn];
+    const wp = ms.find(m => m.wp);
+    if (wp) {
+      const zg = ziel.R.gens.find(g => g.typ.includes("Wärmepumpe"));
+      t += ` Im Zielzustand erreicht die Wärmepumpe rechnerisch eine ${zg ? zg.eff.replace("JAZ", "Jahresarbeitszahl von") : "gute Jahresarbeitszahl"} bei ${ziel.R.vl} °C Vorlauftemperatur und einer Heizleistung von rund ${fnum(ziel.R.phi_rec, 1)} kW.`;
+      if (wp.d_cost < 0) t += ` Bei den angesetzten Energiepreisen führt der Umstieg für sich genommen zu Mehrkosten von ${eur(-wp.d_cost)} pro Jahr; wirtschaftlich wird er erst zusammen mit niedrigeren Vorlauftemperaturen, eigenem Solarstrom oder einem Wärmepumpentarif.`;
+      t += ` Schallschutz (TA Lärm) und der Aufstellort sind früh zu klären.`;
+    }
+    s += `<p>${e(t)}</p>`;
+  }
+  if (notIn.length) s += `<h4>Nicht in den Stufenplan aufgenommen</h4>` + tbl([["Maßnahme"], ["Einsparung", "r"], ["CO₂", "r"], ["Investition", "r"], ["Grund"]],
+    notIn.map(m => ({c: [m.name, `${fnum(m.d_cost)} €/a`, `${fnum(m.d_co2, 1)} t/a`, eur(m.invest),
+      m.verhalten ? "Nutzerverhalten – jederzeit möglich, hängt von der Akzeptanz ab" : m.klasse.startsWith("Alternative") ? m.klasse : "allein über die Energieeinsparung nicht wirtschaftlich; aus Komfort- oder Hygienegründen dennoch sinnvoll prüfbar"]})), "mtab");
+  if (!M.filter(m => !m.paket).length) s += `<p>Der Maßnahmenkatalog enthält für dieses Gebäude keine sinnvollen Vorschläge.</p>`;
+  sec("4", "Maßnahmenkonzept", s);
+
+  // 5 Zielzustand
+  if (st.length > 1) {
+    s = tbl([["Zustand"], ["Energiebezug", "r"], ["CO₂", "r"], ["Kosten", "r"], ["Heizlast", "r"], ["Kennwert", "r"], ["Investition kumuliert", "r"]],
+      st.map((x, i) => ({cls: i === st.length - 1 ? "tot" : "", c: [i === 0 ? x.name : `nach ${D.STAGE_SHORT[x.stage]}`, `${fnum(x.k.end)} kWh/a`, `${fnum(x.k.co2, 1)} t/a`, `${fnum(x.k.cost)} €/a`, `${fnum(x.k.hl, 1)} kW`,
+        `${fnum(x.k.ea)} kWh/(m²a)` + (R.res ? ` (${x.k.klasse})` : ""), i === 0 ? "–" : eur(x.invest)]})));
+    s += `<p>Die Stufen bauen aufeinander auf und wurden kumuliert berechnet; die Einsparungen einzelner Maßnahmen lassen sich deshalb nicht einfach addieren. Im Zielzustand stammen ${pct(k1.ee)} der Wärme aus erneuerbaren Quellen` +
+      (ziel.R.pv_gen > 0 ? `, die PV-Anlage erzeugt ${fnum(ziel.R.pv_gen)} kWh/a und deckt ${pct(k1.autarkie)} des Strombedarfs` : "") + `. ` +
+      (k1.co2 > 0.5 ? `Die verbleibenden ${fnum(k1.co2, 1)} t CO₂ pro Jahr entstehen überwiegend durch Netzstrom und sinken mit dem weiteren Ausbau erneuerbarer Energien im Strommix.` : "") + `</p>`;
+    sec("5", "Zielzustand und Stufenplan", s);
+  }
+
+  // 6 Wirtschaftlichkeit
+  if (st.length > 1) {
+    const eHi = econ(K.invest, K.d_cost, K.d_co2, Object.assign({}, R.eco, {s: R.eco.s + 0.02})), eLo = econ(K.invest, K.d_cost, K.d_co2, Object.assign({}, R.eco, {s: R.eco.s - 0.02}));
+    s = `<p>Bewertet wird nach der Kapitalwertmethode in Anlehnung an VDI 2067 und VDI 6025: Betrachtungszeitraum ${R.eco.n} Jahre, Kalkulationszins ${pct(R.eco.i, 1)}, Energiepreissteigerung ${pct(R.eco.s, 1)} pro Jahr, Förderquote ${pct(R.eco.f)}. Die Randbedingungen lassen sich unter „Preise &amp; Ist“ anpassen.</p>`;
+    s += tbl([["Größe"], ["Wert", "r"], ["Erläuterung"]], [
+      {c: ["Investition Stufenplan", eur(K.invest), "Richtwerte brutto, Preisstand 2025/26"]},
+      {c: ["Investition nach Förderung", eur(K.eco.inv), R.eco.f > 0 ? `Förderquote ${pct(R.eco.f)}` : "ohne Förderung gerechnet"]},
+      {c: ["Einsparung im ersten Jahr", `${fnum(K.d_cost)} €/a`, "Energie- und Wasserkosten gegenüber dem Ist-Zustand"]},
+      {c: ["Kapitalwert", eur(K.eco.npv), K.eco.npv >= 0 ? "positiv: Das Paket ist über den Betrachtungszeitraum wirtschaftlich" : "negativ: Die Einsparungen decken die Investition im Betrachtungszeitraum nicht"]},
+      {c: ["Dynamische Amortisation", K.eco.dyn !== null ? `${fnum(K.eco.dyn)} Jahre` : "nicht erreicht", "unter Berücksichtigung von Zins und Preissteigerung"]},
+      {c: ["CO₂-Vermeidungskosten", K.eco.co2cost !== null ? `${fnum(K.eco.co2cost)} €/t` : "–", "Annuität der Investition abzüglich Einsparung je vermiedener Tonne; negativ = Klimaschutz mit Gewinn"]},
+      {c: ["Sensitivität Energiepreis", `${eur(eLo.npv)} … ${eur(eHi.npv)}`, `Kapitalwert bei ${pct(R.eco.s - 0.02, 1)} bzw. ${pct(R.eco.s + 0.02, 1)} Preissteigerung pro Jahr`]},
+    ]);
+    s += `<p>Nicht berücksichtigt sind Wartungs- und Instandhaltungskosten, Restwerte, die ohnehin fälligen Ersatzinvestitionen (zum Beispiel für einen neuen Kessel) sowie Wertsteigerung und Komfortgewinn. Werden Hüllmaßnahmen mit einer ohnehin nötigen Instandsetzung verbunden, fällt die Bilanz deutlich günstiger aus.</p>`;
+    sec("6", "Wirtschaftlichkeit", s);
+  }
+
+  // 7 Elektrischer Anschluss
+  const zs = ziel.R.sim, za = ziel.R.anschluss, a0 = R.anschluss;
+  s = `<p>Der Leistungsbedarf am Netzanschluss beträgt im Ist-Zustand etwa ${fnum(a0.P)} kW (${a0.fuse ? `Absicherung ${a0.fuse} A` : "Sonderanschluss"})` +
+    (st.length > 1 && Math.abs(za.P - a0.P) > 1 ? ` und ${za.P > a0.P ? "steigt" : "sinkt"} im Zielzustand auf rund ${fnum(za.P)} kW (${za.fuse ? `${za.fuse} A` : "Sonderanschluss"})` : "") + `. ` +
+    (R.res ? "Grundlage sind die Kennlinien der DIN 18015-1 zuzüglich Wärmepumpe, Ladepunkten und Aufzügen." : "Grundlage ist der simulierte Lastgang mit Zuschlag für Kurzzeitspitzen.") + `</p><ul>`;
+  if (st.length > 1 && za.fuse && a0.fuse && za.fuse > a0.fuse) s += `<li>Die Elektrifizierung von Wärme und Mobilität erfordert voraussichtlich eine Verstärkung des Hausanschlusses. Die Leistungserhöhung ist früh beim Netzbetreiber anzufragen (VDE-AR-N 4100, TAB).</li>`;
+  if (za.steuerbar.length) s += `<li>${e(za.steuerbar.join(", "))}: Steuerbare Verbrauchseinrichtungen über 4,2 kW sind nach § 14a EnWG anzumelden. Der Netzbetreiber darf die Leistung bei Engpässen vorübergehend begrenzen und gewährt dafür reduzierte Netzentgelte.</li>`;
+  if (ziel.R.pv_gen > 0) s += `<li>PV-Anlage mit ${fnum(ziel.R.pv_kwp, 1)} kWp: Anmeldung und Netzverträglichkeitsprüfung nach VDE-AR-N 4105; die maximale Einspeisung liegt rechnerisch bei ${fnum(zs.feedPeak, 1)} kW. Anforderungen an Steuerbarkeit und Messung (intelligentes Messsystem) richten sich nach dem aktuellen EEG und Messstellenbetriebsgesetz.</li>`;
+  if (ziel.R.ev_n > 1 || za.wb_kw > 11) s += `<li>Für mehrere Ladepunkte ist ein Lastmanagement vorzusehen; es begrenzt die Anschlussleistung und vermeidet Lastspitzen.</li>`;
+  s += `<li>Die elektrische Anlage ist nach DIN VDE 0100 zu planen und zu errichten; bei Bestandsanlagen empfiehlt sich vor größeren Erweiterungen eine Prüfung von Zählerschrank und Hauptleitung.</li></ul>`;
+  sec("7", "Elektrischer Netzanschluss", s);
+
+  // 8 Rechtlicher Rahmen und Förderung
+  s = `<ul><li><b>Gebäudeenergierecht:</b> Seit 2026 ist das Gebäudemodernisierungsgesetz (GModG) an die Stelle des Gebäudeenergiegesetzes (GEG) getreten. Anforderungen an Bauteile bei Sanierungen, an neue Heizungsanlagen und an Energieausweise sind vor der Umsetzung am aktuellen Gesetzesstand zu prüfen.</li>` +
+    `<li><b>Kommunale Wärmeplanung:</b> Vor einer Entscheidung über den Wärmeerzeuger sollte geklärt werden, ob für das Grundstück ein Wärmenetz vorgesehen ist.</li>` +
+    `<li><b>CO₂-Bepreisung:</b> Fossile Brennstoffe unterliegen dem nationalen Emissionshandel (BEHG) und künftig dem europäischen Emissionshandel für Gebäude (EU-ETS 2). Die Preisentwicklung ist ein wesentliches Kostenrisiko fossiler Heizungen.</li>` +
+    `<li><b>Solarpflichten:</b> Mehrere Bundesländer schreiben bei Neubau oder grundlegender Dachsanierung PV-Anlagen vor; die Landesregelung ist zu prüfen.</li>` +
+    (!R.res ? `<li><b>Energiemanagement:</b> Für größere Verbraucher und öffentliche Stellen können Pflichten zu Energieaudits (DIN EN 16247-1) oder Energiemanagementsystemen (DIN EN ISO 50001) nach dem Energieeffizienzgesetz bestehen.</li>` : "") +
+    `<li><b>Förderung:</b> Für Hülle, Anlagentechnik, Heizungsoptimierung und Heizungstausch kommt die Bundesförderung für effiziente Gebäude (BEG) in Betracht, für Kommunen zusätzlich Landes- und Bundesprogramme. Fördersätze und Bedingungen ändern sich häufig; der Antrag ist in der Regel vor Auftragsvergabe zu stellen. Die erwartete Förderquote kann unter „Preise &amp; Ist“ eingetragen werden.</li></ul>`;
+  sec("8", "Rechtlicher Rahmen und Förderung", s);
+
+  // 9 Umsetzung
+  const names = sn => M.filter(m => m.stage === sn && m.inPath).map(m => m.name).join(", ");
+  const steps = [`<b>Datengrundlage schärfen:</b> Verbrauchsabrechnungen der letzten drei Jahre auswerten und witterungsbereinigen (VDI 3807), Anlagendaten und Bauteilaufbauten aufnehmen und im Rechner als Ist-Verbrauch und eigene Werte hinterlegen.`];
+  if (names(1)) steps.push(`<b>Kurzfristige Maßnahmen umsetzen:</b> ${e(names(1))}.`);
+  if (names(2) || names(3)) steps.push(`<b>Fachplanung beauftragen:</b> Energieberatung mit Bedarfsberechnung nach DIN V 18599` + (R.res ? " und individuellem Sanierungsfahrplan" : "") + `, raumweise Heizlast nach DIN EN 12831-1, Lüftungskonzept; Fördermittel vor Auftragsvergabe beantragen.`);
+  if (names(2)) steps.push(`<b>Gebäudehülle:</b> ${e(names(2))} – abgestimmt auf den Instandhaltungsplan.`);
+  if (names(3)) steps.push(`<b>Anlagentechnik:</b> ${e(names(3))} – ausgelegt auf die reduzierte Heizlast, mit hydraulischem Abgleich und Einregulierung.`);
+  if (names(4)) steps.push(`<b>Eigenstrom:</b> ${e(names(4))} – Netzanfrage, Statik und Dachzustand prüfen, Messkonzept festlegen.`);
+  steps.push(`<b>Monitoring und Erfolgskontrolle:</b> Zählerstände monatlich erfassen, Kennwerte jährlich mit diesem Konzept vergleichen und den Anlagenbetrieb nachjustieren.`);
+  sec("9", "Empfohlenes Vorgehen", `<ol>${steps.map(x => `<li>${x}</li>`).join("")}</ol>`);
+
+  // 10 Hinweise
+  sec("10", "Hinweise zur Aussagekraft", `<p class="kmuted">Das Konzept beruht auf einer kennwertbasierten Berechnung mit vereinfachten Verfahren (Monatsbilanz nach DIN V 4108-6 / DIN EN ISO 13790, DIN V 18599, DIN EN 12831, VDI 2067, VDI 3807, VDI 4650, VDI 4707, DIN 18015-1, DIN EN ISO 52120-1) und einer stündlichen Strombilanz mit synthetischen Lastprofilen. ` +
+    `Die Ergebnisse sind als Orientierung mit einer Unsicherheit in der Größenordnung von ±20 % zu verstehen; ein Abgleich mit gemessenen Verbräuchen verbessert die Genauigkeit deutlich. Investitionskosten sind Richtwerte ohne Planung und Nebenkosten. ` +
+    `Das Konzept ersetzt weder einen Energieausweis noch eine Fachplanung, Heizlastberechnung oder Rechtsberatung.</p>`);
+  return `<article class="konzept"><header><h2>Energiekonzept ${e(obj)}</h2><p class="kmuted">${pj.projekt_adresse ? e(pj.projekt_adresse) + " · " : ""}${pj.projekt_bearbeiter ? "Bearbeitung: " + e(pj.projekt_bearbeiter) + " · " : ""}Stand ${new Date().toLocaleDateString("de-DE")}</p></header>${H}</article>`;
 }
 
 </script>
@@ -1971,7 +2749,7 @@ const h = (tag, attrs = {}, ...kids) => {
   return el;
 };
 
-const APP = {fields: {}, meta: {}, devices: [], R: null, M: null, dirty: new Set(), tab: "overview", timer: null, auto: true, sec: ""};
+const APP = {fields: {}, meta: {}, devices: [], R: null, M: null, K: null, dirty: new Set(), tab: "overview", timer: null, auto: true, sec: "", expert: false};
 const STORE_KEY = "gebaeude-energierechner-v2";
 
 /* -------------------------------------------------------------------------- Feldtypen */
@@ -1986,7 +2764,7 @@ function numField(key, label, unit = "", o = {}) {
   inp.addEventListener("input", () => { inp.classList.remove("bad"); schedule(); });
   if (cb) cb.addEventListener("change", () => { apply(); if (!cb.checked) { inp.focus(); inp.select(); } schedule(); });
   const f = {
-    type: "num",
+    type: "num", allowAvg,
     el: h("span", {class: "numwrap"}, inp, cb ? h("label", {class: "avgcb"}, cb, "Ø") : null),
     get() {
       if (cb && cb.checked) return null;
@@ -2013,7 +2791,7 @@ function choiceField(key, label, options, o = {}) {
   const hint = h("div", {class: "hint"});
   sel.addEventListener("change", schedule);
   const f = {
-    type: "choice",
+    type: "choice", allowAvg,
     el: h("span", {class: "choicewrap"}, sel, hint),
     get: () => (sel.value === AVG_LABEL ? null : sel.value),
     isAvg: () => sel.value === AVG_LABEL,
@@ -2041,7 +2819,7 @@ function textField(key, label) {
 function reg(key, f, label, unit, tip) {
   APP.fields[key] = f;
   APP.meta[key] = [APP.sec, label, unit];
-  f.label = label; f.unit = unit; f.tip = tip;
+  f.label = label; f.unit = unit; f.tip = tip; f.key = key;
   return f;
 }
 
@@ -2055,7 +2833,8 @@ function section(parent, title, note) {
 }
 function rowOf(body, f) {
   const lbl = h("label", {class: "lbl"}, f.label, f.tip ? h("span", {class: "tip", tabindex: "0", "data-tip": f.tip}, "ⓘ") : null);
-  body.append(lbl, h("div", {class: "ctl"}, f.el), h("span", {class: "unit"}, f.unit || ""));
+  body.append(h("div", {class: "row", "data-key": f.key, "data-label": (f.label + " " + (f.unit || "") + " " + f.key.replace(/_/g, " ")).toLowerCase()},
+    lbl, h("div", {class: "ctl"}, f.el), h("span", {class: "unit"}, f.unit || "")));
 }
 const N = (body, ...a) => rowOf(body, numField(...a));
 const CH = (body, ...a) => rowOf(body, choiceField(...a));
@@ -2068,7 +2847,8 @@ function buildInputs() {
   tabs.forEach(([k, t], i) => {
     nav.append(h("button", {class: "tab" + (i ? "" : " active"), "data-tab": k, onclick: () => {
       nav.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.tab === k));
-      wrap.querySelectorAll(".panel").forEach(p => p.hidden = p.dataset.tab !== k);
+      $("#in-search").value = "";
+      applyFilter();
     }}, t));
     panels[k] = h("div", {class: "panel", "data-tab": k, hidden: i ? true : null});
     wrap.append(panels[k]);
@@ -2121,7 +2901,7 @@ function buildInputs() {
   CH(s, "heizflaechen", "Heizflächen / Vorlauftemperatur", keys(D.HEIZFL)); CH(s, "verteilung", "Zustand Verteilung", D.DIST_OPTS);
   CH(s, "pumpe", "Heizungspumpe", keys(D.PUMP_OPTS));
   APP.sec = "Wärmeerzeuger";
-  const gsec = h("fieldset", {class: "card"}, h("legend", {}, "Wärmeerzeuger (Reihenfolge = Priorität, 1 = Grundlast)"),
+  const gsec = h("fieldset", {class: "card", "data-basic": "1"}, h("legend", {}, "Wärmeerzeuger (Reihenfolge = Priorität, 1 = Grundlast)"),
     h("p", {class: "note"}, "Leistung je Gerät × Anzahl. Ohne Vorgabe wird die Wärme über die stündliche Jahresdauerlinie verteilt: Erzeuger 1 deckt die Grundlast, die folgenden die Spitzenlast. Optional: fester Deckungsanteil oder bekannte Volllaststunden vorgeben."));
   const gt = h("div", {class: "gengrid"}, ["#", "Erzeuger", "kW je Gerät", "Anzahl", "Anteil %", "Volllast h/a"].map(x => h("div", {class: "gh"}, x)));
   for (let i = 1; i <= 4; i++) {
@@ -2133,6 +2913,8 @@ function buildInputs() {
   }
   gsec.append(gt);
   t.append(gsec);
+  s = section(t, "Zustand der Anlage");
+  N(s, "heizung_alter", "Alter des Hauptwärmeerzeugers", "Jahre", {tip: "Für die Empfehlungen im Energiekonzept (rechnerische Nutzungsdauer nach VDI 2067: etwa 18–20 Jahre). Auf die Energiebilanz hat das Alter keinen Einfluss – die Effizienz ergibt sich aus dem gewählten Erzeugertyp."});
   s = section(t, "Wärmepumpe");
   N(s, "jaz_wp", "Jahresarbeitszahl (falls gemessen)", "", {tip: "Ø = aus Wärmequelle und Vorlauftemperatur (VDI 4650-1 / Feldtests). Bei bekannter JAZ (z. B. aus Wärmemengen- und Stromzähler) hier eintragen."});
   s = section(t, "Warmwasser");
@@ -2190,7 +2972,11 @@ function buildInputs() {
   s = section(t, "Kühlung / Klimatisierung");
   CH(s, "kuehlung", "Kühlsystem", keys(D.COOL_OPTS)); N(s, "kuehl_anteil", "gekühlter Flächenanteil", "%"); N(s, "eer", "Jahresarbeitszahl Kälte (EER/SEER)");
   s = section(t, "Photovoltaik");
-  N(s, "pv_kwp", "PV-Leistung", "kWp"); N(s, "pv_ertrag", "spezifischer Ertrag", "kWh/kWp"); N(s, "speicher_kwh", "Batteriespeicher", "kWh");
+  N(s, "pv_kwp", "PV-Leistung", "kWp", {tip: "Ø = keine Anlage. Das Dachpotenzial steht in den Kennzahlen."});
+  CH(s, "pv_ausrichtung", "Ausrichtung", keys(D.PV_ORIENT));
+  N(s, "pv_neigung", "Neigung", "°", {tip: "Dachneigung bzw. Aufständerung. Ausrichtung und Neigung ergeben den Ertragsfaktor gegenüber einer optimal nach Süden geneigten Anlage."});
+  N(s, "pv_ertrag", "spezifischer Ertrag bei optimaler Ausrichtung", "kWh/kWp");
+  N(s, "speicher_kwh", "Batteriespeicher", "kWh", {tip: "Eigenverbrauch und Autarkie werden mit einer stündlichen Jahresbilanz berechnet (Lastgang, PV-Tagesgang, Speicher)."});
   // Preise & Ist
   t = panels.preise;
   s = section(t, "Arbeitspreise (brutto)");
@@ -2199,6 +2985,10 @@ function buildInputs() {
   N(s, "preis_einspeisung", "Einspeisevergütung", "€/kWh"); N(s, "grundpreise", "Grundpreise / Zählergebühren gesamt", "€/a");
   s = section(t, "Emissionen", "Brennstoffe nach GEG Anlage 9. Strom: Ø = aktueller deutscher Strommix (ca. 380 g/kWh); GEG-Wert wäre 560 g/kWh.");
   N(s, "co2_strom", "CO₂-Faktor Strom", "g/kWh"); N(s, "co2_preis", "CO₂-Preis (BEHG/ETS2)", "€/t");
+  s = section(t, "Wirtschaftlichkeit (Maßnahmen und Energiekonzept)", "Randbedingungen der Kapitalwertrechnung in Anlehnung an VDI 2067 / VDI 6025.");
+  N(s, "zins", "Kalkulationszins", "%/a"); N(s, "preissteigerung", "Energiepreissteigerung", "%/a");
+  N(s, "zeitraum", "Betrachtungszeitraum", "Jahre");
+  N(s, "foerderquote", "Förderquote auf Investitionen", "%", {tip: "Erwarteter Zuschussanteil (z. B. BEG). Ø = ohne Förderung. Fördersätze vor der Umsetzung prüfen."});
   s = section(t, "Gemessener Verbrauch (Soll-Ist-Vergleich)", "Optional: Werte aus Abrechnungen eintragen. Die Abweichung wird in der Übersicht gezeigt. Tipp: Witterung des Bezugsjahres und Rechenmodus passend wählen.");
   N(s, "ist_strom", "Strom (gesamt)", "kWh/a", {avg: false}); N(s, "ist_waerme", "Wärme (Endenergie, z. B. Gas in kWh)", "kWh/a", {avg: false});
   N(s, "ist_wasser", "Wasser", "m³/a", {avg: false});
@@ -2250,7 +3040,7 @@ function recalc() {
   let R;
   try { R = compute(params(), APP.devices); }
   catch (e) { console.error(e); status("Fehler in der Berechnung: " + e.message); return; }
-  APP.R = R; APP.M = null;
+  APP.R = R; APP.M = null; APP.K = null;
   for (const [k, f] of Object.entries(APP.fields)) f.showDefault(R.used[k]);
   renderTiles(R);
   APP.dirty = new Set(D.TABS.map(t => t[0]));
@@ -2259,45 +3049,63 @@ function recalc() {
   const nAvg = Object.values(APP.fields).filter(f => f.isAvg()).length;
   status(`Berechnet in ${Math.round(performance.now() - t0)} ms  ·  ${R.profil}, ${fnum(R.A)} m²  ·  ${nAvg} Eingaben auf Ø (Durchschnittswerte)  ·  ${R.warn.length} Hinweis(e)`);
   saveLocal();
+  applyFilter();
 }
 function ensureMeasures() {
   if (!APP.M && APP.R) APP.M = measures(params(), APP.devices, APP.R);
   return APP.M;
 }
+function ensureKonzept() {
+  ensureMeasures();
+  if (!APP.K && APP.R) APP.K = konzeptPfad(params(), APP.devices, APP.R, APP.M);
+  return APP.K;
+}
+function konzeptMeta() {
+  const fs = Object.values(APP.fields).filter(f => f.type !== "text");
+  return {nTotal: fs.length, nAvg: fs.filter(f => f.isAvg()).length};
+}
 function renderTiles(R) {
   const el = $("#tiles");
   el.innerHTML = "";
+  const go = {"Strom": "strom", "Wärme · Endenergie": "waerme", "Wasser": "wasser", "Heizlast": "waerme", "PV-Ertrag": "lastgang", "Kosten": "kosten", "CO₂": "kosten", "Effizienz": "kennzahlen"};
   for (const [t, v, s1, s2, col] of kpiValues(R))
-    el.append(h("div", {class: "tile", style: `--c:${col}`}, h("div", {class: "tt"}, t), h("div", {class: "tv"}, v), h("div", {class: "ts"}, s1), h("div", {class: "ts"}, s2)));
+    el.append(h("button", {class: "tile", style: `--c:${col}`, title: "Details anzeigen", onclick: () => showTab(go[t] || "overview")},
+      h("div", {class: "tt"}, t), h("div", {class: "tv"}, v), h("div", {class: "ts"}, s1), h("div", {class: "ts"}, s2)));
 }
 function tableHTML(spec, print = false) {
   const tot = spec.cols.reduce((s, c) => s + c[1], 0);
   const cg = spec.cols.map(c => `<col style="width:${(c[1] / tot * 100).toFixed(2)}%">`).join("");
   const th = spec.cols.map(c => `<th class="${c[2] === "e" ? "r" : ""}">${esc(c[0])}</th>`).join("");
   const rows = spec.rows.map(r => `<tr class="${r.style || ""} lv${r.level || 0}">` + r.cells.map((c, j) =>
-    `<td class="${spec.cols[j] && spec.cols[j][2] === "e" ? "r" : ""}">${j === 0 ? `<span class="ind"></span>` : ""}${esc(c)}</td>`).join("") + "</tr>").join("");
+    `<td class="${spec.cols[j] && spec.cols[j][2] === "e" ? "r" : ""}">${c && typeof c === "object" ? c.html : esc(c)}</td>`).join("") + "</tr>").join("");
   return `<div class="tblwrap"><div class="tbltitle">${esc(spec.title)}</div><div class="tblscroll"><table class="res${print ? " pr" : ""}"><colgroup>${cg}</colgroup><thead><tr>${th}</tr></thead><tbody>${rows}</tbody></table></div>${spec.note ? `<p class="tblnote">${esc(spec.note)}</p>` : ""}</div>`;
 }
+const FIG_H = {flow: 520, kennzahlen: 440, konzept: 400};
 function render(key) {
   const R = APP.R;
   if (!R) return;
   const pane = $(`#out-${key}`);
-  if (key === "massnahmen" && !APP.M) {
-    const fig = new Fig(1000, 420);
-    chartMassnahmen(fig, R, null);
+  const needM = key === "massnahmen" && !APP.M, needK = key === "konzept" && !APP.K;
+  if (needM || needK) {
+    const fig = new Fig(1000, FIG_H[key] || 420);
+    CHARTS[key](fig, R, null, null);
     pane.querySelector(".chart").innerHTML = fig.svg();
-    setTimeout(() => { ensureMeasures(); APP.dirty.add("massnahmen"); if (APP.tab === "massnahmen") render("massnahmen"); }, 30);
+    pane.querySelector(".tables").innerHTML = `<p class="note">Varianten werden berechnet …</p>`;
+    setTimeout(() => { if (needK) ensureKonzept(); else ensureMeasures(); APP.dirty.add(key); if (APP.tab === key) render(key); }, 30);
     return;
   }
   APP.dirty.delete(key);
-  const fig = new Fig(1000, key === "flow" ? 520 : 420);
-  CHARTS[key](fig, R, APP.M);
+  const fig = new Fig(1000, FIG_H[key] || 420);
+  CHARTS[key](fig, R, APP.M, APP.K);
   pane.querySelector(".chart").innerHTML = fig.svg();
   let html = "";
   if (key === "overview" && R.warn.length) html += `<div class="warn">${R.warn.map(w => "⚠ " + esc(w)).join("<br>")}</div>`;
   if (key === "massnahmen") html += `<p class="note">Jede Maßnahme wird als eigene Variante komplett durchgerechnet (Einsparung gegenüber dem aktuellen Ist-Zustand).</p>`;
-  for (const spec of buildTables(key, R, APP.M)) html += tableHTML(spec);
+  if (key === "konzept") html += `<div class="toolbar"><button class="btn primary" id="k-pdf">📄 Energiekonzept als PDF …</button><span class="note">Das Konzept wird aus den Eingaben und Ergebnissen erzeugt und passt sich bei jeder Änderung an.</span></div>` + buildKonzept(R, APP.M, APP.K, konzeptMeta());
+  else for (const spec of buildTables(key, R, APP.M, APP.K)) html += tableHTML(spec);
   pane.querySelector(".tables").innerHTML = html;
+  const kb = pane.querySelector("#k-pdf");
+  if (kb) kb.addEventListener("click", openPdfDialog);
 }
 function buildResults() {
   const nav = $("#out-tabs"), wrap = $("#out-panels");
@@ -2310,7 +3118,7 @@ function buildResults() {
           h("button", {class: "btn primary", onclick: openPdfDialog}, "📄 PDF-Bericht mit allen Grafiken …"),
           h("button", {class: "btn", onclick: exportTxt}, "Text (.txt)"),
           h("button", {class: "btn", onclick: exportCsv}, "Tabelle (.csv)"),
-          h("span", {class: "note"}, "PDF: Deckblatt, Eingaben, Übersicht bis Monatsverlauf, Maßnahmen, Methodik")),
+          h("span", {class: "note"}, "PDF: Deckblatt, Energiekonzept, alle Auswertungen mit Grafiken, Eingaben, Methodik")),
         h("pre", {id: "report"})));
     } else wrap.append(h("section", {class: "outpanel", id: `out-${k}`, hidden: k !== "overview" ? true : null}, h("div", {class: "chart"}), h("div", {class: "tables"})));
   }
@@ -2356,13 +3164,13 @@ function loadParams() {
 function exportTxt() { if (APP.R) download(`${safeName()}.txt`, APP.R.report, "text/plain;charset=utf-8"); }
 function exportCsv() {
   if (!APP.R) return;
-  ensureMeasures();
+  ensureKonzept();
   const q = s => { s = String(s ?? ""); return /[;"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
   const lines = [["Auswertung", "Tabelle", "Ebene", ...range(14).map(i => `Spalte ${i + 1}`)].map(q).join(";")];
   for (const [key, title] of D.TABS)
-    for (const spec of buildTables(key, APP.R, APP.M)) {
+    for (const spec of buildTables(key, APP.R, APP.M, APP.K)) {
       lines.push([title, spec.title, "Kopf", ...spec.cols.map(c => c[0])].map(q).join(";"));
-      for (const r of spec.rows) lines.push([title, spec.title, String(r.level || 0), ...r.cells].map(q).join(";"));
+      for (const r of spec.rows) lines.push([title, spec.title, String(r.level || 0), ...r.cells.map(c => c && typeof c === "object" ? c.text : c)].map(q).join(";"));
     }
   download(`${safeName()}.csv`, "﻿" + lines.join("\r\n"), "text/csv;charset=utf-8");
 }
@@ -2425,11 +3233,17 @@ const METHODIK = [
   ["Warmwasser", "Zapfmengen je Nutzung (Duschen, Bäder, Händewaschen, Küche, Reinigung), Speicher- und Zirkulationsverluste (DIN EN 12897, DVGW W 551)."],
   ["Strom", "Beleuchtung nach DIN V 18599-4 (vereinfacht: Wartungswert × spezifische Leistung × Betriebszeit, Tageslicht- und Präsenzfaktoren), Haushaltsstrom nach Stromspiegel, Arbeitshilfen nach VDI 3807, Aufzüge nach VDI 4707, Gebäudeautomation nach DIN EN ISO 52120-1."],
   ["Wasser", "Personenbezogene Verbrauchsansätze je Nutzungsprofil, Armaturen und Spülmengen."],
+  ["Strombilanz und PV", "Stündliche Jahresbilanz mit synthetischen Lastprofilen (Haushalte: Form des Standardlastprofils mit Streuung; Nichtwohngebäude: Nutzungszeiten und Grundlast), Wärmepumpenstrom nach stündlicher Heizlast, PV-Erzeugung nach Sonnenstand (51° N) mit wechselnder Bewölkung, Ausrichtung und Neigung als Ertragsfaktor, Batteriespeicher mit Wirkungsgrad und Leistungsgrenze. Daraus folgen Eigenverbrauch, Autarkiegrad, Einspeisung und Lastspitzen."],
+  ["Netzanschluss", "Leistungsbedarf von Wohngebäuden nach den Kennlinien der DIN 18015-1 (Näherung) zuzüglich Wärmepumpe, Ladepunkten und Aufzügen; sonstige Gebäude aus der simulierten Lastspitze mit Zuschlag. Hinweise auf VDE-AR-N 4100/4105 und § 14a EnWG. Die Abschätzung ersetzt keine Planung nach DIN VDE 0100."],
+  ["Wirtschaftlichkeit", "Kapitalwert, dynamische Amortisation und CO₂-Vermeidungskosten in Anlehnung an VDI 2067 / VDI 6025 mit Kalkulationszins, Energiepreissteigerung, Betrachtungszeitraum und Förderquote. Investitionen sind Richtwerte."],
+  ["Energiekonzept", "Die Maßnahmen werden einzeln und im Stufenplan kumuliert als vollständige Varianten des Gebäudes berechnet. Reihenfolge: Betriebsoptimierung, Gebäudehülle, Wärmeerzeugung, Eigenstrom."],
   ["Bewertung", "CO₂-Faktoren und Primärenergiefaktoren nach GEG Anlage 4/9 (Strom: aktueller Strommix), Kennwerte NWG nach VDI 3807 / Bekanntmachung Vergleichswerte, Effizienzklassen nach GEG."],
   ["Grenzen", "Ergebnis ist eine Grobabschätzung für Planung, Budget und Plausibilisierung. Es ersetzt weder Energieausweis noch Heizlastberechnung oder Fachplanung. Alle Durchschnittswerte sind im Programm einsehbar und änderbar."],
 ];
 function buildPrint(opts) {
-  const R = APP.R, M = opts.massnahmen ? ensureMeasures() : null, A = R.A;
+  const R = APP.R, A = R.A;
+  if (opts.konzept) ensureKonzept();
+  const M = (opts.massnahmen || opts.konzept) ? ensureMeasures() : null, K = APP.K;
   const pj = R.projekt;
   const right = [pj.projekt_name, pj.projekt_adresse].filter(Boolean).join(" · ") || `${R.profil}, ${fnum(A)} m²`;
   const head = (title, sub) => `<div class="phead"><span>${esc(title)}</span><span class="pr">${esc(right)}</span></div>${sub ? `<p class="psub">${esc(sub)}</p>` : ""}`;
@@ -2455,26 +3269,34 @@ function buildPrint(opts) {
       <div class="pchart">${(() => { const f = new Fig(1000, 330); chartOverview(f, R); return f.svg(); })()}</div>
     </section>`;
   }
+  if (opts.konzept && K) {
+    const fig = new Fig(1000, 340);
+    chartKonzept(fig, R, M, K);
+    html += `<section class="psec">${head("Energiekonzept")}${buildKonzept(R, M, K, konzeptMeta()).replace("</header>", `</header><div class="pchart">${fig.svg()}</div>`)}</section>`;
+  }
+  let eingabenHtml = "";
   if (opts.eingaben) {
     let last = null, items = "";
     for (const [sec, lbl, val, unit, src] of inputList()) {
       if (sec !== last) { items += `<div class="ih">${esc(sec)}</div>`; last = sec; }
       items += `<div class="ir${src.startsWith("Ø") ? " avg" : ""}"><span>${esc(lbl)}</span><span>${esc(val)} ${esc(unit)}</span><span class="src">${esc(src)}</span></div>`;
     }
-    html += `<section class="psec">${head("Eingabeparameter", "Alle Eingaben der Berechnung – „Ø-Annahme“ = typischer Durchschnittswert bei unbekannter Angabe")}<div class="icols">${items}</div></section>`;
+    eingabenHtml = `<section class="psec">${head("Anhang: Eingabeparameter", "Alle Eingaben der Berechnung – „Ø-Annahme“ = typischer Durchschnittswert bei unbekannter Angabe")}<div class="icols">${items}</div></section>`;
   }
   for (const [key] of D.TABS) {
+    if (key === "konzept") continue;
     if (key === "massnahmen" && !(opts.massnahmen && M && M.length)) continue;
-    const fig = new Fig(1000, key === "flow" ? 560 : 360);
-    CHARTS[key](fig, R, M);
-    html += `<section class="psec">${head(D.TAB_TITLES[key])}<div class="pchart${key === "flow" ? " tall" : ""}">${fig.svg()}</div>${buildTables(key, R, M).map(s => tableHTML(s, true)).join("")}</section>`;
+    const fig = new Fig(1000, key === "flow" ? 560 : (key === "kennzahlen" ? 400 : 360));
+    CHARTS[key](fig, R, M, K);
+    html += `<section class="psec">${head(D.TAB_TITLES[key])}<div class="pchart${key === "flow" ? " tall" : ""}">${fig.svg()}</div>${buildTables(key, R, M, K).map(s => tableHTML(s, true)).join("")}</section>`;
   }
+  html += eingabenHtml;
   if (opts.methodik) html += `<section class="psec">${head("Methodik und Annahmen")}<table class="meth">${METHODIK.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join("")}</table></section>`;
   $("#print-root").innerHTML = html;
 }
 function doPrint() {
   const opts = {};
-  for (const k of ["deckblatt", "eingaben", "massnahmen", "methodik"]) opts[k] = $(`#opt-${k}`).checked;
+  for (const k of ["deckblatt", "konzept", "eingaben", "massnahmen", "methodik"]) opts[k] = $(`#opt-${k}`).checked;
   $("#pdfdlg").close();
   status("PDF-Bericht wird vorbereitet …");
   setTimeout(() => {
@@ -2483,6 +3305,46 @@ function doPrint() {
     document.title = `${safeName()}_${new Date().toISOString().slice(0, 10)}`;
     setTimeout(() => { window.print(); document.title = old; status("Druckdialog geöffnet – Ziel „Als PDF speichern“ wählen."); }, 60);
   }, 20);
+}
+
+/* -------------------------------------------------------------------------- Basis-/Expertenmodus, Suche, Beispiele */
+function applyFilter() {
+  const q = ($("#in-search").value || "").trim().toLowerCase();
+  const active = ($("#in-tabs .tab.active") || {dataset: {}}).dataset.tab;
+  let shown = 0, total = 0;
+  document.querySelectorAll("#in-panels .panel").forEach(panel => {
+    let any = false;
+    panel.querySelectorAll("fieldset.card").forEach(card => {
+      const rows = card.querySelectorAll(".row");
+      const legend = (card.querySelector("legend").textContent || "").toLowerCase();
+      let vis = 0;
+      rows.forEach(r => {
+        const f = APP.fields[r.dataset.key];
+        const own = f && f.type !== "text" && !f.isAvg() && f.get() !== null && f.allowAvg !== false;
+        const okMode = APP.expert || D.BASIC.has(r.dataset.key) || own;
+        const ok = q ? (r.dataset.label.includes(q) || legend.includes(q)) : okMode;
+        r.hidden = !ok; total++; if (ok) { vis++; shown++; }
+      });
+      const special = !rows.length;                       // Erzeugertabelle, Beleuchtungszonen, Geräteliste
+      const showCard = special ? (q ? legend.includes(q) : (APP.expert || card.dataset.basic === "1")) : vis > 0;
+      card.hidden = !showCard;
+      if (showCard) any = true;
+    });
+    panel.hidden = q ? !any : panel.dataset.tab !== active;
+    panel.classList.toggle("searching", !!q);
+  });
+  $("#in-count").textContent = q ? `${shown} Treffer` : (APP.expert ? `${total} Eingaben` : `${shown} von ${total} Eingaben`);
+  $("#in-tabs").classList.toggle("dim", !!q);
+}
+function loadPreset(name) {
+  const pre = D.PRESETS[name];
+  if (!pre) return;
+  if (!confirm(`Beispiel „${name}“ laden?\nDie aktuellen Eingaben werden ersetzt.`)) return;
+  const st = JSON.parse(JSON.stringify(APP.snapshot));
+  Object.assign(st.fields, JSON.parse(JSON.stringify(pre)));
+  st.devices = [];
+  setState(st);
+  status(`Beispiel geladen: ${name}`);
 }
 
 /* -------------------------------------------------------------------------- Hilfen */
@@ -2496,6 +3358,13 @@ function init() {
   APP.snapshot = getState();
   $("#auto").addEventListener("change", e => { APP.auto = e.target.checked; if (APP.auto) recalc(); });
   $("#btn-calc").addEventListener("click", recalc);
+  try { APP.expert = localStorage.getItem(STORE_KEY + "-expert") === "1"; } catch (e) { /* ignorieren */ }
+  $("#in-expert").checked = APP.expert;
+  $("#in-expert").addEventListener("change", e => { APP.expert = e.target.checked; try { localStorage.setItem(STORE_KEY + "-expert", APP.expert ? "1" : "0"); } catch (x) { /* ignorieren */ } applyFilter(); });
+  $("#in-search").addEventListener("input", applyFilter);
+  const ps = $("#in-preset");
+  for (const k of keys(D.PRESETS)) ps.append(h("option", {value: k}, k));
+  ps.addEventListener("change", () => { const v = ps.value; ps.value = ""; loadPreset(v); });
   $("#btn-pdf").addEventListener("click", openPdfDialog);
   $("#pdf-go").addEventListener("click", doPrint);
   $("#pdf-cancel").addEventListener("click", () => $("#pdfdlg").close());
